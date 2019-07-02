@@ -375,6 +375,7 @@ ad_connect tx_adrv9009_som_tpl_core/dac_dunf util_som_tx_upack/fifo_rd_underflow
 ad_connect tx_sysref_0 tx_adrv9009_som_tpl_core/dac_tpl_core/dac_sync_in
 
 
+create_bd_port -dir O -from 2 -to 0 fsm_debug_0
 
 # connections (adc)
 
@@ -386,6 +387,7 @@ ad_connect  core_clk_b util_som_rx_cpack/clk
 ad_connect  rx_adrv9009_som_tpl_core/adc_tpl_core/adc_rst util_som_rx_cpack/reset
 ad_connect  rx_adrv9009_som_tpl_core/adc_tpl_core/adc_sync_in rx_sysref_0
 
+ad_connect rx_adrv9009_som_tpl_core/adc_tpl_core/fsm_debug fsm_debug_0
 
 ad_connect rx_adrv9009_som_tpl_core/adc_valid_0 util_som_rx_cpack/fifo_wr_en
 for {set i 0} {$i < $RX_NUM_OF_CONVERTERS} {incr i} {

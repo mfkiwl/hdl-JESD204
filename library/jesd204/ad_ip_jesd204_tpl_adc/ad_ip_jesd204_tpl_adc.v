@@ -57,6 +57,8 @@ module ad_ip_jesd204_tpl_adc #(
   input adc_sync_in,
   output adc_rst,
 
+  output [2:0]  fsm_debug,
+
   // axi interface
 
   input s_axi_aclk,
@@ -108,6 +110,8 @@ module ad_ip_jesd204_tpl_adc #(
   wire adc_sync_status;
 
   assign adc_rst = adc_rst_s | adc_rst_sync_s;
+  wire [31:0] counter_debug;
+
 
   // regmap
   ad_ip_jesd204_tpl_adc_regmap #(
@@ -161,6 +165,8 @@ module ad_ip_jesd204_tpl_adc #(
 
     .adc_dovf (adc_dovf),
 
+    .counter_debug(counter_debug),
+
     .jesd_m (NUM_CHANNELS),
     .jesd_l (NUM_LANES),
     .jesd_s (SAMPLES_PER_FRAME),
@@ -201,6 +207,9 @@ module ad_ip_jesd204_tpl_adc #(
     .adc_sync_status (adc_sync_status),
     .adc_sync_in (adc_sync_in),
     .adc_rst_sync (adc_rst_sync_s),
+
+    .counter_debug(counter_debug),
+    .fsm_debug(fsm_debug),
 
     .adc_valid (adc_valid),
     .adc_data (adc_data)
