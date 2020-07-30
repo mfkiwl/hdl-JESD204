@@ -1,12 +1,12 @@
 
 source $ad_hdl_dir/library/spi_engine/scripts/spi_engine.tcl
-source ../common/config.tcl
+#source ../common/config.tcl
 
-set data_width    [get_config_param DATA_WIDTH]
-set async_spi_clk [get_config_param ASYNC_SPI_CLK]
-set num_cs        [get_config_param NUM_CS]
-set num_sdi       [get_config_param NUM_SDI]
-set sdi_delay     [get_config_param SDI_DELAY]
+set data_width    $ad_project_params(DATA_WIDTH)
+set async_spi_clk $ad_project_params(ASYNC_SPI_CLK)
+set num_cs        $ad_project_params(NUM_CS)
+set num_sdi       $ad_project_params(NUM_SDI)
+set sdi_delay     $ad_project_params(SDI_DELAY)
 
 set hier_spi_engine spi_ad40xx
  
