@@ -6,6 +6,8 @@ set_instance_parameter_value axi_adrv9001 {ID} {0}
 set_instance_parameter_value axi_adrv9001 {CMOS_LVDS_N} {1}
 add_interface adrv9001_if conduit end
 set_interface_property adrv9001_if EXPORT_OF axi_adrv9001.device_if
+add_interface adrv9001_tdd_if conduit end
+set_interface_property adrv9001_tdd_if EXPORT_OF axi_adrv9001.tdd_if
 add_connection sys_clk.clk axi_adrv9001.s_axi_clock
 add_connection sys_clk.clk_reset axi_adrv9001.s_axi_reset
 

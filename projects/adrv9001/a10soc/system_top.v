@@ -143,7 +143,7 @@ module system_top (
   // physical interface
   input             rx1_dclk_in_n,
   input             rx1_dclk_in_p,
-  inout             rx1_enable,
+  output            rx1_enable,
   input             rx1_idata_in_n,
   input             rx1_idata_in_p,
   input             rx1_qdata_in_n,
@@ -153,7 +153,7 @@ module system_top (
 
   input             rx2_dclk_in_n,
   input             rx2_dclk_in_p,
-  inout             rx2_enable,
+  output            rx2_enable,
   input             rx2_idata_in_n,
   input             rx2_idata_in_p,
   input             rx2_qdata_in_n,
@@ -165,7 +165,7 @@ module system_top (
   output            tx1_dclk_out_p,
   input             tx1_dclk_in_n,
   input             tx1_dclk_in_p,
-  inout             tx1_enable,
+  output            tx1_enable,
   output            tx1_idata_out_n,
   output            tx1_idata_out_p,
   output            tx1_qdata_out_n,
@@ -177,7 +177,7 @@ module system_top (
   output            tx2_dclk_out_p,
   input             tx2_dclk_in_n,
   input             tx2_dclk_in_p,
-  inout             tx2_enable,
+  output            tx2_enable,
   output            tx2_idata_out_n,
   output            tx2_idata_out_p,
   output            tx2_qdata_out_n,
@@ -192,6 +192,10 @@ module system_top (
   wire              sys_resetn_s;
   wire    [ 63:0]   gpio_i;
   wire    [ 63:0]   gpio_o;
+  wire              gpio_rx1_enable_in;
+  wire              gpio_rx2_enable_in;
+  wire              gpio_tx1_enable_in;
+  wire              gpio_tx2_enable_in;
 
   // assignments
 
@@ -315,15 +319,26 @@ module system_top (
     .adrv9001_if_tx2_qdata_out_p_qdata3 (tx2_qdata_out_p),
     .adrv9001_if_tx2_strobe_out_p_strobe_out (tx2_strobe_out_p),
 
+    .adrv9001_if_rx1_enable (rx1_enable),
+    .adrv9001_if_rx2_enable (rx2_enable),
+    .adrv9001_if_tx1_enable (tx1_enable),
+    .adrv9001_if_tx2_enable (tx2_enable),
+
+    .adrv9001_tdd_if_rx1_enable_in (gpio_rx1_enable_in),
+    .adrv9001_tdd_if_rx2_enable_in (gpio_rx2_enable_in),
+    .adrv9001_tdd_if_tx1_enable_in (gpio_tx1_enable_in),
+    .adrv9001_tdd_if_tx2_enable_in (gpio_tx2_enable_in),
+    .adrv9001_tdd_if_tdd_sync_in (1'b0),
+
     .sys_spi_MISO (spi_do),
     .sys_spi_MOSI (spi_dio),
     .sys_spi_SCLK (spi_clk),
     .sys_spi_SS_n (spi_en),
 
-    .adrv9001_gpio_export({tx2_enable,
-                           tx1_enable,
-                           rx2_enable,
-                           rx1_enable,
+    .adrv9001_gpio_export({gpio_tx2_enable_in,
+                           gpio_tx1_enable_in,
+                           gpio_rx2_enable_in,
+                           gpio_rx1_enable_in,
                            reset_trx,
                            mode,
                            gp_int,
