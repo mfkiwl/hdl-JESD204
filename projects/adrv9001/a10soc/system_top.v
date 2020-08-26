@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2020 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -183,7 +183,10 @@ module system_top (
   output            tx2_qdata_out_n,
   output            tx2_qdata_out_p,
   output            tx2_strobe_out_n,
-  output            tx2_strobe_out_p
+  output            tx2_strobe_out_p,
+
+  input             vadj_err,
+  output            platform_status
 );
 
   // internal signals
@@ -199,7 +202,11 @@ module system_top (
 
   // assignments
 
-  assign gpio_i[63:32] = gpio_o[63:32];
+  assign platform_status = vadj_err;
+
+  assign gpio_i[54:32] = gpio_o[54:32];
+  assign gpio_i[55] = vadj_err;
+  assign gpio_i[63:56] = gpio_o[63:56];
 
   // board stuff (max-v-u21)
 

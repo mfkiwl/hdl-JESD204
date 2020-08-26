@@ -144,7 +144,6 @@ ad_cpu_interconnect 0x00044000 axi_dac_dma.s_axi
 ad_cpu_interconnect 0x00060000 avl_adrv9001_gpio.s1
 
 # mem interconnects
-# set_instance_parameter_value sys_hps {F2SDRAM_Width} {64 128 64}
 
 ad_dma_interconnect axi_adc_dma.m_dest_axi
 ad_dma_interconnect axi_dac_dma.m_src_axi

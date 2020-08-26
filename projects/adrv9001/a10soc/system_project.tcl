@@ -23,7 +23,6 @@ source $ad_hdl_dir/projects/common/a10soc/a10soc_plddr4_assign.tcl
 #  R621: R0 -> DNI
 #  R633: R0 -> DNI
 
-
 ## constraints
 ## adrv9001
 #
@@ -58,8 +57,8 @@ set_location_assignment PIN_N13  -to spi_do              ; ## FMCA_HPC_LA12_N
 set_location_assignment PIN_D4   -to spi_en              ; ## FMCA_HPC_LA15_P
 set_location_assignment PIN_A12  -to tx1_enable          ; ## FMCA_HPC_LA09_P
 set_location_assignment PIN_N9   -to tx2_enable          ; ## FMCA_HPC_LA29_P
-set_location_assignment PIN_P8   -to vadj_test_1         ; ## FMCA_HPC_LA31_P
-set_location_assignment PIN_R8   -to vadj_test_2         ; ## FMCA_HPC_LA31_N
+set_location_assignment PIN_P8   -to vadj_err            ; ## FMCA_HPC_LA31_P
+set_location_assignment PIN_R8   -to platform_status     ; ## FMCA_HPC_LA31_N
 set_location_assignment PIN_H14  -to rx1_dclk_in_n       ; ## FMCA_HPC_LA00_CC_N
 set_location_assignment PIN_G14  -to rx1_dclk_in_p       ; ## FMCA_HPC_LA00_CC_P
 set_location_assignment PIN_D14  -to rx1_idata_in_n      ; ## FMCA_HPC_LA03_N
@@ -96,7 +95,6 @@ set_location_assignment PIN_F3   -to tx2_qdata_out_n     ; ## FMCA_HPC_LA25_N
 set_location_assignment PIN_E3   -to tx2_qdata_out_p     ; ## FMCA_HPC_LA25_P
 set_location_assignment PIN_E2   -to tx2_strobe_out_n    ; ## FMCA_HPC_LA24_N
 set_location_assignment PIN_E1   -to tx2_strobe_out_p    ; ## FMCA_HPC_LA24_P
-
 
 execute_flow -compile
 
