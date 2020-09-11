@@ -42,6 +42,8 @@ set_property  -dict {PACKAGE_PIN V7    IOSTANDARD LVCMOS18}  [get_ports platform
 set_property UNAVAILABLE_DURING_CALIBRATION TRUE [get_ports tx1_strobe_out_p]
 set_property UNAVAILABLE_DURING_CALIBRATION TRUE [get_ports tx2_idata_out_p]
 
+set_property  -dict {PACKAGE_PIN A20   IOSTANDARD LVCMOS33} [get_ports tdd_sync]   ;#PMOD0_0 J55.1
+
 # Debug port (Proto header)
 set_property -dict {PACKAGE_PIN H13 IOSTANDARD LVCMOS33} [get_ports proto_hdr[0]]  ;# J3 24 L8P_HDGC_50_P
 set_property -dict {PACKAGE_PIN G13 IOSTANDARD LVCMOS33} [get_ports proto_hdr[1]]  ;# J3 22 L8N_HDGC_50_N

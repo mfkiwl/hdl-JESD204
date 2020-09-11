@@ -124,6 +124,8 @@ module system_top (
   input                   vadj_err,
   output                  platform_status,
 
+  inout                   tdd_sync,
+
   //debug hdr
   output       [9:0]      proto_hdr
 
@@ -144,6 +146,9 @@ module system_top (
 
   wire fpga_ref_clk;
   wire fpga_mcs_in;
+  wire tdd_sync_loc;
+  wire tdd_sync_i;
+  wire tdd_sync_cntr;
 
   // instantiations
 
@@ -179,7 +184,7 @@ module system_top (
     .dio_t ({gpio_t[47:32]}),
     .dio_i ({gpio_o[47:32]}),
     .dio_o ({gpio_i[47:32]}),
-    .dio_p ({sm_fan_tach,  // 47 
+    .dio_p ({sm_fan_tach,  // 47
              reset_trx,    // 46
              mode,         // 45
              gp_int,       // 44
@@ -211,6 +216,14 @@ module system_top (
   assign gpio_i[31:21] = gpio_o[31:21];
 
   assign spi_en = spi_csn[0];
+
+  assign tdd_sync_loc = gpio_o[55];
+
+  // tdd_sync_loc - local sync signal from a GPIO or other source
+  // tdd_sync - external sync 
+
+  assign tdd_sync_i = tdd_sync_cntr ? tdd_sync_loc : tdd_sync;
+  assign tdd_sync = tdd_sync_cntr ? tdd_sync_loc : 1'bz;
 
   system_wrapper i_system_wrapper (
     .ref_clk (fpga_ref_clk),
@@ -267,6 +280,9 @@ module system_top (
     .gpio_rx2_enable_in (gpio_rx2_enable_in),
     .gpio_tx1_enable_in (gpio_tx1_enable_in),
     .gpio_tx2_enable_in (gpio_tx2_enable_in),
+
+    .tdd_sync (tdd_sync_i),
+    .tdd_sync_cntr (tdd_sync_cntr),
 
     .gpio_i (gpio_i),
     .gpio_o (gpio_o),
