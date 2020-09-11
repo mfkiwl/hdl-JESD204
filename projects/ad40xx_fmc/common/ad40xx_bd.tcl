@@ -1,6 +1,5 @@
 
 source $ad_hdl_dir/library/spi_engine/scripts/spi_engine.tcl
-#source ../common/config.tcl
 
 set data_width    $ad_project_params(DATA_WIDTH)
 set async_spi_clk $ad_project_params(ASYNC_SPI_CLK)
@@ -9,7 +8,7 @@ set num_sdi       $ad_project_params(NUM_SDI)
 set sdi_delay     $ad_project_params(SDI_DELAY)
 
 set hier_spi_engine spi_ad40xx
- 
+
 spi_engine_create $hier_spi_engine $data_width $async_spi_clk $num_cs $num_sdi $sdi_delay
 
 create_bd_intf_port -mode Master -vlnv analog.com:interface:spi_master_rtl:1.0 ad40xx_spi
