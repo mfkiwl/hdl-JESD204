@@ -86,8 +86,8 @@ module axi_adrv9001_rx_channel #(
   wire    [(NUM_OF_SAMPLES-1):0]  adc_dcfilter_valid_s;
   wire    [(DATA_WIDTH-1):0]      adc_dcfilter_data_s;
   wire    [(NUM_OF_SAMPLES-1):0]  adc_valid_out_s;
-  wire                            adc_pn_err_s;
-  wire                            adc_pn_oos_s;
+  (* mark_debug = "true" *) wire                            adc_pn_err_s;
+  (* mark_debug = "true" *) wire                            adc_pn_oos_s;
   wire    [3:0]                   adc_pnseq_sel;
   wire                            adc_dfmt_se_s;
   wire                            adc_dfmt_type_s;
@@ -98,12 +98,12 @@ module axi_adrv9001_rx_channel #(
   wire                            adc_iqcor_enb_s;
   wire    [15:0]                  adc_iqcor_coeff_1_s;
   wire    [15:0]                  adc_iqcor_coeff_2_s;
-  wire    [(DATA_WIDTH-1):0]      adc_data_pn;
+  (* mark_debug = "true" *) wire    [(DATA_WIDTH-1):0]      adc_data_pn;
   wire    [(DATA_WIDTH-1):0]      pn7_data;
   wire    [(DATA_WIDTH-1):0]      pn15_data;
   wire    [ 3:0]                  adc_data_sel_s;
-  wire    [15:0]                  adc_data_in_s;
-  wire                            adc_valid_in_s;
+  (* mark_debug = "true" *) wire    [15:0]                  adc_data_in_s;
+  (* mark_debug = "true" *) wire                            adc_valid_in_s;
 
   reg     [15:0]                  full_ramp_counter = 'd0;
 
@@ -236,10 +236,12 @@ module axi_adrv9001_rx_channel #(
 
   // reference nibble ramp and full ramp generator
   always @(posedge adc_clk) begin
-    if (adc_pn_oos_s) begin
-      full_ramp_counter <= adc_data_in_s + 16'd1;
-    end else if (adc_valid_in_s) begin
-      full_ramp_counter <= full_ramp_counter + 16'd1;
+    if (adc_valid_in_s) begin
+      if (adc_pn_oos_s) begin
+        full_ramp_counter <= adc_data_in_s + 16'd1;
+      end else begin
+        full_ramp_counter <= full_ramp_counter + 16'd1;
+      end
     end
   end
 
