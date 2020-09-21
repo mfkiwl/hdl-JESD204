@@ -217,7 +217,7 @@ module system_top (
 
   assign spi_en = spi_csn[0];
 
-  assign tdd_sync_loc = gpio_o[55];
+  assign tdd_sync_loc = gpio_o[56];
 
   // tdd_sync_loc - local sync signal from a GPIO or other source
   // tdd_sync - external sync 
