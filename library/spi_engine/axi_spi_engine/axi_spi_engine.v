@@ -125,13 +125,7 @@ module axi_spi_engine #(
 
   output offload_sync_ready,
   input offload_sync_valid,
-  input [7:0] offload_sync_data,
-
-  // Configuration interface conversion start generator (PWM)
-
-  output reg [31:0] pulse_gen_period,
-  output reg [31:0] pulse_gen_width,
-  output reg pulse_gen_load);
+  input [7:0] offload_sync_data);
 
   localparam PCORE_VERSION = 'h010071;
   localparam S_AXI = 0;
@@ -298,31 +292,18 @@ module axi_spi_engine #(
   reg offload0_mem_reset_reg;
   wire offload0_enabled_s;
 
-
-  always @(posedge clk) begin
-    if ((up_waddr_s == 8'h48) && (up_wreq_s == 1'b1)) begin
-      pulse_gen_load <= 1'b1;
-    end else begin
-      pulse_gen_load <= 1'b0;
-    end
-  end
-
   // the software reset should reset all the registers
   always @(posedge clk) begin
     if (up_sw_resetn == 1'b0) begin
       up_irq_mask <= 'h00;
       offload0_enable_reg <= 1'b0;
       offload0_mem_reset_reg <= 1'b0;
-      pulse_gen_period <= 32'h0;
-      pulse_gen_width <= 32'h0;
     end else begin
       if (up_wreq_s) begin
         case (up_waddr_s)
           8'h20: up_irq_mask <= up_wdata_s;
           8'h40: offload0_enable_reg <= up_wdata_s[0];
           8'h42: offload0_mem_reset_reg <= up_wdata_s[0];
-          8'h48: pulse_gen_period <= up_wdata_s;
-          8'h49: pulse_gen_width <= up_wdata_s;
         endcase
       end
     end
@@ -365,8 +346,6 @@ module axi_spi_engine #(
       8'h3c: up_rdata_ff <= sdi_fifo_out_data; /* PEEK register */
       8'h40: up_rdata_ff <= {offload0_enable_reg};
       8'h41: up_rdata_ff <= {offload0_enabled_s};
-      8'h48: up_rdata_ff <= pulse_gen_period;
-      8'h49: up_rdata_ff <= pulse_gen_width;
       default: up_rdata_ff <= 'h00;
     endcase
   end
@@ -425,9 +404,9 @@ module axi_spi_engine #(
 
   util_axis_fifo #(
     .DATA_WIDTH(16),
-    .ASYNC_CLK(ASYNC_SPI_CLK),
     .ADDRESS_WIDTH(CMD_FIFO_ADDRESS_WIDTH),
-    .S_AXIS_REGISTERED(0)
+    .ASYNC_CLK(ASYNC_SPI_CLK),
+    .M_AXIS_REGISTERED(0)
   ) i_cmd_fifo (
     .s_axis_aclk(clk),
     .s_axis_aresetn(up_sw_resetn),
@@ -435,12 +414,14 @@ module axi_spi_engine #(
     .s_axis_valid(cmd_fifo_in_valid),
     .s_axis_data(cmd_fifo_in_data),
     .s_axis_room(cmd_fifo_room),
-    .s_axis_empty(),
+    .s_axis_full(),
+    .s_axis_room(),
     .m_axis_aclk(spi_clk),
     .m_axis_aresetn(spi_resetn),
     .m_axis_ready(cmd_ready),
     .m_axis_valid(cmd_valid),
     .m_axis_data(cmd_data),
+    .m_axis_empty(),
     .m_axis_level()
   );
 
@@ -453,7 +434,7 @@ module axi_spi_engine #(
     .DATA_WIDTH(DATA_WIDTH),
     .ASYNC_CLK(ASYNC_SPI_CLK),
     .ADDRESS_WIDTH(SDO_FIFO_ADDRESS_WIDTH),
-    .S_AXIS_REGISTERED(0)
+    .M_AXIS_REGISTERED(0)
   ) i_sdo_fifo (
     .s_axis_aclk(clk),
     .s_axis_aresetn(up_sw_resetn),
@@ -478,7 +459,7 @@ module axi_spi_engine #(
     .DATA_WIDTH(NUM_OF_SDI * DATA_WIDTH),
     .ASYNC_CLK(ASYNC_SPI_CLK),
     .ADDRESS_WIDTH(SDI_FIFO_ADDRESS_WIDTH),
-    .S_AXIS_REGISTERED(0)
+    .M_AXIS_REGISTERED(0)
   ) i_sdi_fifo (
     .s_axis_aclk(spi_clk),
     .s_axis_aresetn(spi_resetn),
@@ -502,7 +483,7 @@ module axi_spi_engine #(
       .DATA_WIDTH(8),
       .ASYNC_CLK(ASYNC_SPI_CLK),
       .ADDRESS_WIDTH(SYNC_FIFO_ADDRESS_WIDTH),
-      .S_AXIS_REGISTERED(0)
+      .M_AXIS_REGISTERED(0)
     ) i_sync_fifo (
       .s_axis_aclk(spi_clk),
       .s_axis_aresetn(spi_resetn),
@@ -527,7 +508,7 @@ module axi_spi_engine #(
       .DATA_WIDTH(16),
       .ASYNC_CLK(ASYNC_SPI_CLK),
       .ADDRESS_WIDTH(SYNC_FIFO_ADDRESS_WIDTH),
-      .S_AXIS_REGISTERED(0)
+      .M_AXIS_REGISTERED(0)
     ) i_offload_cmd_fifo (
       .s_axis_aclk(clk),
       .s_axis_aresetn(up_sw_resetn),
@@ -555,7 +536,7 @@ module axi_spi_engine #(
       .DATA_WIDTH(DATA_WIDTH),
       .ASYNC_CLK(ASYNC_SPI_CLK),
       .ADDRESS_WIDTH(SYNC_FIFO_ADDRESS_WIDTH),
-      .S_AXIS_REGISTERED(0)
+      .M_AXIS_REGISTERED(0)
     ) i_offload_sdo_fifo (
       .s_axis_aclk(clk),
       .s_axis_aresetn(up_sw_resetn),
@@ -580,7 +561,7 @@ module axi_spi_engine #(
       .DATA_WIDTH(8),
       .ASYNC_CLK(ASYNC_SPI_CLK),
       .ADDRESS_WIDTH(SYNC_FIFO_ADDRESS_WIDTH),
-      .S_AXIS_REGISTERED(0)
+      .M_AXIS_REGISTERED(0)
     ) i_offload_sync_fifo (
       .s_axis_aclk(spi_clk),
       .s_axis_aresetn(spi_resetn),

@@ -5,10 +5,11 @@
 
 PROJECT_NAME := adrv9001_zed
 
+M_DEPS += cmos_constr.xdc
 M_DEPS += ../common/adrv9001_bd.tcl
 M_DEPS += ../../common/zed/zed_system_constr.xdc
 M_DEPS += ../../common/zed/zed_system_bd.tcl
-M_DEPS += ../../../library/xilinx/common/ad_iobuf.v
+M_DEPS += ../../../library/common/ad_iobuf.v
 
 LIB_DEPS += axi_adrv9001
 LIB_DEPS += axi_clkgen
@@ -21,9 +22,5 @@ LIB_DEPS += sysid_rom
 LIB_DEPS += util_i2c_mixer
 LIB_DEPS += util_pack/util_cpack2
 LIB_DEPS += util_pack/util_upack2
-LIB_DEPS += util_rfifo
-LIB_DEPS += util_tdd_sync
-LIB_DEPS += util_wfifo
-LIB_DEPS += xilinx/util_clkdiv
 
 include ../../scripts/project-xilinx.mk

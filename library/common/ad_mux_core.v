@@ -35,75 +35,32 @@
 
 `timescale 1ns/100ps
 
-module fifo_address_sync #(
-  parameter ADDRESS_WIDTH = 4
+module ad_mux_core #(
+  parameter CH_W = 16,
+  parameter CH_CNT = 8,
+  parameter EN_REG = 0
 ) (
   input clk,
-  input resetn,
-
-  input m_axis_ready,
-  output reg m_axis_valid,
-  output reg  [ADDRESS_WIDTH-1:0] m_axis_raddr,
-  output [ADDRESS_WIDTH:0] m_axis_level,
-
-  output reg s_axis_ready,
-  input s_axis_valid,
-  output reg s_axis_empty,
-  output reg [ADDRESS_WIDTH-1:0] s_axis_waddr,
-  output [ADDRESS_WIDTH:0] s_axis_room
+  input [CH_W*CH_CNT-1:0] data_in,
+  input [$clog2(CH_CNT)-1:0] ch_sel,
+  output [CH_W-1:0] data_out
 );
 
-localparam MAX_ROOM = {1'b1,{ADDRESS_WIDTH{1'b0}}};
+wire [CH_W-1:0] data_out_loc;
 
-reg [ADDRESS_WIDTH:0] room = MAX_ROOM;
-reg [ADDRESS_WIDTH:0] level = 'h00;
-reg [ADDRESS_WIDTH:0] level_next;
+assign data_out_loc = data_in >> CH_W*ch_sel;
 
-assign s_axis_room = room;
-assign m_axis_level = level;
-
-wire read = m_axis_ready & m_axis_valid;
-wire write = s_axis_ready & s_axis_valid;
-
-always @(posedge clk)
-begin
-  if (resetn == 1'b0) begin
-    s_axis_waddr <= 'h00;
-    m_axis_raddr <= 'h00;
-  end else begin
-    if (write)
-      s_axis_waddr <= s_axis_waddr + 1'b1;
-    if (read)
-      m_axis_raddr <= m_axis_raddr + 1'b1;
+generate if (EN_REG) begin
+  reg [CH_W-1:0] data_out_reg;
+  always @(posedge clk) begin
+    data_out_reg <= data_out_loc;
   end
+  assign data_out = data_out_reg;
+end else begin
+  assign data_out = data_out_loc;
 end
-
-always @(*)
-begin
-  if (read & ~write)
-    level_next <= level - 1'b1;
-  else if (~read & write)
-    level_next <= level + 1'b1;
-  else
-    level_next <= level;
-end
-
-always @(posedge clk)
-begin
-  if (resetn == 1'b0) begin
-    m_axis_valid <= 1'b0;
-    s_axis_ready <= 1'b0;
-    level <= 'h00;
-    room <= MAX_ROOM;
-    s_axis_empty <= 'h00;
-  end else begin
-    level <= level_next;
-    room <= MAX_ROOM - level_next;
-    m_axis_valid <= level_next != 0;
-    s_axis_ready <= level_next != MAX_ROOM;
-    s_axis_empty <= level_next == 0;
-  end
-end
+endgenerate
 
 endmodule
+
 

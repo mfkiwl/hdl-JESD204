@@ -6,7 +6,14 @@ adi_project cn0540_de10nano
 
 source $ad_hdl_dir/projects/common/de10nano/de10nano_system_assign.tcl
 
+#
+## down-rade Critical Warning reated to a asynchronous RAM in DMAC
+#
+## "mixed_port_feed_through_mode" parameter of RAM can not have value "old"
+set_global_assignment -name MESSAGE_DISABLE 15003
+
 # files
+set_global_assignment -name VERILOG_FILE ../../../library/common/ad_iobuf.v
 
 # SPI interface for ad7768-1
 

@@ -230,6 +230,7 @@ adi_tpl_jesd204_tx_create tx_mxfe_tpl_core $TX_NUM_OF_LANES \
                                            $DATAPATH_WIDTH
 
 ad_ip_parameter tx_mxfe_tpl_core/dac_tpl_core CONFIG.IQCORRECTION_DISABLE 0
+ad_ip_parameter tx_mxfe_tpl_core/dac_tpl_core CONFIG.XBAR_ENABLE 1
 
 ad_ip_instance util_upack2 util_mxfe_upack [list \
   NUM_OF_CHANNELS $TX_NUM_OF_CONVERTERS \
@@ -498,7 +499,6 @@ ad_cpu_interconnect 0x7c430000 axi_mxfe_tx_dma
 # interconnect (gt/adc)
 
 if {$ADI_PHY_SEL == 1} {
-ad_mem_hp0_interconnect $sys_cpu_clk sys_ps7/S_AXI_HP0
 ad_mem_hp0_interconnect $sys_cpu_clk axi_mxfe_rx_xcvr/m_axi
 }
 

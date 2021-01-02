@@ -29,6 +29,8 @@ ad_ip_create ad_ip_jesd204_tpl_dac "JESD204 Transport Layer for DACs" p_ad_ip_je
 set_module_property VALIDATION_CALLBACK p_ad_ip_jesd204_tpl_dac_validate
 ad_ip_files ad_ip_jesd204_tpl_dac [list \
   $ad_hdl_dir/library/intel/common/ad_mul.v \
+  $ad_hdl_dir/library/common/ad_mux.v \
+  $ad_hdl_dir/library/common/ad_mux_core.v \
   $ad_hdl_dir/library/common/ad_dds_sine.v \
   $ad_hdl_dir/library/common/ad_dds_cordic_pipe.v \
   $ad_hdl_dir/library/common/ad_dds_sine_cordic.v \
@@ -93,14 +95,14 @@ ad_ip_parameter PART STRING "Generic" false [list \
 ad_ip_parameter NUM_LANES INTEGER 1 true [list \
   DISPLAY_NAME "Number of Lanes (L)" \
   DISPLAY_UNITS "lanes" \
-  ALLOWED_RANGES {1 2 3 4 8} \
+  ALLOWED_RANGES {1 2 3 4 8 16} \
   GROUP $group \
 ]
 
 ad_ip_parameter NUM_CHANNELS INTEGER 1 true [list \
   DISPLAY_NAME "Number of Converters (M)" \
   DISPLAY_UNITS "converters" \
-  ALLOWED_RANGES {1 2 4 6 8} \
+  ALLOWED_RANGES {1 2 4 6 8 16 32 64} \
   GROUP $group \
 ]
 
@@ -142,7 +144,7 @@ ad_ip_parameter SAMPLES_PER_FRAME_MANUAL INTEGER 1 false [list \
 ad_ip_parameter OCTETS_PER_FRAME INTEGER 1 false [list \
   DISPLAY_NAME "Octets per Frame (F)" \
   DISPLAY_UNITS "octets" \
-  ALLOWED_RANGES {1 2 4} \
+  ALLOWED_RANGES {1 2 4 8} \
   DERIVED true \
   GROUP $group \
 ]
@@ -198,6 +200,11 @@ ad_ip_parameter DDS_CORDIC_PHASE_DW INTEGER 16 true [list \
   DISPLAY_NAME "CORDIC DDS Phase Width" \
   ALLOWED_RANGES {8:20} \
   UNITS bits \
+  GROUP $group \
+]
+
+ad_ip_parameter XBAR_ENABLE boolean 0 true [list \
+  DISPLAY_NAME "Channel Crossbar Enable" \
   GROUP $group \
 ]
 
@@ -437,11 +444,11 @@ proc p_ad_ip_jesd204_tpl_dac_validate {} {
       send_message ERROR "Framer configuration (L=$L, M=$M, N=$N, NP=$NP, S=$S, F=$F) not supported by $part"
     }
   } else {
-    set allowed_channels {1 2 4 6}
-    set allowed_lanes {1 2 3 4 8}
+    set allowed_channels {1 2 4 6 8 16 32 64}
+    set allowed_lanes {1 2 3 4 8 16}
     set allowed_samples_per_frame {1 2 3 4 6 8 12 16}
-    set allowed_resolution {11 12 16}
-    set allowed_bits_per_sample {12 16}
+    set allowed_resolution {8 11 12 16}
+    set allowed_bits_per_sample {8 12 16}
   }
 
   set_parameter_property "NUM_CHANNELS" "ALLOWED_RANGES" $allowed_channels
