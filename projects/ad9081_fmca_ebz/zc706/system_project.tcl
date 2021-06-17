@@ -10,6 +10,7 @@ source $ad_hdl_dir/projects/scripts/adi_board.tcl
 #    e.g.
 #      make RX_JESD_L=4 RX_JESD_M=8 RX_JESD_S=1 TX_JESD_L=4 TX_JESD_M=8 TX_JESD_S=1
 #      make RX_JESD_L=8 RX_JESD_M=4 RX_JESD_S=1 TX_JESD_L=8 TX_JESD_M=4 TX_JESD_S=1
+#      make RX_JESD_L=2 RX_JESD_M=8 RX_JESD_S=1 RX_JESD_NP=12 TX_JESD_L=2 TX_JESD_M=8 TX_JESD_S=1 TX_JESD_NP=12
 
 #
 # Parameter description:
@@ -19,15 +20,9 @@ source $ad_hdl_dir/projects/scripts/adi_board.tcl
 #
 #   RX_RATE :  Line rate of the Rx link ( MxFE to FPGA ) used in 64B66B mode
 #   TX_RATE :  Line rate of the Tx link ( FPGA to MxFE ) used in 64B66B mode
-#   [RX/TX]_PLL_SEL :  Used PLL in the Xilinx PHY used in 64B66B mode
-#                      Encoding is:
-#                         0 - CPLL
-#                         1 - QPLL0
-#                         2 - QPLL1
-#   REF_CLK_RATE : Frequency of reference clock in MHz used in 64B66B mode
 #   [RX/TX]_JESD_M : Number of converters per link
 #   [RX/TX]_JESD_L : Number of lanes per link
-#   [RX/TX]_JESD_NP : Number of bits per sample, only 16 is supported
+#   [RX/TX]_JESD_NP : Number of bits per sample
 #   [RX/TX]_NUM_LINKS : Number of links
 #
 #  
@@ -36,6 +31,8 @@ source $ad_hdl_dir/projects/scripts/adi_board.tcl
 
 adi_project ad9081_fmca_ebz_zc706 0 [list \
   JESD_MODE    8B10B \
+  RX_LANE_RATE [get_env_param RX_RATE      10 ] \
+  TX_LANE_RATE [get_env_param TX_RATE      10 ] \
   RX_JESD_M    [get_env_param RX_JESD_M    8 ] \
   RX_JESD_L    [get_env_param RX_JESD_L    4 ] \
   RX_JESD_S    [get_env_param RX_JESD_S    1 ] \

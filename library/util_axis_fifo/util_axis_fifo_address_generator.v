@@ -36,7 +36,9 @@
 
 module util_axis_fifo_address_generator #(
   parameter ASYNC_CLK = 0,                // single or double clocked FIFO
-  parameter ADDRESS_WIDTH = 4             // address width, effective FIFO depth
+  parameter ADDRESS_WIDTH = 4,            // address width, effective FIFO depth
+  parameter [ADDRESS_WIDTH-1:0] ALMOST_EMPTY_THRESHOLD = 16,
+  parameter [ADDRESS_WIDTH-1:0] ALMOST_FULL_THRESHOLD = 16
 ) (
   // Read interface - Sink side
 
@@ -45,6 +47,7 @@ module util_axis_fifo_address_generator #(
   input m_axis_ready,
   output m_axis_valid,
   output m_axis_empty,
+  output m_axis_almost_empty,
   output [ADDRESS_WIDTH-1:0] m_axis_raddr,
   output [ADDRESS_WIDTH-1:0] m_axis_level,
 
@@ -55,6 +58,7 @@ module util_axis_fifo_address_generator #(
   output s_axis_ready,
   input s_axis_valid,
   output  s_axis_full,
+  output  s_axis_almost_full,
   output [ADDRESS_WIDTH-1:0] s_axis_waddr,
   output [ADDRESS_WIDTH-1:0] s_axis_room
 );
@@ -92,7 +96,7 @@ wire [ADDRESS_WIDTH-1:0] m_axis_level_s;
 // Write address counter
 //------------------------------------------------------------------------------
 
-assign s_axis_write_s = s_axis_ready && s_axis_valid;
+assign s_axis_write_s = s_axis_ready && s_axis_valid && ~s_axis_full;
 always @(posedge s_axis_aclk)
 begin
   if (!s_axis_aresetn)
@@ -106,7 +110,7 @@ end
 // Read address counter
 //------------------------------------------------------------------------------
 
-assign m_axis_read_s = m_axis_ready && m_axis_valid;
+assign m_axis_read_s = m_axis_ready && m_axis_valid && ~m_axis_empty;
 always @(posedge m_axis_aclk)
 begin
   if (!m_axis_aresetn)
@@ -166,7 +170,8 @@ endgenerate
 //------------------------------------------------------------------------------
 
 wire [ADDRESS_WIDTH:0] s_axis_fifo_fill = s_axis_waddr_reg - s_axis_raddr_reg;
-assign s_axis_full  =  (s_axis_fifo_fill == { 1'b1, {ADDRESS_WIDTH-1{1'b0}}});
+assign s_axis_full = (s_axis_fifo_fill == {ADDRESS_WIDTH{1'b1}});
+assign s_axis_almost_full = s_axis_fifo_fill > {1'b0, ~ALMOST_FULL_THRESHOLD};
 assign s_axis_ready = ~s_axis_full;
 assign s_axis_room = ~s_axis_fifo_fill;
 
@@ -180,8 +185,8 @@ assign s_axis_room = ~s_axis_fifo_fill;
 
 wire [ADDRESS_WIDTH:0] m_axis_fifo_fill = m_axis_waddr_reg - m_axis_raddr_reg;
 assign m_axis_empty = m_axis_fifo_fill == 0;
+assign m_axis_almost_empty = (m_axis_fifo_fill < ALMOST_EMPTY_THRESHOLD);
 assign m_axis_valid = ~m_axis_empty;
 assign m_axis_level = m_axis_fifo_fill;
 
 endmodule
-

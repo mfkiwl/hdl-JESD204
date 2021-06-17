@@ -64,6 +64,7 @@ module adrv9001_tx #(
   input                   rx_ssi_rst,
 
   // internal resets and clocks
+  output     [31:0]       dac_clk_ratio,
 
   input                   dac_rst,
   output                  dac_clk_div,
@@ -186,7 +187,12 @@ module adrv9001_tx #(
         .CLR (mssi_sync),
         .CE (1'b1),
         .I (tx_dclk_in_s),
-        .O (dac_clk_div));
+        .O (dac_clk_div_s));
+
+      BUFG I_bufg (
+        .I (dac_clk_div_s),
+        .O (dac_clk_div)
+      );
 
       assign ssi_rst = mssi_sync;
 
@@ -234,5 +240,7 @@ module adrv9001_tx #(
   end
 
   endgenerate
+
+  assign dac_clk_ratio = 4;
 
 endmodule

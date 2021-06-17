@@ -108,6 +108,9 @@ module axi_adrv9001_if #(
 
   // upper layer data interface
 
+  output [ 31:0]    adc_clk_ratio,
+  output [ 31:0]    dac_clk_ratio,
+
   output            rx1_clk,
   input             rx1_rst,
   output            rx1_data_valid,
@@ -215,6 +218,8 @@ module axi_adrv9001_if #(
     .adc_data_strobe (adc_1_data_strobe),
     .adc_valid (adc_1_valid),
 
+    .adc_clk_ratio (adc_clk_ratio),
+
     .up_clk (up_clk),
     .up_adc_dld (up_rx1_dld),
     .up_adc_dwdata (up_rx1_dwdata),
@@ -232,6 +237,7 @@ module axi_adrv9001_if #(
   adrv9001_rx_link #(
     .CMOS_LVDS_N (CMOS_LVDS_N)
   ) i_rx_1_link (
+    .adc_rst (rx1_rst),
     .adc_clk_div (adc_1_clk_div),
     .adc_data_0 (adc_1_data_0),
     .adc_data_1 (adc_1_data_1),
@@ -292,6 +298,7 @@ module axi_adrv9001_if #(
   adrv9001_rx_link #(
     .CMOS_LVDS_N (CMOS_LVDS_N)
   ) i_rx_2_link (
+    .adc_rst (rx2_rst),
     .adc_clk_div (adc_2_clk_div),
     .adc_data_0 (adc_2_data_0),
     .adc_data_1 (adc_2_data_1),
@@ -345,6 +352,8 @@ module axi_adrv9001_if #(
    .dac_data_strb (dac_1_data_strobe),
    .dac_data_clk (dac_1_data_clk),
    .dac_data_valid (dac_1_data_valid),
+
+   .dac_clk_ratio (dac_clk_ratio),
 
    .mssi_sync (mssi_sync)
   );
