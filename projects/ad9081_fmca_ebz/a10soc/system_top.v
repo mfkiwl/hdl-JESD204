@@ -37,7 +37,8 @@
 
 module system_top #(
   // Dummy parameters to workaround critical warning
-  parameter SAMPLE_RATE        = 250,
+  parameter RX_LANE_RATE       = 10,
+  parameter TX_LANE_RATE       = 10,
   parameter RX_JESD_M          = 8,
   parameter RX_JESD_L          = 4,
   parameter RX_JESD_S          = 1,
@@ -129,8 +130,12 @@ module system_top #(
   input         fpga_refclk_in,
   input  [7:0]  rx_data,
   output [7:0]  tx_data,
-  input  [1:0]  fpga_syncin,
-  output [1:0]  fpga_syncout,
+  input         fpga_syncin_0,
+  inout         fpga_syncin_1_n,
+  inout         fpga_syncin_1_p,
+  output        fpga_syncout_0,
+  inout         fpga_syncout_1_n,
+  inout         fpga_syncout_1_p,
   input         sysref2,
 
   // spi
@@ -154,8 +159,7 @@ module system_top #(
   output        rstb,
   output [1:0]  rxen,
   output [1:0]  txen
-
-  );
+);
 
   // internal signals
 
@@ -164,7 +168,6 @@ module system_top #(
   wire    [ 63:0]   gpio_i;
   wire    [ 63:0]   gpio_o;
   wire    [  7:0]   spi_csn_s;
-  wire              dac_fifo_bypass;
 
   // assignments
 
@@ -176,7 +179,9 @@ module system_top #(
 
   assign spi0_mosi = spi_mosi;
 
-  ad_3w_spi #(.NUM_OF_SLAVES(1)) i_spi_hmc (
+  ad_3w_spi #(
+    .NUM_OF_SLAVES(1)
+  ) i_spi_hmc (
     .spi_csn (spi_csn_s[1]),
     .spi_clk (spi_clk),
     .spi_mosi (spi_mosi),
@@ -210,7 +215,6 @@ module system_top #(
   assign rxen[1]          = gpio_o[57];
   assign txen[0]          = gpio_o[58];
   assign txen[1]          = gpio_o[59];
-  assign dac_fifo_bypass  = gpio_o[60];
 
   // board stuff (max-v-u21)
 
@@ -232,7 +236,11 @@ module system_top #(
   // instantiations
 
   system_bd i_system_bd (
-    .mxfe_gpio_export (gpio),
+    .mxfe_gpio_export ({fpga_syncout_1_n,  // 14
+                        fpga_syncout_1_p,  // 13
+                        fpga_syncin_1_n,   // 12
+                        fpga_syncin_1_p,   // 11
+                        gpio}),            // 10 :0
     .sys_clk_clk (sys_clk),
     .sys_gpio_bd_in_port (gpio_i[31:0]),
     .sys_gpio_bd_out_port (gpio_o[31:0]),
@@ -312,19 +320,13 @@ module system_top #(
     .sys_spi_SS_n (spi_csn_s),
     .tx_serial_data_tx_serial_data (tx_data[7:0]),
     .tx_ref_clk_clk (fpga_refclk_in),
-    .tx_sync_export (fpga_syncin),
+    .tx_sync_export (fpga_syncin_0),
     .tx_sysref_export (sysref2),
     .tx_device_clk_clk (clkin6),
     .rx_serial_data_rx_serial_data (rx_data[7:0]),
     .rx_ref_clk_clk (fpga_refclk_in),
-    .rx_sync_export (fpga_syncout),
+    .rx_sync_export (fpga_syncout_0),
     .rx_sysref_export (sysref2),
-    .rx_device_clk_clk (clkin6),
-    .tx_fifo_bypass_bypass (dac_fifo_bypass)
-
-  );
+    .rx_device_clk_clk (clkin6));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

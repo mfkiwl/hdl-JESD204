@@ -1,16 +1,9 @@
-
 source $ad_hdl_dir/library/scripts/adi_xilinx_device_info_enc.tcl
 
-# check tool version
-
-if {![info exists REQUIRED_VIVADO_VERSION]} {
-  set REQUIRED_VIVADO_VERSION "2020.1"
-}
-
-if {[info exists ::env(ADI_IGNORE_VERSION_CHECK)]} {
-  set IGNORE_VERSION_CHECK 1
-} elseif {![info exists IGNORE_VERSION_CHECK]} {
-  set IGNORE_VERSION_CHECK 0
+if {[info exists ::env(ADI_VIVADO_IP_LIBRARY)]} {
+  set VIVADO_IP_LIBRARY $::env(ADI_VIVADO_IP_LIBRARY)
+} else {
+  set VIVADO_IP_LIBRARY user
 }
 
 ## Add a ttcl file to the project. XDC does not support if statements
@@ -260,20 +253,20 @@ proc adi_ip_create {ip_name} {
 
   global ad_hdl_dir
   global ad_ghdl_dir
-  global REQUIRED_VIVADO_VERSION
+  global required_vivado_version
   global IGNORE_VERSION_CHECK
 
   set VIVADO_VERSION [version -short]
   if {$IGNORE_VERSION_CHECK} {
-    if {[string compare $VIVADO_VERSION $REQUIRED_VIVADO_VERSION] != 0} {
+    if {[string compare $VIVADO_VERSION $required_vivado_version] != 0} {
       puts -nonewline "CRITICAL WARNING: vivado version mismatch; "
-      puts -nonewline "expected $REQUIRED_VIVADO_VERSION, "
+      puts -nonewline "expected $required_vivado_version, "
       puts -nonewline "got $VIVADO_VERSION.\n"
     }
   } else {
-    if {[string compare $VIVADO_VERSION $REQUIRED_VIVADO_VERSION] != 0} {
+    if {[string compare $VIVADO_VERSION $required_vivado_version] != 0} {
       puts -nonewline "ERROR: vivado version mismatch; "
-      puts -nonewline "expected $REQUIRED_VIVADO_VERSION, "
+      puts -nonewline "expected $required_vivado_version, "
       puts -nonewline "got $VIVADO_VERSION.\n"
       puts -nonewline "This ERROR message can be down-graded to CRITICAL WARNING by setting ADI_IGNORE_VERSION_CHECK environment variable to 1. Be aware that ADI will not support you, if you are using a different tool version.\n"
       exit 2
@@ -289,8 +282,12 @@ proc adi_ip_create {ip_name} {
   }
 
   set lib_dirs $ad_hdl_dir/library
-  if {$ad_hdl_dir ne $ad_ghdl_dir} {
-    lappend lib_dirs $ad_ghdl_dir/library
+  if {[info exists ::env(ADI_GHDL_DIR)]} {
+    if {$ad_hdl_dir ne $ad_ghdl_dir} {
+      lappend lib_dirs $ad_ghdl_dir/library
+    }
+  } else {
+    # puts -nonew-line "INFO: ADI_GHDL_DIR not defined.\n"
   }
 
   set_property ip_repo_paths $lib_dirs [current_fileset]
@@ -321,25 +318,16 @@ proc adi_ip_files {ip_name ip_files} {
 proc adi_ip_properties_lite {ip_name} {
 
   global ad_hdl_dir
+  global VIVADO_IP_LIBRARY
 
-  ipx::package_project -root_dir . -vendor analog.com -library user -taxonomy /Analog_Devices
+  ipx::package_project -root_dir . -vendor analog.com -library $VIVADO_IP_LIBRARY -taxonomy /Analog_Devices
 
   set_property name $ip_name [ipx::current_core]
 
   set_property vendor_display_name {Analog Devices} [ipx::current_core]
   set_property company_url {http://www.analog.com} [ipx::current_core]
 
-  set i_families ""
-  foreach i_part [get_parts] {
-    lappend i_families [get_property FAMILY $i_part]
-  }
-  set i_families [lsort -unique $i_families]
-  set s_families [get_property supported_families [ipx::current_core]]
-  foreach i_family $i_families {
-    set s_families "$s_families $i_family Production"
-    set s_families "$s_families $i_family Beta"
-  }
-  set_property supported_families $s_families [ipx::current_core]
+  set_property AUTO_FAMILY_SUPPORT_LEVEL level_2 [ipx::current_core]
 
   ipx::save_core [ipx::current_core]
 
@@ -644,4 +632,3 @@ proc adi_if_infer_bus {if_name mode name maps} {
     set_property physical_name $p_map [ipx::get_port_maps $p_name -of_objects $m_bus_if]
   }
 }
-

@@ -42,8 +42,10 @@
 # is copyright © 2016-2017, Analog Devices, Inc.”
 #
 
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
+
+global VIVADO_IP_LIBRARY
 
 adi_ip_create jesd204_tx
 adi_ip_files jesd204_tx [list \
@@ -54,6 +56,7 @@ adi_ip_files jesd204_tx [list \
   "jesd204_tx_ctrl.v" \
   "jesd204_tx_constr.ttcl" \
   "jesd204_tx_ooc.ttcl" \
+  "../../common/ad_pack.v" \
   "../../common/ad_upack.v" \
   "jesd204_tx.v" \
   "bd/bd.tcl"
@@ -64,10 +67,10 @@ adi_ip_ttcl jesd204_tx "jesd204_tx_constr.ttcl"
 adi_ip_ttcl jesd204_tx "jesd204_tx_ooc.ttcl"
 adi_ip_bd jesd204_tx "bd/bd.tcl"
 
-adi_ip_add_core_dependencies { \
-  analog.com:user:jesd204_common:1.0 \
-  analog.com:user:util_cdc:1.0 \
-}
+adi_ip_add_core_dependencies [list \
+  analog.com:$VIVADO_IP_LIBRARY:jesd204_common:1.0 \
+  analog.com:$VIVADO_IP_LIBRARY:util_cdc:1.0 \
+]
 
 set_property display_name "ADI JESD204 Transmit" [ipx::current_core]
 set_property description "ADI JESD204 Transmit" [ipx::current_core]
@@ -81,7 +84,7 @@ adi_add_bus "tx_data" "slave" \
     { "tx_data" "TDATA" } \
   }
 
-adi_add_multi_bus 16 "tx_phy" "master" \
+adi_add_multi_bus 32 "tx_phy" "master" \
   "xilinx.com:display_jesd204:jesd204_tx_bus_rtl:1.0" \
   "xilinx.com:display_jesd204:jesd204_tx_bus:1.0" \
   [list \

@@ -1,5 +1,7 @@
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
+
+global VIVADO_IP_LIBRARY
 
 adi_ip_create spi_engine_offload
 adi_ip_files spi_engine_offload [list \
@@ -10,12 +12,14 @@ adi_ip_files spi_engine_offload [list \
 adi_ip_properties_lite spi_engine_offload
 adi_ip_ttcl axi_spi_engine "spi_engine_offload_constr.ttcl"
 
+set_property company_url {https://wiki.analog.com/resources/fpga/peripherals/spi_engine/offload} [ipx::current_core]
+
 # Remove all inferred interfaces
 ipx::remove_all_bus_interface [ipx::current_core]
 
-adi_ip_add_core_dependencies { \
-	analog.com:user:util_cdc:1.0 \
-}
+adi_ip_add_core_dependencies [list \
+	analog.com:$VIVADO_IP_LIBRARY:util_cdc:1.0 \
+]
 
 ## Interface definitions
 

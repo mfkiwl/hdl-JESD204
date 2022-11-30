@@ -225,7 +225,8 @@ module system_top (
   output      [ 0:0]      ddr3_odt,
   output                  ddr3_ras_n,
   output                  ddr3_reset_n,
-  output                  ddr3_we_n);
+  output                  ddr3_we_n
+);
 
   // internal signals
 
@@ -261,6 +262,10 @@ module system_top (
     .O (ref_clk1),
     .ODIV2 ());
 
+  BUFG i_bufg_ref_clk (
+    .I (ref_clk1),
+    .O (ref_clk1_bufg));
+
   OBUFDS i_obufds_rx_sync (
     .I (rx_sync),
     .O (rx_sync_p),
@@ -291,7 +296,9 @@ module system_top (
     .IB (sysref_n),
     .O (sysref));
 
-  ad_iobuf #(.DATA_WIDTH(28)) i_iobuf (
+  ad_iobuf #(
+    .DATA_WIDTH(28)
+  ) i_iobuf (
     .dio_t ({gpio_t[59:32]}),
     .dio_i ({gpio_o[59:32]}),
     .dio_o ({gpio_i[59:32]}),
@@ -324,7 +331,9 @@ module system_top (
               adrv9009_gpio_16,     // 33
               adrv9009_gpio_18}));  // 32
 
-  ad_iobuf #(.DATA_WIDTH(15)) i_iobuf_bd (
+  ad_iobuf #(
+    .DATA_WIDTH(15)
+  ) i_iobuf_bd (
     .dio_t (gpio_t[14:0]),
     .dio_i (gpio_o[14:0]),
     .dio_o (gpio_i[14:0]),
@@ -426,9 +435,7 @@ module system_top (
     .tx_data_3_p (tx_data_p[3]),
     .tx_ref_clk_0 (ref_clk1),
     .tx_sync_0 (tx_sync),
-    .tx_sysref_0 (sysref));
+    .tx_sysref_0 (sysref),
+    .ref_clk (ref_clk1_bufg));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

@@ -43,7 +43,7 @@
 #
 
 package require qsys 14.0
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source ../../scripts/adi_ip_intel.tcl
 
 #
@@ -102,7 +102,7 @@ ad_ip_parameter REFCLK_FREQUENCY FLOAT 500.0 false { \
 
 ad_ip_parameter NUM_OF_LANES POSITIVE 4 false { \
   DISPLAY_NAME "Number of Lanes" \
-  ALLOWED_RANGES 1:8
+  ALLOWED_RANGES 1:16
 }
 
 ad_ip_parameter BONDING_CLOCKS_EN BOOLEAN 0 false { \

@@ -1,7 +1,7 @@
 
 
 package require qsys 14.0
-source ../scripts/adi_env.tcl
+source ../../scripts/adi_env.tcl
 source ../scripts/adi_ip_intel.tcl
 
 set_module_property NAME axi_dmac
@@ -37,7 +37,7 @@ ad_ip_files axi_dmac [list \
   request_generator.v \
   response_handler.v \
   axi_register_slice.v \
-  2d_transfer.v \
+  dmac_2d_transfer.v \
   dest_axi_mm.v \
   dest_axi_stream.v \
   dest_fifo_inf.v \
@@ -79,6 +79,13 @@ add_parameter MAX_BYTES_PER_BURST INTEGER 128
 set_parameter_property MAX_BYTES_PER_BURST DISPLAY_NAME "Maximum bytes per burst"
 set_parameter_property MAX_BYTES_PER_BURST HDL_PARAMETER true
 set_parameter_property MAX_BYTES_PER_BURST GROUP $group
+
+add_parameter DMA_AXI_ADDR_WIDTH INTEGER 32
+set_parameter_property DMA_AXI_ADDR_WIDTH DISPLAY_NAME "DMA AXI Address Width"
+set_parameter_property DMA_AXI_ADDR_WIDTH UNITS Bits
+set_parameter_property DMA_AXI_ADDR_WIDTH HDL_PARAMETER true
+set_parameter_property DMA_AXI_ADDR_WIDTH ALLOWED_RANGES {16:64}
+set_parameter_property DMA_AXI_ADDR_WIDTH GROUP $group
 
 foreach {suffix group} { \
     "SRC" "Source" \

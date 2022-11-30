@@ -1,11 +1,11 @@
 ####################################################################################
-## Copyright 2018(c) Analog Devices, Inc.
+## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+### SPDX short identifier: BSD-1-Clause
 ## Auto-generated, do not modify!
 ####################################################################################
 
 PROJECT_NAME := ad469x_fmc_zed
 
-M_DEPS += ../common/config.tcl
 M_DEPS += ../common/ad469x_bd.tcl
 M_DEPS += ../../scripts/adi_pd.tcl
 M_DEPS += ../../common/zed/zed_system_constr.xdc
@@ -19,7 +19,7 @@ LIB_DEPS += axi_clkgen
 LIB_DEPS += axi_dmac
 LIB_DEPS += axi_hdmi_tx
 LIB_DEPS += axi_i2s_adi
-LIB_DEPS += axi_pulse_gen
+LIB_DEPS += axi_pwm_gen
 LIB_DEPS += axi_spdif_tx
 LIB_DEPS += axi_sysid
 LIB_DEPS += spi_engine/axi_spi_engine

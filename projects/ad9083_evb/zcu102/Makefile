@@ -1,19 +1,19 @@
 ####################################################################################
-## Copyright 2018(c) Analog Devices, Inc.
+## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+### SPDX short identifier: BSD-1-Clause
 ## Auto-generated, do not modify!
 ####################################################################################
 
 PROJECT_NAME := ad9083_evb_zcu102
 
 M_DEPS += ../common/ad9083_evb_bd.tcl
-M_DEPS += ../../../library/common/ad_3w_spi.v
+M_DEPS += ../../scripts/adi_pd.tcl
 M_DEPS += ../../common/zcu102/zcu102_system_constr.xdc
 M_DEPS += ../../common/zcu102/zcu102_system_bd.tcl
 M_DEPS += ../../../library/jesd204/scripts/jesd204.tcl
 M_DEPS += ../../../library/common/ad_iobuf.v
-M_DEPS += ../../common/xilinx/adcfifo_bd.tcl
+M_DEPS += ../../../library/common/ad_3w_spi.v
 
-LIB_DEPS += util_adcfifo
 LIB_DEPS += axi_dmac
 LIB_DEPS += axi_sysid
 LIB_DEPS += jesd204/ad_ip_jesd204_tpl_adc

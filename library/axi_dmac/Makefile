@@ -1,5 +1,6 @@
 ####################################################################################
-## Copyright 2018(c) Analog Devices, Inc.
+## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+### SPDX short identifier: BSD-1-Clause
 ## Auto-generated, do not modify!
 ####################################################################################
 
@@ -7,7 +8,6 @@ LIBRARY_NAME := axi_dmac
 
 GENERIC_DEPS += ../common/ad_mem_asym.v
 GENERIC_DEPS += ../common/up_axi.v
-GENERIC_DEPS += 2d_transfer.v
 GENERIC_DEPS += address_generator.v
 GENERIC_DEPS += axi_dmac.v
 GENERIC_DEPS += axi_dmac_burst_memory.v
@@ -23,6 +23,7 @@ GENERIC_DEPS += data_mover.v
 GENERIC_DEPS += dest_axi_mm.v
 GENERIC_DEPS += dest_axi_stream.v
 GENERIC_DEPS += dest_fifo_inf.v
+GENERIC_DEPS += dmac_2d_transfer.v
 GENERIC_DEPS += inc_id.vh
 GENERIC_DEPS += request_arb.v
 GENERIC_DEPS += request_generator.v
@@ -47,8 +48,8 @@ XILINX_DEPS += ../interfaces/fifo_wr_rtl.xml
 XILINX_LIB_DEPS += util_axis_fifo
 XILINX_LIB_DEPS += util_cdc
 
-INTEL_DEPS += ../util_axis_fifo/util_axis_fifo_address_generator.v
 INTEL_DEPS += ../util_axis_fifo/util_axis_fifo.v
+INTEL_DEPS += ../util_axis_fifo/util_axis_fifo_address_generator.v
 INTEL_DEPS += ../util_cdc/sync_bits.v
 INTEL_DEPS += ../util_cdc/sync_event.v
 INTEL_DEPS += axi_dmac_constr.sdc

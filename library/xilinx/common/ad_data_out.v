@@ -39,10 +39,12 @@ module ad_data_out #(
 
   parameter   FPGA_TECHNOLOGY = 0,
   parameter   SINGLE_ENDED = 0,
+  parameter   IDDR_CLK_EDGE ="SAME_EDGE",
   parameter   IODELAY_ENABLE = 0,
   parameter   IODELAY_CTRL = 0,
   parameter   IODELAY_GROUP = "dev_if_delay_group",
-  parameter   REFCLK_FREQUENCY = 200) (
+  parameter   REFCLK_FREQUENCY = 200
+) (
 
   // data interface
 
@@ -63,7 +65,8 @@ module ad_data_out #(
 
   input               delay_clk,
   input               delay_rst,
-  output              delay_locked);
+  output              delay_locked
+);
 
   localparam  NONE = -1;
   localparam  SEVEN_SERIES = 1;
@@ -90,7 +93,9 @@ module ad_data_out #(
   assign delay_locked = 1'b1;
   end else begin
   (* IODELAY_GROUP = IODELAY_GROUP *)
-  IDELAYCTRL #(.SIM_DEVICE (IODELAY_CTRL_SIM_DEVICE)) i_delay_ctrl (
+  IDELAYCTRL #(
+    .SIM_DEVICE (IODELAY_CTRL_SIM_DEVICE)
+  ) i_delay_ctrl (
     .RST (delay_rst),
     .REFCLK (delay_clk),
     .RDY (delay_locked));
@@ -112,7 +117,9 @@ module ad_data_out #(
 
   generate
   if (FPGA_TECHNOLOGY == SEVEN_SERIES) begin
-  ODDR #(.DDR_CLK_EDGE ("SAME_EDGE")) i_tx_data_oddr (
+  ODDR #(
+    .DDR_CLK_EDGE (IDDR_CLK_EDGE)
+  ) i_tx_data_oddr (
     .CE (1'b1),
     .R (1'b0),
     .S (1'b0),
@@ -136,8 +143,8 @@ module ad_data_out #(
     .ODELAY_VALUE (0),
     .REFCLK_FREQUENCY (REFCLK_FREQUENCY),
     .PIPE_SEL ("FALSE"),
-    .SIGNAL_PATTERN ("DATA"))
-  i_tx_data_odelay (
+    .SIGNAL_PATTERN ("DATA")
+  ) i_tx_data_odelay (
     .CE (1'b0),
     .CLKIN (1'b0),
     .INC (1'b0),
@@ -177,6 +184,3 @@ module ad_data_out #(
   endgenerate
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

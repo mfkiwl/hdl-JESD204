@@ -1,12 +1,13 @@
 ####################################################################################
 ####################################################################################
-## Copyright 2011(c) Analog Devices, Inc.
+## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+### SPDX short identifier: BSD-1-Clause
 ## Auto-generated, do not modify!
 ####################################################################################
 ####################################################################################
 
 M_DEPS := interfaces_ip.tcl
-M_DEPS += ../../scripts/adi_env.tcl
+M_DEPS += ../../../scripts/adi_env.tcl
 M_DEPS += ../../scripts/adi_ip_xilinx.tcl
 
 M_VIVADO := vivado -mode batch -source

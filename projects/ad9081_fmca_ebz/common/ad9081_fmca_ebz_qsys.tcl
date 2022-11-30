@@ -1,6 +1,3 @@
-# Common parameter for TX and RX
-set SAMPLE_RATE $ad_project_params(SAMPLE_RATE)
-
 # RX parameters
 set RX_NUM_OF_LINKS $ad_project_params(RX_NUM_LINKS)
 
@@ -47,9 +44,9 @@ set TX_DMA_SAMPLE_WIDTH  16
 set TX_SAMPLES_PER_CHANNEL [expr $TX_NUM_OF_LANES * 8*$TX_TPL_DATA_PATH_WIDTH / \
                                 ($TX_NUM_OF_CONVERTERS * $TX_SAMPLE_WIDTH)]
 
-#Lane Rate = I/Q Sample Rate x M x N' x (10 \ 8) \ L
-set TX_LANE_RATE [expr ($SAMPLE_RATE*$TX_NUM_OF_CONVERTERS*$TX_SAMPLE_WIDTH*10)/(8*$TX_NUM_OF_LANES)]
-set RX_LANE_RATE [expr ($SAMPLE_RATE*$RX_NUM_OF_CONVERTERS*$RX_SAMPLE_WIDTH*10)/(8*$RX_NUM_OF_LANES)]
+# Lane Rate = I/Q Sample Rate x M x N' x (10 \ 8) \ L
+set TX_LANE_RATE [expr $ad_project_params(RX_LANE_RATE)*1000]
+set RX_LANE_RATE [expr $ad_project_params(TX_LANE_RATE)*1000]
 
 set adc_fifo_name mxfe_adc_fifo
 set adc_data_width [expr 8*$RX_TPL_DATA_PATH_WIDTH*$RX_NUM_OF_LANES*$RX_DMA_SAMPLE_WIDTH/$RX_SAMPLE_WIDTH]
@@ -251,7 +248,6 @@ add_interface rx_device_clk   clock   sink
 add_interface tx_serial_data  conduit end
 add_interface tx_sysref       conduit end
 add_interface tx_sync         conduit end
-add_interface tx_fifo_bypass  conduit end
 add_interface tx_device_clk   clock   sink
 
 set_interface_property rx_ref_clk       EXPORT_OF mxfe_rx_jesd204.ref_clk
@@ -264,7 +260,6 @@ set_interface_property tx_ref_clk       EXPORT_OF mxfe_tx_jesd204.ref_clk
 set_interface_property tx_sysref        EXPORT_OF mxfe_tx_jesd204.sysref
 set_interface_property tx_sync          EXPORT_OF mxfe_tx_jesd204.sync
 set_interface_property tx_serial_data   EXPORT_OF mxfe_tx_jesd204.serial_data
-set_interface_property tx_fifo_bypass   EXPORT_OF $dac_fifo_name.if_bypass
 set_interface_property tx_device_clk    EXPORT_OF tx_device_clk.in_clk
 
 #

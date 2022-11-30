@@ -1,6 +1,6 @@
 # ip
 
-source ../scripts/adi_env.tcl
+source ../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
 
 adi_if_define if_xcvr_cm
@@ -34,6 +34,8 @@ adi_if_ports output    1  wr
 adi_if_ports output   16  wdata
 adi_if_ports input    16  rdata
 adi_if_ports input     1  ready
+adi_if_ports output    2  bufstatus
+adi_if_ports output    1  bufstatus_rst
 
 adi_if_define if_gt_qpll
 adi_if_ports output    1  qpll_rst            reset
@@ -102,3 +104,12 @@ adi_if_ports  output   4  rx_gt_ilas_a
 adi_if_ports  output   4  rx_gt_ilas_r
 adi_if_ports  output   4  rx_gt_cgs_k
 
+adi_if_define if_do_ctrl
+adi_if_ports  output   1  request_enable
+adi_if_ports  output   1  request_valid
+adi_if_ports  input    1  request_ready
+adi_if_ports  output  -1  request_length
+adi_if_ports  output  -1  response_measured_length
+adi_if_ports  input    1  response_eot
+adi_if_ports  input    1  status_underflow
+adi_if_ports  input    1  status_overflow

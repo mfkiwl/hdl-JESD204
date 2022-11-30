@@ -38,7 +38,8 @@
 module axi_ad7616 #(
 
   parameter       ID = 0,
-  parameter       IF_TYPE = 1) (
+  parameter       IF_TYPE = 1
+) (
 
   // physical data interface
 
@@ -88,8 +89,8 @@ module axi_ad7616 #(
   output      [15:0]      adc_data,
   output                  adc_sync,
 
-  output                  irq);
-
+  output                  irq
+);
 
   localparam      NUM_OF_SDI = 2;
   localparam      SERIAL = 0;
@@ -207,6 +208,9 @@ module axi_ad7616 #(
     wire                                    offload0_mem_reset_s;
     wire                                    offload0_enable_s;
     wire                                    offload0_enabled_s;
+    wire                                    offload_sync_ready_s;
+    wire                                    offload_sync_valid_s;
+    wire  [ 7:0]                            offload_sync_data_s;
 
     axi_spi_engine #(
       .DATA_WIDTH (8),
@@ -239,6 +243,9 @@ module axi_ad7616 #(
       .sync_ready (s0_sync_ready_s),
       .sync_valid (s0_sync_valid_s),
       .sync_data (s0_sync_s),
+      .offload_sync_ready (offload_sync_ready_s),
+      .offload_sync_valid (offload_sync_valid_s),
+      .offload_sync_data (offload_sync_data_s),
       .offload0_cmd_wr_en (offload0_cmd_wr_en_s),
       .offload0_cmd_wr_data (offload0_cmd_wr_data_s),
       .offload0_sdo_wr_en (offload0_sdo_wr_en_s),
@@ -274,6 +281,9 @@ module axi_ad7616 #(
       .sync_valid (s1_sync_valid_s),
       .sync_ready (s1_sync_ready_s),
       .sync_data (s1_sync_s),
+      .status_sync_ready (offload_sync_ready_s),
+      .status_sync_valid (offload_sync_valid_s),
+      .status_sync_data (offload_sync_data_s),
       .offload_sdi_valid (m_axis_valid_s),
       .offload_sdi_ready (m_axis_ready_s),
       .offload_sdi_data (m_axis_data_s));
@@ -359,8 +369,7 @@ module axi_ad7616 #(
       .fifo_wr_en(adc_valid),
       .fifo_wr_data(adc_data),
       .fifo_wr_sync(adc_sync),
-      .fifo_wr_xfer_req(1'b1)
-    );
+      .fifo_wr_xfer_req(1'b1));
 
   end
   endgenerate
@@ -393,8 +402,7 @@ module axi_ad7616 #(
       .wr_req (wr_req_s),
       .wr_data (wr_data_s),
       .rd_data (rd_data_s),
-      .rd_valid (rd_valid_s)
-    );
+      .rd_valid (rd_valid_s));
 
   end
   endgenerate
@@ -457,6 +465,3 @@ module axi_ad7616 #(
     .up_rack (up_rack));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

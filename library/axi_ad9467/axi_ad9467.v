@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -43,7 +43,8 @@ module axi_ad9467#(
   parameter   SPEED_GRADE = 0,
   parameter   DEV_PACKAGE = 0,
   parameter   IO_DELAY_GROUP = "dev_if_delay_group",
-  parameter   DELAY_REFCLK_FREQUENCY = 200) (
+  parameter   DELAY_REFCLK_FREQUENCY = 200
+) (
 
   // physical interface
 
@@ -88,8 +89,8 @@ module axi_ad9467#(
   output                  s_axi_rvalid,
   output      [ 1:0]      s_axi_rresp,
   output      [31:0]      s_axi_rdata,
-  input                   s_axi_rready);
-
+  input                   s_axi_rready
+);
 
   // internal registers
 
@@ -150,8 +151,8 @@ module axi_ad9467#(
   axi_ad9467_if #(
     .FPGA_TECHNOLOGY (FPGA_TECHNOLOGY),
     .IO_DELAY_GROUP (IO_DELAY_GROUP),
-    .DELAY_REFCLK_FREQUENCY (DELAY_REFCLK_FREQUENCY))
-  i_if (
+    .DELAY_REFCLK_FREQUENCY (DELAY_REFCLK_FREQUENCY)
+  ) i_if (
     .adc_clk_in_p (adc_clk_in_p),
     .adc_clk_in_n (adc_clk_in_n),
     .adc_data_in_p (adc_data_in_p),
@@ -172,7 +173,9 @@ module axi_ad9467#(
 
   // channel
 
-  axi_ad9467_channel #(.CHANNEL_ID(0)) i_channel (
+  axi_ad9467_channel #(
+    .CHANNEL_ID(0)
+  ) i_channel (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_data (adc_data_s),
@@ -195,7 +198,10 @@ module axi_ad9467#(
 
   // adc delay control
 
-  up_delay_cntrl #(.DATA_WIDTH(9), .BASE_ADDRESS(6'h02)) i_delay_cntrl (
+  up_delay_cntrl #(
+    .DATA_WIDTH(9),
+    .BASE_ADDRESS(6'h02)
+  ) i_delay_cntrl (
     .delay_clk (delay_clk),
     .delay_rst (delay_rst),
     .delay_locked (delay_locked_s),
@@ -226,8 +232,8 @@ module axi_ad9467#(
     .DRP_DISABLE (6'h00),
     .USERPORTS_DISABLE (0),
     .GPIO_DISABLE (0),
-    .START_CODE_DISABLE(0))
-  i_up_adc_common (
+    .START_CODE_DISABLE(0)
+  ) i_up_adc_common (
     .mmcm_rst (),
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
@@ -241,8 +247,15 @@ module axi_ad9467#(
     .adc_start_code (),
     .adc_sref_sync (),
     .adc_sync (),
+    .adc_ext_sync_arm (),
+    .adc_ext_sync_disarm (),
+    .adc_ext_sync_manual_req (),
     .adc_num_lanes (),
+    .adc_custom_control (),
+    .adc_crc_enable (),
     .adc_sdr_ddr_n (),
+    .adc_symb_op (),
+    .adc_symb_8_16b (),
     .up_pps_rcounter (32'd0),
     .up_pps_status (1'd0),
     .up_pps_irq_mask (),
@@ -258,6 +271,11 @@ module axi_ad9467#(
     .up_drp_rdata (16'b0),
     .up_drp_ready (1'b0),
     .up_drp_locked (1'b1),
+    .adc_custom_wr (),
+    .adc_write_req (),
+    .adc_custom_rd ('d0),
+    .adc_read_valid ('d0),
+    .adc_read_req (),
     .up_usr_chanmax_out (),
     .up_usr_chanmax_in (8'd1),
     .up_adc_gpio_in (32'd0),
@@ -305,6 +323,3 @@ module axi_ad9467#(
     .up_rack (up_rack));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

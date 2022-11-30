@@ -92,3 +92,15 @@ _vmake
 *.qdb
 *.qpg
 *.qtl
+*.xpe
+*.gen*
+*.xsa
+*.pdi
+library/**/bd/bd.tcl
+*.syn.smsg
+*.syn.summary
+qdb
+tmp-clearbox
+*.bin
+.qsys_edit
+

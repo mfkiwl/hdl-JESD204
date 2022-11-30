@@ -22,7 +22,7 @@
 # ***************************************************************************
 
 package require qsys 14.0
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source ../../scripts/adi_ip_intel.tcl
 
 ad_ip_create ad_ip_jesd204_tpl_adc "JESD204 Transport Layer for ADCs" p_ad_ip_jesd204_tpl_adc_elab
@@ -38,6 +38,7 @@ ad_ip_files ad_ip_jesd204_tpl_adc [list \
   $ad_hdl_dir/library/common/up_clock_mon.v \
   $ad_hdl_dir/library/common/up_adc_common.v \
   $ad_hdl_dir/library/common/up_adc_channel.v \
+  $ad_hdl_dir/library/common/util_ext_sync.v \
   $ad_hdl_dir/library/common/ad_xcvr_rx_if.v \
   $ad_hdl_dir/library/jesd204/ad_ip_jesd204_tpl_common/up_tpl_common.v \
   $ad_hdl_dir/library/jesd204/ad_ip_jesd204_tpl_adc/ad_ip_jesd204_tpl_adc_regmap.v \
@@ -72,7 +73,7 @@ set group "JESD204 Deframer Configuration"
 ad_ip_parameter NUM_LANES INTEGER 1 true [list \
   DISPLAY_NAME "Number of Lanes (L)" \
   DISPLAY_UNITS "lanes" \
-  ALLOWED_RANGES {1 2 3 4 8} \
+  ALLOWED_RANGES {1 2 3 4 8 16 24 32} \
   GROUP $group \
 ]
 
@@ -99,7 +100,7 @@ ad_ip_parameter DMA_BITS_PER_SAMPLE INTEGER 16 true [list \
 
 ad_ip_parameter CONVERTER_RESOLUTION INTEGER 16 true [list \
   DISPLAY_NAME "Converter Resolution (N)" \
-  ALLOWED_RANGES {8 11 12 16} \
+  ALLOWED_RANGES {8 11 12 14 16} \
   UNITS bits \
   GROUP $group \
 ]
@@ -166,7 +167,14 @@ ad_ip_parameter TWOS_COMPLEMENT boolean 1 true [list \
   DISPLAY_NAME "Twos Complement" \
   GROUP $group \
 ]
-
+ad_ip_parameter PN7_ENABLE boolean 1 true [list \
+  DISPLAY_NAME "Enable PN7" \
+  GROUP $group \
+]
+ad_ip_parameter PN15_ENABLE boolean 1 true [list \
+  DISPLAY_NAME "Enable PN15" \
+  GROUP $group \
+]
 
 # axi4 slave
 
@@ -258,7 +266,7 @@ proc p_ad_ip_jesd204_tpl_adc_elab {} {
   set DMA_BPS [get_parameter_value "DMA_BITS_PER_SAMPLE"]
 
   # The DMA interface is rounded to nearest power of two bytes per sample,
-  # e.g NP=12 is padded into 16 bits 
+  # e.g NP=12 is padded into 16 bits
   set samples_per_beat_per_channel [expr ($OPB * 8 * $L / ($M * $NP))]
   set channel_bus_width [expr $samples_per_beat_per_channel*$DMA_BPS]
 

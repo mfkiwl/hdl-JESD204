@@ -1,7 +1,7 @@
 package require qsys 14.0
 package require quartus::device
 
-source ../scripts/adi_env.tcl
+source ../../scripts/adi_env.tcl
 source ../scripts/adi_ip_intel.tcl
 
 ad_ip_create axi_adrv9001 {AXI ADRV9001 Interface} axi_adrv9001_elab
@@ -169,6 +169,11 @@ add_interface_port dac_2_ch_1 dac_2_data_q0 data Input 16
 
 ad_interface signal dac_2_dunf input 1 unf
 
+set_interface_property dac_2_ch_0 associatedClock if_dac_2_clk
+set_interface_property dac_2_ch_1 associatedClock if_dac_2_clk
+set_interface_property dac_2_ch_0 associatedReset dac_2_rst
+set_interface_property dac_2_ch_1 associatedReset dac_2_rst
+
 add_interface tdd_if conduit end
 add_interface_port tdd_if gpio_rx1_enable_in rx1_enable_in Input 1
 add_interface_port tdd_if gpio_rx2_enable_in rx2_enable_in Input 1
@@ -182,19 +187,19 @@ proc axi_adrv9001_elab {} {
   set m_fpga_technology [get_parameter_value "FPGA_TECHNOLOGY"]
   set m_cmos_lvds_n [get_parameter_value "CMOS_LVDS_N"]
 
-  add_hdl_instance adrv9001_gpio_in altera_gpio 19.3
+  add_hdl_instance adrv9001_gpio_in altera_gpio
   set_instance_parameter_value adrv9001_gpio_in {DEVICE_FAMILY} {Arria 10}
   set_instance_parameter_value adrv9001_gpio_in {PIN_TYPE_GUI} {Input}
   set_instance_parameter_value adrv9001_gpio_in {SIZE} {1}
   set_instance_parameter_value adrv9001_gpio_in {gui_io_reg_mode} {DDIO}
 
-  add_hdl_instance adrv9001_gpio_out altera_gpio 19.3
+  add_hdl_instance adrv9001_gpio_out altera_gpio
   set_instance_parameter_value adrv9001_gpio_out {DEVICE_FAMILY} {Arria 10}
   set_instance_parameter_value adrv9001_gpio_out {PIN_TYPE_GUI} {Output}
   set_instance_parameter_value adrv9001_gpio_out {SIZE} {1}
   set_instance_parameter_value adrv9001_gpio_out {gui_io_reg_mode} {DDIO}
 
-  add_hdl_instance periphery_clk_buf altclkctrl 19.1
+  add_hdl_instance periphery_clk_buf altclkctrl
   set_instance_parameter_value periphery_clk_buf {DEVICE_FAMILY} {Arria 10}
   set_instance_parameter_value periphery_clk_buf {CLOCK_TYPE} {Periphery Clock}
 

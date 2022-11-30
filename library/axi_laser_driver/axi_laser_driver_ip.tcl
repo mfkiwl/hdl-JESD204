@@ -1,7 +1,9 @@
 # ip
 
-source ../scripts/adi_env.tcl
+source ../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
+
+global VIVADO_IP_LIBRARY
 
 adi_ip_create axi_laser_driver
 adi_ip_files axi_laser_driver [list \
@@ -14,10 +16,12 @@ adi_ip_files axi_laser_driver [list \
 adi_ip_properties axi_laser_driver
 adi_ip_ttcl axi_laser_driver "../axi_pulse_gen/axi_pulse_gen_constr.ttcl"
 
-adi_ip_add_core_dependencies { \
-	analog.com:user:util_cdc:1.0 \
-	analog.com:user:axi_pulse_gen:1.0 \
-}
+set_property company_url {https://wiki.analog.com/resources/fpga/docs/axi_laser_driver} [ipx::current_core]
+
+adi_ip_add_core_dependencies [list \
+	analog.com:$VIVADO_IP_LIBRARY:util_cdc:1.0 \
+	analog.com:$VIVADO_IP_LIBRARY:axi_pulse_gen:1.0 \
+]
 
 set cc [ipx::current_core]
 

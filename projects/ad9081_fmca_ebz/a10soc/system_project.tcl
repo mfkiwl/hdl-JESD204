@@ -1,5 +1,4 @@
-
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source ../../scripts/adi_project_intel.tcl
 
 # get_env_param retrieves parameter value from the environment if exists,
@@ -8,22 +7,37 @@ source ../../scripts/adi_project_intel.tcl
 #   Use over-writable parameters from the environment.
 #
 #    e.g.
-#      make RX_JESD_L=4 RX_JESD_M=8 RX_JESD_S=1 RX_JESD_NP=16 TX_JESD_L=4 TX_JESD_M=8 TX_JESD_S=1 TX_JESD_NP=16 SAMPLE_RATE=250
-#      make RX_JESD_L=8 RX_JESD_M=4 RX_JESD_S=1 RX_JESD_NP=16 TX_JESD_L=8 TX_JESD_M=4 TX_JESD_S=1 TX_JESD_NP=16 SAMPLE_RATE=250
-#      make RX_JESD_L=2 RX_JESD_M=8 RX_JESD_S=1 RX_JESD_NP=12 TX_JESD_L=2 TX_JESD_M=8 TX_JESD_S=1 TX_JESD_NP=12 SAMPLE_RATE=166.66666667
+#      make RX_LANE_RATE=10 TX_LANE_RATE=10 RX_JESD_L=4 RX_JESD_M=8 RX_JESD_S=1 RX_JESD_NP=16 TX_JESD_L=4 TX_JESD_M=8 TX_JESD_S=1 TX_JESD_NP=16
+#      make RX_LANE_RATE=2.5 TX_LANE_RATE=2.5 RX_JESD_L=8 RX_JESD_M=4 RX_JESD_S=1 RX_JESD_NP=16 TX_JESD_L=8 TX_JESD_M=4 TX_JESD_S=1 TX_JESD_NP=16
+#      make RX_LANE_RATE=10 TX_LANE_RATE=10 RX_JESD_L=2 RX_JESD_M=8 RX_JESD_S=1 RX_JESD_NP=12 TX_JESD_L=2 TX_JESD_M=8 TX_JESD_S=1 TX_JESD_NP=12
+#
+# Lane Rate = I/Q Sample Rate x M x N' x (10 \ 8) \ L
+
+# Parameter description:
+#
+#   RX_LANE_RATE :  Lane rate of the Rx link ( MxFE to FPGA )
+#   TX_LANE_RATE :  Lane rate of the Tx link ( FPGA to MxFE )
+#   [RX/TX]_JESD_M : Number of converters per link
+#   [RX/TX]_JESD_L : Number of lanes per link
+#   [RX/TX]_JESD_S : Number of samples per frame
+#   [RX/TX]_JESD_NP : Number of bits per sample
+#   [RX/TX]_NUM_LINKS : Number of links
+#   [RX/TX]_KS_PER_CHANNEL : Number of samples stored in internal buffers in kilosamples per converter (M)
+#
 
 adi_project ad9081_fmca_ebz_a10soc [list \
-  SAMPLE_RATE        [get_env_param SAMPLE_RATE  250] \
-  RX_JESD_M          [get_env_param RX_JESD_M    8 ] \
-  RX_JESD_L          [get_env_param RX_JESD_L    4 ] \
-  RX_JESD_S          [get_env_param RX_JESD_S    1 ] \
-  RX_JESD_NP         [get_env_param RX_JESD_NP   16 ] \
-  RX_NUM_LINKS       [get_env_param RX_NUM_LINKS 1 ] \
-  TX_JESD_M          [get_env_param TX_JESD_M    8 ] \
-  TX_JESD_L          [get_env_param TX_JESD_L    4 ] \
-  TX_JESD_S          [get_env_param TX_JESD_S    1 ] \
-  TX_JESD_NP         [get_env_param TX_JESD_NP   16 ] \
-  TX_NUM_LINKS       [get_env_param TX_NUM_LINKS 1 ] \
+  RX_LANE_RATE       [get_env_param RX_LANE_RATE      10 ] \
+  TX_LANE_RATE       [get_env_param TX_LANE_RATE      10 ] \
+  RX_JESD_M          [get_env_param RX_JESD_M          8 ] \
+  RX_JESD_L          [get_env_param RX_JESD_L          4 ] \
+  RX_JESD_S          [get_env_param RX_JESD_S          1 ] \
+  RX_JESD_NP         [get_env_param RX_JESD_NP        16 ] \
+  RX_NUM_LINKS       [get_env_param RX_NUM_LINKS       1 ] \
+  TX_JESD_M          [get_env_param TX_JESD_M          8 ] \
+  TX_JESD_L          [get_env_param TX_JESD_L          4 ] \
+  TX_JESD_S          [get_env_param TX_JESD_S          1 ] \
+  TX_JESD_NP         [get_env_param TX_JESD_NP        16 ] \
+  TX_NUM_LINKS       [get_env_param TX_NUM_LINKS       1 ] \
   RX_KS_PER_CHANNEL  [get_env_param RX_KS_PER_CHANNEL 32 ] \
   TX_KS_PER_CHANNEL  [get_env_param TX_KS_PER_CHANNEL 32 ] \
 ]
@@ -33,7 +47,7 @@ source $ad_hdl_dir/projects/common/a10soc/a10soc_system_assign.tcl
 
 # files
 
-set_global_assignment -name VERILOG_FILE ../../../library/common/ad_3w_spi.v
+set_global_assignment -name VERILOG_FILE $ad_hdl_dir/library/common/ad_3w_spi.v
 
 
 # Note: This projects requires a hardware rework to function correctly.
@@ -49,6 +63,11 @@ set_global_assignment -name VERILOG_FILE ../../../library/common/ad_3w_spi.v
 #  R632: DNI -> R0    PIN_F14
 #  R621: R0 -> DNI
 #  R633: R0 -> DNI
+#  R574: DNI -> R0    PIN_W5
+#  R577: DNI -> R0    PIN_W6
+#  R576: R0 -> DNI
+#  R575: R0 -> DNI
+
 
 set_location_assignment PIN_F9    -to "agc0[0]"             ; ## D20  LA17_CC_P
 set_location_assignment PIN_G9    -to "agc0[1]"             ; ## D21  LA17_CC_N
@@ -94,14 +113,14 @@ set_location_assignment PIN_J36   -to "tx_data[4](n)"       ; ## A35  DP4_C2M_N
 set_location_assignment PIN_J37   -to "tx_data[4]"          ; ## A34  DP4_C2M_P
 set_location_assignment PIN_K38   -to "tx_data[3](n)"       ; ## A31  DP3_C2M_N
 set_location_assignment PIN_K39   -to "tx_data[3]"          ; ## A30  DP3_C2M_P
-set_location_assignment PIN_D13   -to "fpga_syncin[0](n)"   ; ## H08  LA02_N
-set_location_assignment PIN_C13   -to "fpga_syncin[0]"      ; ## H07  LA02_P
-set_location_assignment PIN_D14   -to "fpga_syncin[1](n)"   ; ## G10  LA03_N
-set_location_assignment PIN_C14   -to "fpga_syncin[1]"      ; ## G09  LA03_P
-set_location_assignment PIN_E13   -to "fpga_syncout[0](n)"  ; ## D09  LA01_CC_N
-set_location_assignment PIN_E12   -to "fpga_syncout[0]"     ; ## D08  LA01_CC_P
-set_location_assignment PIN_B10   -to "fpga_syncout[1](n)"  ; ## C11  LA06_N
-set_location_assignment PIN_A10   -to "fpga_syncout[1]"     ; ## C10  LA06_P
+set_location_assignment PIN_D13   -to "fpga_syncin_0(n)"    ; ## H08  LA02_N
+set_location_assignment PIN_C13   -to "fpga_syncin_0"       ; ## H07  LA02_P
+set_location_assignment PIN_D14   -to "fpga_syncin_1_n"     ; ## G10  LA03_N
+set_location_assignment PIN_C14   -to "fpga_syncin_1_p"     ; ## G09  LA03_P
+set_location_assignment PIN_E13   -to "fpga_syncout_0(n)"   ; ## D09  LA01_CC_N
+set_location_assignment PIN_E12   -to "fpga_syncout_0"      ; ## D08  LA01_CC_P
+set_location_assignment PIN_B10   -to "fpga_syncout_1_n"    ; ## C11  LA06_N
+set_location_assignment PIN_A10   -to "fpga_syncout_1_p"    ; ## C10  LA06_P
 set_location_assignment PIN_D4    -to "gpio[0]"             ; ## H19  LA15_P
 set_location_assignment PIN_D5    -to "gpio[1]"             ; ## H20  LA15_N
 set_location_assignment PIN_G5    -to "gpio[2]"             ; ## H22  LA19_P
@@ -153,13 +172,10 @@ for {set i 0} {$i < $common_lanes} {incr i} {
   set_instance_assignment -name XCVR_RECONFIG_GROUP xcvr_${i} -to tx_data[${i}]
 }
 
-set_instance_assignment -name IO_STANDARD LVDS -to fpga_syncin[0]
-set_instance_assignment -name IO_STANDARD LVDS -to fpga_syncin[1]
-set_instance_assignment -name IO_STANDARD LVDS -to fpga_syncout[0]
-set_instance_assignment -name IO_STANDARD LVDS -to fpga_syncout[1]
+set_instance_assignment -name IO_STANDARD LVDS -to fpga_syncin_0
+set_instance_assignment -name IO_STANDARD LVDS -to fpga_syncout_0
 set_instance_assignment -name IO_STANDARD LVDS -to sysref2
-set_instance_assignment -name INPUT_TERMINATION DIFFERENTIAL -to fpga_syncin[0]
-set_instance_assignment -name INPUT_TERMINATION DIFFERENTIAL -to fpga_syncin[1]
+set_instance_assignment -name INPUT_TERMINATION DIFFERENTIAL -to fpga_syncin_0
 set_instance_assignment -name INPUT_TERMINATION DIFFERENTIAL -to sysref2
 
 set_instance_assignment -name IO_STANDARD "1.8 V" -to agc0[0]

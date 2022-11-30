@@ -1,5 +1,6 @@
 ####################################################################################
-## Copyright 2018(c) Analog Devices, Inc.
+## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+### SPDX short identifier: BSD-1-Clause
 ## Auto-generated, do not modify!
 ####################################################################################
 
@@ -9,8 +10,6 @@ GENERIC_DEPS += ../../common/ad_rst.v
 GENERIC_DEPS += ../../common/up_axi.v
 GENERIC_DEPS += axi_spi_engine.v
 
-XILINX_DEPS += ../../common/ad_rst.v
-XILINX_DEPS += ../../common/up_axi.v
 XILINX_DEPS += ../../xilinx/common/ad_rst_constr.xdc
 XILINX_DEPS += axi_spi_engine_constr.ttcl
 XILINX_DEPS += axi_spi_engine_ip.tcl

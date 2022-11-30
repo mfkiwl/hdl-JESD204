@@ -41,12 +41,14 @@ module axi_hdmi_tx #(
   parameter   CR_CB_N = 0,
   parameter   FPGA_TECHNOLOGY = 0,
   parameter   INTERFACE = "16_BIT",
-  parameter   OUT_CLK_POLARITY = 0) (
+  parameter   OUT_CLK_POLARITY = 0
+) (
 
   // hdmi interface
 
-  input                   hdmi_clk,
+  input                   reference_clk,
   output                  hdmi_out_clk,
+  output                  vga_out_clk,
 
   // 16-bit interface
 
@@ -62,6 +64,14 @@ module axi_hdmi_tx #(
   output                  hdmi_24_vsync,
   output                  hdmi_24_data_e,
   output      [23:0]      hdmi_24_data,
+
+  // VGA interface
+
+  output                  vga_hsync,
+  output                  vga_vsync,
+  output      [7:0]       vga_red,
+  output      [7:0]       vga_green,
+  output      [7:0]       vga_blue,
 
   // 36-bit interface
 
@@ -100,20 +110,22 @@ module axi_hdmi_tx #(
   output                  s_axi_rvalid,
   output      [ 1:0]      s_axi_rresp,
   output      [31:0]      s_axi_rdata,
-  input                   s_axi_rready);
+  input                   s_axi_rready
+);
 
   /* 0 = Launch on rising edge, 1 = Launch on falling edge */
 
   localparam  EMBEDDED_SYNC = (INTERFACE == "16_BIT_EMBEDDED_SYNC") ? 1 : 0;
   localparam  XILINX_7SERIES = 1;
   localparam  XILINX_ULTRASCALE = 2;
+  localparam  XILINX_ULTRASCALE_PLUS = 3;
   localparam  INTEL_5SERIES = 101;
 
   // reset and clocks
 
   wire            up_rstn;
   wire            up_clk;
-  wire            hdmi_rst;
+  wire            reference_rst;
   wire            vdma_rst;
 
   // internal signals
@@ -159,6 +171,7 @@ module axi_hdmi_tx #(
 
   assign up_rstn = s_axi_aresetn;
   assign up_clk = s_axi_aclk;
+  assign vga_out_clk = hdmi_out_clk;
 
   // axi interface
 
@@ -194,8 +207,8 @@ module axi_hdmi_tx #(
   // processor interface
 
   up_hdmi_tx i_up (
-    .hdmi_clk (hdmi_clk),
-    .hdmi_rst (hdmi_rst),
+    .hdmi_clk (reference_clk),
+    .hdmi_rst (reference_rst),
     .hdmi_csc_bypass (hdmi_csc_bypass_s),
     .hdmi_ss_bypass (hdmi_ss_bypass_s),
     .hdmi_srcsel (hdmi_srcsel_s),
@@ -254,11 +267,12 @@ module axi_hdmi_tx #(
   // hdmi interface
 
   axi_hdmi_tx_core #(
+    .INTERFACE(INTERFACE),
     .CR_CB_N(CR_CB_N),
-    .EMBEDDED_SYNC(EMBEDDED_SYNC))
-  i_tx_core (
-    .hdmi_clk (hdmi_clk),
-    .hdmi_rst (hdmi_rst),
+    .EMBEDDED_SYNC(EMBEDDED_SYNC)
+  )  i_tx_core (
+    .reference_clk (reference_clk),
+    .reference_rst (reference_rst),
     .hdmi_16_hsync (hdmi_16_hsync),
     .hdmi_16_vsync (hdmi_16_vsync),
     .hdmi_16_data_e (hdmi_16_data_e),
@@ -268,6 +282,11 @@ module axi_hdmi_tx #(
     .hdmi_24_vsync (hdmi_24_vsync),
     .hdmi_24_data_e (hdmi_24_data_e),
     .hdmi_24_data (hdmi_24_data),
+    .vga_hsync(vga_hsync),
+    .vga_vsync(vga_vsync),
+    .vga_red(vga_red),
+    .vga_green(vga_green),
+    .vga_blue(vga_blue),
     .hdmi_36_hsync (hdmi_36_hsync),
     .hdmi_36_vsync (hdmi_36_vsync),
     .hdmi_36_data_e (hdmi_36_data_e),
@@ -302,16 +321,20 @@ module axi_hdmi_tx #(
   // hdmi output clock
 
   generate
-  if (FPGA_TECHNOLOGY == XILINX_ULTRASCALE) begin
-  ODDRE1 #(.SRVAL(1'b0)) i_clk_oddr (
+  if (FPGA_TECHNOLOGY == XILINX_ULTRASCALE || FPGA_TECHNOLOGY == XILINX_ULTRASCALE_PLUS) begin
+  ODDRE1 #(
+    .SRVAL(1'b0)
+  ) i_clk_oddr (
     .SR (1'b0),
     .D1 (~OUT_CLK_POLARITY),
     .D2 (OUT_CLK_POLARITY),
-    .C (hdmi_clk),
+    .C (reference_clk),
     .Q (hdmi_out_clk));
   end
   if (FPGA_TECHNOLOGY == INTEL_5SERIES) begin
-  altddio_out #(.WIDTH(1)) i_clk_oddr (
+  altddio_out #(
+    .WIDTH(1)
+  ) i_clk_oddr (
     .aclr (1'b0),
     .aset (1'b0),
     .sclr (1'b0),
@@ -320,23 +343,22 @@ module axi_hdmi_tx #(
     .outclocken (1'b1),
     .datain_h (~OUT_CLK_POLARITY),
     .datain_l (OUT_CLK_POLARITY),
-    .outclock (hdmi_clk),
+    .outclock (reference_clk),
     .oe_out (),
     .dataout (hdmi_out_clk));
   end
   if (FPGA_TECHNOLOGY == XILINX_7SERIES) begin
-  ODDR #(.INIT(1'b0)) i_clk_oddr (
+  ODDR #(
+    .INIT(1'b0)
+  ) i_clk_oddr (
     .R (1'b0),
     .S (1'b0),
     .CE (1'b1),
     .D1 (~OUT_CLK_POLARITY),
     .D2 (OUT_CLK_POLARITY),
-    .C (hdmi_clk),
+    .C (reference_clk),
     .Q (hdmi_out_clk));
   end
   endgenerate
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

@@ -44,7 +44,7 @@
 
 package require qsys 14.0
 
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_intel.tcl
 
 ad_ip_create axi_jesd204_tx "ADI JESD204 Transmit AXI Interface"
@@ -76,7 +76,7 @@ set_parameter_property ID HDL_PARAMETER true
 
 add_parameter NUM_LANES INTEGER 1
 set_parameter_property NUM_LANES DISPLAY_NAME "Number of Lanes"
-set_parameter_property NUM_LANES ALLOWED_RANGES 1:8
+set_parameter_property NUM_LANES ALLOWED_RANGES 1:32
 set_parameter_property NUM_LANES HDL_PARAMETER true
 
 add_parameter NUM_LINKS INTEGER 1

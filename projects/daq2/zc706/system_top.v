@@ -129,7 +129,8 @@ module system_top (
   output                  spi_csn_adc,
   output                  spi_clk,
   inout                   spi_sdio,
-  output                  spi_dir);
+  output                  spi_dir
+);
 
   // internal signals
 
@@ -210,7 +211,9 @@ module system_top (
   assign gpio_i[43] = trig;
   assign spi_clk = spi0_clk;
 
-  ad_iobuf #(.DATA_WIDTH(9)) i_iobuf (
+  ad_iobuf #(
+    .DATA_WIDTH(9)
+  ) i_iobuf (
     .dio_t ({gpio_t[42:40], gpio_t[38], gpio_t[36:32]}),
     .dio_i ({gpio_o[42:40], gpio_o[38], gpio_o[36:32]}),
     .dio_o ({gpio_i[42:40], gpio_i[38], gpio_i[36:32]}),
@@ -223,7 +226,9 @@ module system_top (
               dac_irq,          // 34
               clkd_status}));   // 33-32
 
-  ad_iobuf #(.DATA_WIDTH(15)) i_iobuf_bd (
+  ad_iobuf #(
+    .DATA_WIDTH(15)
+  ) i_iobuf_bd (
     .dio_t (gpio_t[14:0]),
     .dio_i (gpio_o[14:0]),
     .dio_o (gpio_i[14:0]),
@@ -250,6 +255,9 @@ module system_top (
     .ddr3_ras_n (ddr3_ras_n),
     .ddr3_reset_n (ddr3_reset_n),
     .ddr3_we_n (ddr3_we_n),
+    .sys_clk_clk_n (sys_clk_n),
+    .sys_clk_clk_p (sys_clk_p),
+    .sys_rst (sys_rst),
     .ddr_addr (ddr_addr),
     .ddr_ba (ddr_ba),
     .ddr_cas_n (ddr_cas_n),
@@ -311,9 +319,9 @@ module system_top (
     .spi1_sdi_i (1'b1),
     .spi1_sdo_i (spi1_mosi),
     .spi1_sdo_o (spi1_mosi),
-    .sys_clk_clk_n (sys_clk_n),
-    .sys_clk_clk_p (sys_clk_p),
-    .sys_rst (sys_rst),
+    //.sys_clk_clk_n (sys_clk_n),
+    //.sys_clk_clk_p (sys_clk_p),
+    //.sys_rst (sys_rst),
     .tx_data_0_n (tx_data_n[0]),
     .tx_data_0_p (tx_data_p[0]),
     .tx_data_1_n (tx_data_n[1]),
@@ -327,6 +335,3 @@ module system_top (
     .tx_sysref_0 (tx_sysref));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

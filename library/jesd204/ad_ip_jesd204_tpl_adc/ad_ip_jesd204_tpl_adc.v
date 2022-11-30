@@ -37,8 +37,12 @@ module ad_ip_jesd204_tpl_adc #(
   parameter DMA_BITS_PER_SAMPLE = 16,
   parameter OCTETS_PER_BEAT = 4,
   parameter EN_FRAME_ALIGN = 1,
-  parameter TWOS_COMPLEMENT = 1
+  parameter TWOS_COMPLEMENT = 1,
+  parameter EXT_SYNC = 0,
+  parameter PN7_ENABLE = 1,
+  parameter PN15_ENABLE = 1
 ) (
+
   // jesd interface
   // link_clk is (line-rate/40)
   input link_clk,
@@ -57,6 +61,9 @@ module ad_ip_jesd204_tpl_adc #(
   input adc_dovf,
 
   input adc_sync_in,
+  output adc_sync_manual_req_out,
+  input adc_sync_manual_req_in,
+
   output adc_rst,
 
   // axi interface
@@ -120,7 +127,8 @@ module ad_ip_jesd204_tpl_adc #(
     .DEV_PACKAGE (DEV_PACKAGE),
     .NUM_CHANNELS (NUM_CHANNELS),
     .DATA_PATH_WIDTH (DATA_PATH_WIDTH),
-    .NUM_PROFILES(1)
+    .NUM_PROFILES(1),
+    .EXT_SYNC (EXT_SYNC)
   ) i_regmap (
     .s_axi_aclk (s_axi_aclk),
     .s_axi_aresetn (s_axi_aresetn),
@@ -158,6 +166,9 @@ module ad_ip_jesd204_tpl_adc #(
 
     .adc_sync (adc_sync),
     .adc_sync_status (adc_sync_status),
+    .adc_ext_sync_arm (adc_ext_sync_arm),
+    .adc_ext_sync_disarm (adc_ext_sync_disarm),
+    .adc_ext_sync_manual_req (adc_sync_manual_req_out),
 
     .adc_rst (adc_rst_s),
 
@@ -169,8 +180,7 @@ module ad_ip_jesd204_tpl_adc #(
     .jesd_f (BYTES_PER_FRAME),
     .jesd_n (CONVERTER_RESOLUTION),
     .jesd_np (BITS_PER_SAMPLE),
-    .up_profile_sel ()
-  );
+    .up_profile_sel ());
 
   ad_ip_jesd204_tpl_adc_core #(
     .NUM_LANES (NUM_LANES),
@@ -184,7 +194,10 @@ module ad_ip_jesd204_tpl_adc #(
     .DMA_DATA_WIDTH (DMA_DATA_WIDTH),
     .TWOS_COMPLEMENT (TWOS_COMPLEMENT),
     .DATA_PATH_WIDTH (DATA_PATH_WIDTH),
-    .DMA_BITS_PER_SAMPLE (DMA_BITS_PER_SAMPLE)
+    .DMA_BITS_PER_SAMPLE (DMA_BITS_PER_SAMPLE),
+    .EXT_SYNC (EXT_SYNC),
+    .PN7_ENABLE (PN7_ENABLE),
+    .PN15_ENABLE(PN15_ENABLE)
   ) i_core (
     .clk (link_clk),
 
@@ -204,10 +217,12 @@ module ad_ip_jesd204_tpl_adc #(
     .adc_sync (adc_sync),
     .adc_sync_status (adc_sync_status),
     .adc_sync_in (adc_sync_in),
+    .adc_ext_sync_arm (adc_ext_sync_arm),
+    .adc_ext_sync_disarm (adc_ext_sync_disarm),
+    .adc_sync_manual_req (adc_sync_manual_req_in),
     .adc_rst_sync (adc_rst_sync_s),
 
     .adc_valid (adc_valid),
-    .adc_data (adc_data)
-  );
+    .adc_data (adc_data));
 
 endmodule

@@ -44,7 +44,7 @@
 
 package require qsys 14.0
 
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_intel.tcl
 
 ad_ip_create jesd204_rx "ADI JESD204 Receive" jesd204_rx_elaboration_callback
@@ -75,13 +75,14 @@ ad_ip_files jesd204_rx [list \
   $ad_hdl_dir/library/util_cdc/sync_event.v \
   $ad_hdl_dir/library/util_cdc/util_cdc_constr.tcl \
   ../../common/ad_pack.v \
+  ../../common/ad_upack.v \
 ]
 
 # parameters
 
 add_parameter NUM_LANES INTEGER 1
 set_parameter_property NUM_LANES DISPLAY_NAME "Number of Lanes"
-set_parameter_property NUM_LANES ALLOWED_RANGES 1:8
+set_parameter_property NUM_LANES ALLOWED_RANGES 1:32
 set_parameter_property NUM_LANES HDL_PARAMETER true
 
 add_parameter NUM_LINKS INTEGER 1

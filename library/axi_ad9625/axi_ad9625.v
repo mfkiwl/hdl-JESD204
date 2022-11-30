@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -42,7 +42,8 @@ module axi_ad9625 #(
   parameter FPGA_FAMILY = 0,
   parameter SPEED_GRADE = 0,
   parameter DEV_PACKAGE = 0,
-  parameter DELAY_REFCLK_FREQUENCY = 200) (
+  parameter DELAY_REFCLK_FREQUENCY = 200
+) (
 
   // jesd interface
   // rx_clk is (line-rate/40)
@@ -87,7 +88,8 @@ module axi_ad9625 #(
   output      [ 31:0]     s_axi_rdata,
   input                   s_axi_rready,
   input       [  2:0]     s_axi_awprot,
-  input       [  2:0]     s_axi_arprot);
+  input       [  2:0]     s_axi_arprot
+);
 
   // internal registers
 
@@ -143,8 +145,8 @@ module axi_ad9625 #(
   assign adc_valid = 1'b1;
 
   axi_ad9625_if #(
-    .ID (ID))
-  i_if (
+    .ID (ID)
+  ) i_if (
     .rx_clk (rx_clk),
     .rx_sof (rx_sof),
     .rx_data (rx_data),
@@ -194,8 +196,8 @@ module axi_ad9625 #(
     .DRP_DISABLE(1),
     .USERPORTS_DISABLE(1),
     .GPIO_DISABLE(1),
-    .START_CODE_DISABLE(1))
-  i_up_adc_common (
+    .START_CODE_DISABLE(1)
+  ) i_up_adc_common (
     .mmcm_rst (),
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
@@ -209,9 +211,19 @@ module axi_ad9625 #(
     .adc_start_code (),
     .adc_sync (),
     .adc_sref_sync (adc_sref_sync_s),
+    .adc_ext_sync_arm (),
+    .adc_ext_sync_disarm (),
+    .adc_ext_sync_manual_req (),
+    .adc_num_lanes (),
+    .adc_custom_control (),
+    .adc_crc_enable (),
+    .adc_sdr_ddr_n (),
+    .adc_symb_op (),
+    .adc_symb_8_16b (),
     .up_pps_rcounter(32'h0),
     .up_pps_status(1'b0),
     .up_pps_irq_mask(),
+    .up_adc_r1_mode (),
     .up_adc_ce (),
     .up_status_pn_err (up_adc_pn_err_s),
     .up_status_pn_oos (up_adc_pn_oos_s),
@@ -223,6 +235,11 @@ module axi_ad9625 #(
     .up_drp_rdata (32'd0),
     .up_drp_ready (1'd0),
     .up_drp_locked (1'd1),
+    .adc_custom_wr (),
+    .adc_write_req (),
+    .adc_custom_rd ('d0),
+    .adc_read_valid ('d0),
+    .adc_read_req (),
     .up_usr_chanmax_out (),
     .up_usr_chanmax_in (8'd1),
     .up_adc_gpio_in (32'd0),
@@ -270,7 +287,3 @@ module axi_ad9625 #(
     .up_rack (up_rack));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************
-

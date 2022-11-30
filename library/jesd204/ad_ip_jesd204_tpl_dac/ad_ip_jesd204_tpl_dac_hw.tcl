@@ -22,7 +22,7 @@
 # ***************************************************************************
 
 package require qsys 14.0
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source ../../scripts/adi_ip_intel.tcl
 
 ad_ip_create ad_ip_jesd204_tpl_dac "JESD204 Transport Layer for DACs" p_ad_ip_jesd204_tpl_dac_elab
@@ -46,6 +46,7 @@ ad_ip_files ad_ip_jesd204_tpl_dac [list \
   $ad_hdl_dir/library/common/up_clock_mon.v \
   $ad_hdl_dir/library/common/up_dac_common.v \
   $ad_hdl_dir/library/common/up_dac_channel.v \
+  $ad_hdl_dir/library/common/util_ext_sync.v \
   \
   $ad_hdl_dir/library/intel/common/up_xfer_cntrl_constr.sdc \
   $ad_hdl_dir/library/intel/common/up_xfer_status_constr.sdc \
@@ -102,7 +103,7 @@ ad_ip_parameter PART STRING "Generic" false [list \
 ad_ip_parameter NUM_LANES INTEGER 1 true [list \
   DISPLAY_NAME "Number of Lanes (L)" \
   DISPLAY_UNITS "lanes" \
-  ALLOWED_RANGES {1 2 3 4 8 16} \
+  ALLOWED_RANGES {1 2 3 4 8 16 24 32} \
   GROUP $group \
 ]
 

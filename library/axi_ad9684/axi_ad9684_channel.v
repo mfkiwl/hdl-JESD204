@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -39,7 +39,8 @@ module axi_ad9684_channel #(
 
   parameter Q_OR_I_N = 0,
   parameter CHANNEL_ID = 0,
-  parameter DATAPATH_DISABLE = 0) (
+  parameter DATAPATH_DISABLE = 0
+) (
 
   // adc data interface
 
@@ -69,8 +70,8 @@ module axi_ad9684_channel #(
   input                   up_rreq,
   input       [13:0]      up_raddr,
   output      [31:0]      up_rdata,
-  output                  up_rack);
-
+  output                  up_rack
+);
 
   // internal signals
 
@@ -94,7 +95,9 @@ module axi_ad9684_channel #(
   genvar n;
   generate
   for (n = 0; n < 2; n = n + 1) begin: g_ad_datafmt_1
-  ad_datafmt #(.DATA_WIDTH(14)) i_ad_datafmt (
+  ad_datafmt #(
+    .DATA_WIDTH(14)
+  ) i_ad_datafmt (
     .clk (adc_clk),
     .valid (1'b1),
     .data (adc_data[n*14+13:n*14]),
@@ -114,8 +117,8 @@ module axi_ad9684_channel #(
     .USERPORTS_DISABLE (0),
     .DATAFORMAT_DISABLE (0),
     .DCFILTER_DISABLE (0),
-    .IQCORRECTION_DISABLE (0))
-  i_up_adc_channel (
+    .IQCORRECTION_DISABLE (0)
+  ) i_up_adc_channel (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_enable (adc_enable),
@@ -133,6 +136,9 @@ module axi_ad9684_channel #(
     .adc_pn_err (adc_pn_err_s),
     .adc_pn_oos (adc_pn_oos_s),
     .adc_or (adc_or),
+    .adc_read_data ('d0),
+    .adc_status_header ('d0),
+    .adc_crc_err ('d0),
     .up_adc_pn_err (up_adc_pn_err),
     .up_adc_pn_oos (up_adc_pn_oos),
     .up_adc_or (up_adc_or),
@@ -162,4 +168,3 @@ module axi_ad9684_channel #(
     .up_rack (up_rack));
 
 endmodule
-

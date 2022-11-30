@@ -1,13 +1,11 @@
-
-source ../../scripts/adi_env.tcl
+set REQUIRED_QUARTUS_VERSION 21.1.0
+set QUARTUS_PRO_ISUSED 0
+source ../../../scripts/adi_env.tcl
 source ../../scripts/adi_project_intel.tcl
 
 adi_project arradio_c5soc
 
 source $ad_hdl_dir/projects/common/c5soc/c5soc_system_assign.tcl
-
-# files
-set_global_assignment -name VERILOG_FILE ../../../library/common/ad_iobuf.v
 
 # ad9361 interface
 

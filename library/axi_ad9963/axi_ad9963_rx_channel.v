@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -45,7 +45,8 @@ module axi_ad9963_rx_channel #(
   parameter DATAFORMAT_DISABLE = 0,
   parameter DCFILTER_DISABLE = 0,
   parameter IQCORRECTION_DISABLE = 0,
-  parameter SCALECORRECTION_ONLY = 1) (
+  parameter SCALECORRECTION_ONLY = 1
+) (
 
   // adc interface
 
@@ -77,7 +78,8 @@ module axi_ad9963_rx_channel #(
   input           up_rreq,
   input   [13:0]  up_raddr,
   output  [31:0]  up_rdata,
-  output          up_rack);
+  output          up_rack
+);
 
   // internal signals
 
@@ -116,7 +118,9 @@ module axi_ad9963_rx_channel #(
   assign adc_dfmt_valid_s = adc_valid;
   assign adc_dfmt_data_s = {{4{adc_data[11]}}, adc_data};
   end else begin
-  ad_datafmt #(.DATA_WIDTH (12)) i_ad_datafmt (
+  ad_datafmt #(
+    .DATA_WIDTH (12)
+  ) i_ad_datafmt (
     .clk (adc_clk),
     .valid (adc_valid),
     .data (adc_data),
@@ -145,10 +149,11 @@ module axi_ad9963_rx_channel #(
   end
   endgenerate
 
-  ad_iqcor #(.Q_OR_I_N (Q_OR_I_N),
-             .DISABLE(IQCORRECTION_DISABLE == 1),
-             .SCALE_ONLY(SCALECORRECTION_ONLY))
-    i_ad_iqcor (
+  ad_iqcor #(
+    .Q_OR_I_N (Q_OR_I_N),
+    .DISABLE(IQCORRECTION_DISABLE == 1),
+    .SCALE_ONLY(SCALECORRECTION_ONLY)
+  ) i_ad_iqcor (
     .clk (adc_clk),
     .valid (adc_dcfilter_valid_s),
     .data_in (adc_dcfilter_data_s),
@@ -184,6 +189,9 @@ module axi_ad9963_rx_channel #(
     .adc_pn_err (adc_pn_err_s),
     .adc_pn_oos (adc_pn_oos_s),
     .adc_or (adc_or),
+    .adc_read_data ('d0),
+    .adc_status_header ('d0),
+    .adc_crc_err ('d0),
     .up_adc_pn_err (up_adc_pn_err),
     .up_adc_pn_oos (up_adc_pn_oos),
     .up_adc_or (up_adc_or),
@@ -213,7 +221,3 @@ module axi_ad9963_rx_channel #(
     .up_rack (up_rack));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************
-

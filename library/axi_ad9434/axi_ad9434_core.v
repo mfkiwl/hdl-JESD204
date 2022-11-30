@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -41,7 +41,8 @@ module axi_ad9434_core #(
   parameter FPGA_TECHNOLOGY = 0,
   parameter FPGA_FAMILY = 0,
   parameter SPEED_GRADE = 0,
-  parameter DEV_PACKAGE = 0) (
+  parameter DEV_PACKAGE = 0
+) (
 
   // device interface
 
@@ -92,7 +93,8 @@ module axi_ad9434_core #(
   output                  mmcm_rst,
   output                  adc_rst,
   output                  adc_enable,
-  input                   adc_status);
+  input                   adc_status
+);
 
   // internal signals
   wire            up_status_pn_err_s;
@@ -122,17 +124,17 @@ module axi_ad9434_core #(
   genvar n;
   generate
   for (n = 0; n < 4; n = n + 1) begin: g_ad_dfmt
-   ad_datafmt # (
-    .DATA_WIDTH(12))
-  i_datafmt (
-    .clk (adc_clk),
-    .valid (1'b1),
-    .data (adc_data[n*12+11:n*12]),
-    .valid_out (dma_dvalid),
-    .data_out (dma_data[n*16+15:n*16]),
-    .dfmt_enable (adc_dfmt_enable_s),
-    .dfmt_type (adc_dfmt_type_s),
-    .dfmt_se (adc_dfmt_se_s));
+    ad_datafmt #(
+      .DATA_WIDTH(12)
+    ) i_datafmt (
+      .clk (adc_clk),
+      .valid (1'b1),
+      .data (adc_data[n*12+11:n*12]),
+      .valid_out (dma_dvalid),
+      .data_out (dma_data[n*16+15:n*16]),
+      .dfmt_enable (adc_dfmt_enable_s),
+      .dfmt_type (adc_dfmt_type_s),
+      .dfmt_se (adc_dfmt_se_s));
   end
   endgenerate
 
@@ -161,8 +163,8 @@ module axi_ad9434_core #(
     .DRP_DISABLE(0),
     .USERPORTS_DISABLE(1),
     .GPIO_DISABLE(1),
-    .START_CODE_DISABLE(1))
-  i_adc_common(
+    .START_CODE_DISABLE(1)
+  ) i_adc_common(
     .mmcm_rst (mmcm_rst),
 
     .adc_clk (adc_clk),
@@ -176,9 +178,19 @@ module axi_ad9434_core #(
     .adc_clk_ratio (32'd4),
     .adc_start_code (),
     .adc_sref_sync (),
+    .adc_ext_sync_arm (),
+    .adc_ext_sync_disarm (),
+    .adc_ext_sync_manual_req (),
+    .adc_num_lanes (),
+    .adc_custom_control (),
+    .adc_crc_enable (),
+    .adc_sdr_ddr_n (),
+    .adc_symb_op (),
+    .adc_symb_8_16b (),
     .adc_sync (),
 
     .up_pps_rcounter(32'h0),
+    .up_adc_r1_mode (),
     .up_pps_status(1'b0),
     .up_pps_irq_mask(),
 
@@ -190,6 +202,11 @@ module axi_ad9434_core #(
     .up_drp_sel (up_drp_sel),
     .up_drp_wr (up_drp_wr),
     .up_drp_addr (up_drp_addr),
+    .adc_custom_wr (),
+    .adc_write_req (),
+    .adc_custom_rd ('d0),
+    .adc_read_valid ('d0),
+    .adc_read_req (),
     .up_drp_wdata (up_drp_wdata),
     .up_drp_rdata (up_drp_rdata),
     .up_drp_ready (up_drp_ready),
@@ -216,8 +233,8 @@ module axi_ad9434_core #(
     .USERPORTS_DISABLE(1),
     .DATAFORMAT_DISABLE(0),
     .DCFILTER_DISABLE(1),
-    .IQCORRECTION_DISABLE(1))
-  i_adc_channel(
+    .IQCORRECTION_DISABLE(1)
+  ) i_adc_channel(
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_enable (adc_enable),
@@ -235,6 +252,9 @@ module axi_ad9434_core #(
     .adc_pn_err (adc_pn_err_s),
     .adc_pn_oos (adc_pn_oos_s),
     .adc_or (adc_or),
+    .adc_read_data ('d0),
+    .adc_status_header ('d0),
+    .adc_crc_err ('d0),
     .up_adc_pn_err (up_status_pn_err_s),
     .up_adc_pn_oos (up_status_pn_oos_s),
     .up_adc_or (up_status_or_s),
@@ -265,7 +285,10 @@ module axi_ad9434_core #(
 
   // adc delay control
 
-  up_delay_cntrl #(.DATA_WIDTH(13), .BASE_ADDRESS(6'h02)) i_delay_cntrl (
+  up_delay_cntrl #(
+    .DATA_WIDTH(13),
+    .BASE_ADDRESS(6'h02)
+  ) i_delay_cntrl (
     .delay_clk (delay_clk),
     .delay_rst (delay_rst),
     .delay_locked (delay_locked),

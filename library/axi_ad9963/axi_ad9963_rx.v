@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -49,7 +49,8 @@ module axi_ad9963_rx #(
   parameter FPGA_TECHNOLOGY = 0,
   parameter FPGA_FAMILY = 0,
   parameter SPEED_GRADE = 0,
-  parameter DEV_PACKAGE = 0) (
+  parameter DEV_PACKAGE = 0
+) (
 
   // adc interface
 
@@ -91,7 +92,8 @@ module axi_ad9963_rx #(
   input               up_rreq,
   input       [13:0]  up_raddr,
   output reg  [31:0]  up_rdata,
-  output reg          up_rack);
+  output reg          up_rack
+);
 
  // configuration settings
 
@@ -148,8 +150,8 @@ module axi_ad9963_rx #(
     .DATAFORMAT_DISABLE (DATAFORMAT_DISABLE),
     .DCFILTER_DISABLE (DCFILTER_DISABLE),
     .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE),
-    .SCALECORRECTION_ONLY (SCALECORRECTION_ONLY))
-  i_rx_channel_0 (
+    .SCALECORRECTION_ONLY (SCALECORRECTION_ONLY)
+  ) i_rx_channel_0 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_valid (adc_valid),
@@ -183,8 +185,8 @@ module axi_ad9963_rx #(
     .DATAFORMAT_DISABLE (DATAFORMAT_DISABLE),
     .DCFILTER_DISABLE (DCFILTER_DISABLE),
     .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE),
-    .SCALECORRECTION_ONLY (SCALECORRECTION_ONLY))
-  i_rx_channel_1 (
+    .SCALECORRECTION_ONLY (SCALECORRECTION_ONLY)
+  ) i_rx_channel_1 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_valid (adc_valid),
@@ -237,8 +239,15 @@ module axi_ad9963_rx #(
     .adc_start_code (),
     .adc_sref_sync (),
     .adc_sync (),
+    .adc_ext_sync_arm (),
+    .adc_ext_sync_disarm (),
+    .adc_ext_sync_manual_req (),
     .adc_num_lanes (),
+    .adc_custom_control (),
+    .adc_crc_enable (),
     .adc_sdr_ddr_n (),
+    .adc_symb_op (),
+    .adc_symb_8_16b (),
     .up_pps_rcounter(32'h0),
     .up_pps_status(1'b0),
     .up_pps_irq_mask(),
@@ -254,6 +263,11 @@ module axi_ad9963_rx #(
     .up_drp_ready (1'd0),
     .up_drp_locked (1'd1),
     .up_usr_chanmax_out (),
+    .adc_custom_wr (),
+    .adc_write_req (),
+    .adc_custom_rd ('d0),
+    .adc_read_valid ('d0),
+    .adc_read_req (),
     .up_usr_chanmax_in (8'd1),
     .up_adc_gpio_in (32'h0),
     .up_adc_gpio_out (),
@@ -273,7 +287,10 @@ module axi_ad9963_rx #(
 
   generate if (IODELAY_ENABLE == 1) begin
 
-  up_delay_cntrl #(.DATA_WIDTH(13), .BASE_ADDRESS(6'h02)) i_delay_cntrl (
+  up_delay_cntrl #(
+    .DATA_WIDTH(13),
+    .BASE_ADDRESS(6'h02)
+  ) i_delay_cntrl (
     .delay_clk (delay_clk),
     .delay_rst (delay_rst),
     .delay_locked (delay_locked),
@@ -302,7 +319,3 @@ module axi_ad9963_rx #(
   endgenerate
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************
-

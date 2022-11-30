@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -32,7 +32,6 @@
 //
 // ***************************************************************************
 // ***************************************************************************
-// ADC channel-need to work on dual mode for pn sequence
 
 `timescale 1ns/100ps
 
@@ -52,7 +51,8 @@ module axi_ad9361_rx #(
   parameter   USERPORTS_DISABLE = 0,
   parameter   DATAFORMAT_DISABLE = 0,
   parameter   DCFILTER_DISABLE = 0,
-  parameter   IQCORRECTION_DISABLE = 0) (
+  parameter   IQCORRECTION_DISABLE = 0
+) (
 
   // common
 
@@ -126,7 +126,8 @@ module axi_ad9361_rx #(
   output   [31:0] up_drp_wdata,
   input    [31:0] up_drp_rdata,
   input           up_drp_ready,
-  input           up_drp_locked);
+  input           up_drp_locked
+);
 
   // configuration settings
 
@@ -194,8 +195,8 @@ module axi_ad9361_rx #(
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
     .DATAFORMAT_DISABLE (DATAFORMAT_DISABLE),
     .DCFILTER_DISABLE (DCFILTER_DISABLE),
-    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE))
-  i_rx_channel_0 (
+    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE)
+  ) i_rx_channel_0 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_valid (adc_valid),
@@ -231,8 +232,8 @@ module axi_ad9361_rx #(
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
     .DATAFORMAT_DISABLE (DATAFORMAT_DISABLE),
     .DCFILTER_DISABLE (DCFILTER_DISABLE),
-    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE))
-  i_rx_channel_1 (
+    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE)
+  ) i_rx_channel_1 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_valid (adc_valid),
@@ -268,8 +269,8 @@ module axi_ad9361_rx #(
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
     .DATAFORMAT_DISABLE (DATAFORMAT_DISABLE),
     .DCFILTER_DISABLE (DCFILTER_DISABLE),
-    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE))
-  i_rx_channel_2 (
+    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE)
+  ) i_rx_channel_2 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_valid (adc_valid),
@@ -305,8 +306,8 @@ module axi_ad9361_rx #(
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
     .DATAFORMAT_DISABLE (DATAFORMAT_DISABLE),
     .DCFILTER_DISABLE (DCFILTER_DISABLE),
-    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE))
-  i_rx_channel_3 (
+    .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE)
+  ) i_rx_channel_3 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_valid (adc_valid),
@@ -345,8 +346,8 @@ module axi_ad9361_rx #(
     .DRP_DISABLE (1),
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
     .GPIO_DISABLE (0),
-    .START_CODE_DISABLE (0))
-  i_up_adc_common (
+    .START_CODE_DISABLE (0)
+  ) i_up_adc_common (
     .mmcm_rst (mmcm_rst),
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
@@ -360,8 +361,15 @@ module axi_ad9361_rx #(
     .adc_start_code (),
     .adc_sref_sync (),
     .adc_sync (),
+    .adc_ext_sync_arm (),
+    .adc_ext_sync_disarm (),
+    .adc_ext_sync_manual_req (),
     .adc_num_lanes (),
+    .adc_custom_control (),
+    .adc_crc_enable (),
     .adc_sdr_ddr_n (),
+    .adc_symb_op (),
+    .adc_symb_8_16b (),
     .up_adc_ce (),
     .up_pps_rcounter (up_pps_rcounter),
     .up_pps_status (up_pps_status),
@@ -377,6 +385,11 @@ module axi_ad9361_rx #(
     .up_drp_rdata (up_drp_rdata),
     .up_drp_ready (up_drp_ready),
     .up_drp_locked (up_drp_locked),
+    .adc_custom_wr (),
+    .adc_write_req (),
+    .adc_custom_rd ('d0),
+    .adc_read_valid ('d0),
+    .adc_read_req (),
     .up_usr_chanmax_out (),
     .up_usr_chanmax_in (8'd3),
     .up_adc_gpio_in (up_adc_gpio_in),
@@ -397,8 +410,8 @@ module axi_ad9361_rx #(
   up_delay_cntrl #(
     .INIT_DELAY (INIT_DELAY),
     .DATA_WIDTH (13),
-    .BASE_ADDRESS (6'h02))
-  i_delay_cntrl (
+    .BASE_ADDRESS (6'h02)
+  ) i_delay_cntrl (
     .delay_clk (delay_clk),
     .delay_rst (delay_rst),
     .delay_locked (delay_locked),
@@ -417,7 +430,3 @@ module axi_ad9361_rx #(
     .up_rack (up_rack_s[5]));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************
-

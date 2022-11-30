@@ -1,5 +1,6 @@
 ####################################################################################
-## Copyright 2018(c) Analog Devices, Inc.
+## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+## SPDX short identifier: BSD-1-Clause
 ####################################################################################
 
 # Assumes this file is in library/scripts/library.mk
@@ -28,8 +29,24 @@ CLEAN_TARGET += *.sim
 CLEAN_TARGET += .Xil
 CLEAN_TARGET += .timestamp_intel
 CLEAN_TARGET += *.hbs
+CLEAN_TARGET += tb/*.log
+CLEAN_TARGET += tb/*.xml
+CLEAN_TARGET += tb/*.jou
+CLEAN_TARGET += tb/*.dir
+CLEAN_TARGET += tb/*.pb
+CLEAN_TARGET += tb/*.vcd
+CLEAN_TARGET += tb/*.wdb
+CLEAN_TARGET += tb/dcv.
+CLEAN_TARGET += tb/vsim.wlf
+CLEAN_TARGET += tb/work
+CLEAN_TARGET += tb/vcd
+CLEAN_TARGET += tb/run
+CLEAN_TARGET += tb/libraries
+CLEAN_TARGET += tb/.Xil
+CLEAN_TARGET += tb/xsim_gui_cmd.tcl
+CLEAN_TARGET += tb/libraries
 
-GENERIC_DEPS += $(HDL_LIBRARY_PATH)scripts/adi_env.tcl
+GENERIC_DEPS += $(HDL_LIBRARY_PATH)../scripts/adi_env.tcl
 
 .PHONY: all intel intel_dep xilinx xilinx_dep clean clean-all
 

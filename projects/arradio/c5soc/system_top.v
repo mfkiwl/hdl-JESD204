@@ -150,7 +150,8 @@ module system_top (
   output            spi_csn,
   output            spi_clk,
   output            spi_mosi,
-  input             spi_miso);
+  input             spi_miso
+);
 
   // internal signals
 
@@ -187,11 +188,17 @@ module system_top (
   assign ga0 = 1'b0;
   assign ga1 = 1'b0;
 
-  ad_iobuf #(.DATA_WIDTH(2)) i_iobuf_i2c (
-    .dio_t ({i2c0_out_clk,i2c0_out_data}),
-    .dio_i (2'b0),
-    .dio_o ({i2c0_scl_in_clk,i2c0_sda}),
-    .dio_p ({scl,sda}));
+  ALT_IOBUF scl_iobuf (
+    .i(1'b0),
+    .oe(i2c0_out_clk),
+    .o(i2c0_scl_in_clk),
+    .io(scl));
+
+  ALT_IOBUF sda_iobuf (
+    .i(1'b0),
+    .oe(i2c0_out_data),
+    .o(i2c0_sda),
+    .io(sda));
 
   // instantiations
 
@@ -288,18 +295,11 @@ module system_top (
     .sys_spi_MOSI (spi_mosi),
     .sys_spi_SCLK (spi_clk),
     .sys_spi_SS_n (spi_csn),
-    .vga_out_clk_clk (vga_clk),
-    .vga_out_data_vid_clk (vga_clk),
-    .vga_out_data_vid_data ({vga_red, vga_grn, vga_blu}),
-    .vga_out_data_underflow (),
-    .vga_out_data_vid_datavalid (),
-    .vga_out_data_vid_v_sync (vga_vsync),
-    .vga_out_data_vid_h_sync (vga_hsync),
-    .vga_out_data_vid_f (),
-    .vga_out_data_vid_h (),
-    .vga_out_data_vid_v ());
+    .vga_out_vga_if_vga_clk (vga_clk),
+    .vga_out_vga_if_vga_red (vga_red),
+    .vga_out_vga_if_vga_green (vga_grn),
+    .vga_out_vga_if_vga_blue (vga_blu),
+    .vga_out_vga_if_vga_hsync(vga_hsync),
+    .vga_out_vga_if_vga_vsync(vga_vsync));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

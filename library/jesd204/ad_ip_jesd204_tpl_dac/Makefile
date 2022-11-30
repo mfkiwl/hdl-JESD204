@@ -1,12 +1,11 @@
 ####################################################################################
-## Copyright 2018(c) Analog Devices, Inc.
+## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+### SPDX short identifier: BSD-1-Clause
 ## Auto-generated, do not modify!
 ####################################################################################
 
 LIBRARY_NAME := ad_ip_jesd204_tpl_dac
 
-GENERIC_DEPS += ../../common/ad_mux.v
-GENERIC_DEPS += ../../common/ad_mux_core.v
 GENERIC_DEPS += ../../common/ad_dds.v
 GENERIC_DEPS += ../../common/ad_dds_1.v
 GENERIC_DEPS += ../../common/ad_dds_2.v
@@ -14,6 +13,8 @@ GENERIC_DEPS += ../../common/ad_dds_cordic_pipe.v
 GENERIC_DEPS += ../../common/ad_dds_sine.v
 GENERIC_DEPS += ../../common/ad_dds_sine_cordic.v
 GENERIC_DEPS += ../../common/ad_iqcor.v
+GENERIC_DEPS += ../../common/ad_mux.v
+GENERIC_DEPS += ../../common/ad_mux_core.v
 GENERIC_DEPS += ../../common/ad_perfect_shuffle.v
 GENERIC_DEPS += ../../common/ad_rst.v
 GENERIC_DEPS += ../../common/up_axi.v
@@ -22,6 +23,7 @@ GENERIC_DEPS += ../../common/up_dac_channel.v
 GENERIC_DEPS += ../../common/up_dac_common.v
 GENERIC_DEPS += ../../common/up_xfer_cntrl.v
 GENERIC_DEPS += ../../common/up_xfer_status.v
+GENERIC_DEPS += ../../common/util_ext_sync.v
 GENERIC_DEPS += ../ad_ip_jesd204_tpl_common/up_tpl_common.v
 GENERIC_DEPS += ad_ip_jesd204_tpl_dac.v
 GENERIC_DEPS += ad_ip_jesd204_tpl_dac_channel.v

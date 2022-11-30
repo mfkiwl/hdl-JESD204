@@ -1,6 +1,6 @@
 # ip
 
-source ../scripts/adi_env.tcl
+source ../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
 
 adi_ip_create axi_ad9467
@@ -30,6 +30,8 @@ adi_ip_properties axi_ad9467
 
 adi_init_bd_tcl
 adi_ip_bd axi_ad9467 "bd/bd.tcl"
+
+set_property company_url {https://wiki.analog.com/resources/fpga/docs/axi_ad9467} [ipx::current_core]
 
 set_property driver_value 0 [ipx::get_ports *dovf* -of_objects [ipx::current_core]]
 

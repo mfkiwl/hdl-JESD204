@@ -45,6 +45,7 @@ module ad_ip_jesd204_tpl_dac #(
   parameter EXT_SYNC = 0,
   parameter XBAR_ENABLE = 0
 ) (
+
   // jesd interface
   // link_clk is (line-rate/40)
 
@@ -60,9 +61,13 @@ module ad_ip_jesd204_tpl_dac #(
   input [DMA_BITS_PER_SAMPLE * OCTETS_PER_BEAT * 8 * NUM_LANES / BITS_PER_SAMPLE-1:0] dac_ddata,
   input dac_dunf,
 
+  output dac_rst,
+
   // external sync, should be on the link_clk clock domain
 
   input dac_sync_in,
+  output dac_sync_manual_req_out,
+  input dac_sync_manual_req_in,
 
   // axi interface
 
@@ -103,6 +108,7 @@ module ad_ip_jesd204_tpl_dac #(
   // internal signals
 
   wire dac_sync;
+  wire dac_ext_sync_arm;
   wire dac_sync_in_status;
   wire dac_dds_format;
 
@@ -137,7 +143,8 @@ module ad_ip_jesd204_tpl_dac #(
     .NUM_CHANNELS (NUM_CHANNELS),
     .DATA_PATH_WIDTH (DATA_PATH_WIDTH),
     .PADDING_TO_MSB_LSB_N (PADDING_TO_MSB_LSB_N),
-    .NUM_PROFILES(1)
+    .NUM_PROFILES(1),
+    .EXT_SYNC (EXT_SYNC)
   ) i_regmap (
     .s_axi_aclk (s_axi_aclk),
     .s_axi_aresetn (s_axi_aresetn),
@@ -167,6 +174,9 @@ module ad_ip_jesd204_tpl_dac #(
     .dac_dunf (dac_dunf),
 
     .dac_sync (dac_sync),
+    .dac_ext_sync_arm (dac_ext_sync_arm),
+    .dac_ext_sync_disarm (dac_ext_sync_disarm),
+    .dac_ext_sync_manual_req (dac_sync_manual_req_out),
     .dac_sync_in_status (dac_sync_in_status),
     .dac_dds_format (dac_dds_format),
 
@@ -193,8 +203,7 @@ module ad_ip_jesd204_tpl_dac #(
     .jesd_f (BYTES_PER_FRAME),
     .jesd_n (CONVERTER_RESOLUTION),
     .jesd_np (BITS_PER_SAMPLE),
-    .up_profile_sel ()
-  );
+    .up_profile_sel ());
 
   // core
 
@@ -225,10 +234,14 @@ module ad_ip_jesd204_tpl_dac #(
 
     .dac_valid (dac_valid),
     .dac_ddata (dac_ddata_cr),
+    .dac_rst (dac_rst),
 
     .dac_sync (dac_sync),
+    .dac_ext_sync_arm (dac_ext_sync_arm),
+    .dac_ext_sync_disarm (dac_ext_sync_disarm),
     .dac_sync_in_status (dac_sync_in_status),
     .dac_sync_in (dac_sync_in),
+    .dac_sync_manual_req (dac_sync_manual_req_in),
     .dac_dds_format (dac_dds_format),
 
     .dac_dds_scale_0 (dac_dds_scale_0_s),
@@ -246,9 +259,7 @@ module ad_ip_jesd204_tpl_dac #(
     .dac_iqcor_coeff_1 (dac_iqcor_coeff_1),
     .dac_iqcor_coeff_2 (dac_iqcor_coeff_2),
 
-    .dac_src_chan_sel (dac_src_chan_sel)
-
-  );
+    .dac_src_chan_sel (dac_src_chan_sel));
 
   // Drop DMA padding bits from the LSB or MSB based on configuration
   integer i;

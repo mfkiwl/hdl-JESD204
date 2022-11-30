@@ -27,7 +27,9 @@ module ad_ip_jesd204_tpl_adc_channel #(
   parameter CONVERTER_RESOLUTION = 14,
   parameter DATA_PATH_WIDTH = 2,
   parameter TWOS_COMPLEMENT = 1,
-  parameter BITS_PER_SAMPLE = 16
+  parameter BITS_PER_SAMPLE = 16,
+  parameter PN7_ENABLE = 1,
+  parameter PN15_ENABLE = 1
 ) (
   input clk,
 
@@ -45,29 +47,28 @@ module ad_ip_jesd204_tpl_adc_channel #(
   output pn_err
 );
 
-  localparam OCTETS_PER_SAMPLE = BITS_PER_SAMPLE / 8;
-
   // instantiations
 
   ad_ip_jesd204_tpl_adc_pnmon #(
     .CONVERTER_RESOLUTION (CONVERTER_RESOLUTION),
     .DATA_PATH_WIDTH (DATA_PATH_WIDTH),
-    .TWOS_COMPLEMENT (TWOS_COMPLEMENT)
+    .TWOS_COMPLEMENT (TWOS_COMPLEMENT),
+    .PN7_ENABLE (PN7_ENABLE),
+    .PN15_ENABLE(PN15_ENABLE)
   ) i_pnmon (
     .clk (clk),
     .data (raw_data),
 
     .pn_seq_sel (pn_seq_sel),
     .pn_oos (pn_oos),
-    .pn_err (pn_err)
-  );
+    .pn_err (pn_err));
 
   generate
   genvar n;
   for (n = 0; n < DATA_PATH_WIDTH; n = n + 1) begin: g_datafmt
     ad_datafmt #(
       .DATA_WIDTH (CONVERTER_RESOLUTION),
-      .OCTETS_PER_SAMPLE (OCTETS_PER_SAMPLE)
+      .BITS_PER_SAMPLE (BITS_PER_SAMPLE)
     ) i_ad_datafmt (
       .clk (clk),
 
@@ -78,8 +79,7 @@ module ad_ip_jesd204_tpl_adc_channel #(
 
       .dfmt_enable (dfmt_enable),
       .dfmt_type (dfmt_type),
-      .dfmt_se (dfmt_sign_extend)
-    );
+      .dfmt_se (dfmt_sign_extend));
   end
   endgenerate
 

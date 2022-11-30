@@ -99,7 +99,8 @@ module system_top (
   inout                   adrv9009_gpio_13,
   inout                   adrv9009_gpio_17,
   inout                   adrv9009_gpio_16,
-  inout                   adrv9009_gpio_18);
+  inout                   adrv9009_gpio_18
+);
 
   // internal signals
 
@@ -134,7 +135,11 @@ module system_top (
     .I (ref_clk1_p),
     .IB (ref_clk1_n),
     .O (ref_clk1),
-    .ODIV2 ());
+    .ODIV2 (ref_clk1_odiv2));
+
+  BUFG_GT i_bufg_ref_clk (
+    .I (ref_clk1_odiv2),
+    .O (ref_clk1_bufg));
 
   OBUFDS i_obufds_rx_sync (
     .I (rx_sync),
@@ -166,7 +171,9 @@ module system_top (
     .IB (sysref_n),
     .O (sysref));
 
-  ad_iobuf #(.DATA_WIDTH(28)) i_iobuf (
+  ad_iobuf #(
+    .DATA_WIDTH(28)
+  ) i_iobuf (
     .dio_t ({gpio_t[59:32]}),
     .dio_i ({gpio_o[59:32]}),
     .dio_o ({gpio_i[59:32]}),
@@ -245,9 +252,7 @@ module system_top (
     .tx_data_3_p (tx_data_p[3]),
     .tx_ref_clk_0 (ref_clk1),
     .tx_sync_0 (tx_sync),
-    .tx_sysref_0 (sysref));
+    .tx_sysref_0 (sysref),
+    .ref_clk (ref_clk1_bufg));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

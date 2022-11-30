@@ -132,7 +132,7 @@ module system_top (
   output              spi_clk,
   inout               spi_sdio,
   input               spi_miso
- );
+);
 
   // internal signals
 
@@ -145,11 +145,13 @@ module system_top (
 
   wire            ref_clk_c;
   wire            core_clk_c;
+  wire            core_clk_c_ds;
   wire            rx_sync_rx;
   wire            tx_sync_c;
   wire            sysref_c;
   wire            ref_clk_d;
   wire            core_clk_d;
+  wire            core_clk_d_ds;
   wire            rx_sync_obs;
   wire            rx_os_sync_d;
   wire            tx_sync_d;
@@ -158,7 +160,7 @@ module system_top (
   wire            spi_mosi;
   wire            spi0_miso;
 
-  // The csn bus from the SPI controller needs to be decoded as 
+  // The csn bus from the SPI controller needs to be decoded as
   // is-decoded-cs = <1> is set in the device tree.
   reg  [7:0]     spi_3_to_8_csn;
   always @(*) begin
@@ -175,12 +177,12 @@ module system_top (
   assign spi_csn_hmc7044 = spi_3_to_8_csn[2];
 
   fmcomms8_spi i_spi (
-  .spi_csn(spi_3_to_8_csn),
-  .spi_clk(spi_clk),
-  .spi_mosi(spi_mosi),
-  .spi_miso_i(spi_miso),
-  .spi_miso_o(spi0_miso),
-  .spi_sdio(spi_sdio));
+    .spi_csn(spi_3_to_8_csn),
+    .spi_clk(spi_clk),
+    .spi_mosi(spi_mosi),
+    .spi_miso_i(spi_miso),
+    .spi_miso_o(spi0_miso),
+    .spi_sdio(spi_sdio));
 
   assign tx_sync = tx_sync_c & tx_sync_d;
 
@@ -191,7 +193,9 @@ module system_top (
   assign gpio_bd_o = gpio_o[ 7: 0];
 
   // instantiations
-  ad_iobuf #(.DATA_WIDTH(36)) i_iobuf (
+  ad_iobuf #(
+    .DATA_WIDTH(36)
+  ) i_iobuf (
     .dio_t ({gpio_t[67:32]}),
     .dio_i ({gpio_o[67:32]}),
     .dio_o ({gpio_i[67:32]}),
@@ -257,14 +261,22 @@ module system_top (
     .IB (sysref_d_n),
     .O (sysref_d));
 
-  IBUFGDS i_rx_clk_ibufg_1 (
+  IBUFDS i_rx_clk_ibuf_1 (
     .I (core_clk_c_p),
     .IB (core_clk_c_n),
+    .O (core_clk_c_ds));
+
+  BUFG i_rx_clk_ibufg_1 (
+    .I (core_clk_c_ds),
     .O (core_clk_c));
 
-  IBUFGDS i_rx_clk_ibufg_2 (
+  IBUFDS i_rx_clk_ibuf_2 (
     .I (core_clk_d_p),
     .IB (core_clk_d_n),
+    .O (core_clk_d_ds));
+
+  BUFG i_rx_clk_ibufg_2(
+    .I (core_clk_d_ds),
     .O (core_clk_d));
 
   IBUFDS i_ibufds_tx_sync_1 (
@@ -356,6 +368,3 @@ module system_top (
     .spi1_mosi ());
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

@@ -1,5 +1,4 @@
-
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source ../../scripts/adi_project_intel.tcl
 
 adi_project daq2_a10soc
@@ -9,7 +8,7 @@ source $ad_hdl_dir/projects/common/a10soc/a10soc_plddr4_assign.tcl
 
 # files
 
-set_global_assignment -name VERILOG_FILE ../common/daq2_spi.v
+set_global_assignment -name VERILOG_FILE $ad_hdl_dir/projects/daq2/common/daq2_spi.v
 
 # lane interface
 

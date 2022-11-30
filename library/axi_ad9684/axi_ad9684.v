@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -43,7 +43,8 @@ module axi_ad9684 #(
   parameter SPEED_GRADE = 0,
   parameter DEV_PACKAGE = 0,
   parameter IO_DELAY_GROUP = "dev_if_delay_group",
-  parameter OR_STATUS = 1) (
+  parameter OR_STATUS = 1
+) (
 
   // device interface ports
 
@@ -92,8 +93,8 @@ module axi_ad9684 #(
   output                  s_axi_rvalid,
   output      [ 1:0]      s_axi_rresp,
   output      [31:0]      s_axi_rdata,
-  input                   s_axi_rready);
-
+  input                   s_axi_rready
+);
 
   // internal registers
 
@@ -168,8 +169,8 @@ module axi_ad9684 #(
   axi_ad9684_if #(
     .FPGA_TECHNOLOGY(FPGA_TECHNOLOGY),
     .IO_DELAY_GROUP(IO_DELAY_GROUP),
-    .OR_STATUS (OR_STATUS))
-  i_ad9684_if (
+    .OR_STATUS (OR_STATUS)
+  ) i_ad9684_if (
     .adc_clk_in_p (adc_clk_in_p),
     .adc_clk_in_n (adc_clk_in_n),
     .adc_data_in_p (adc_data_in_p),
@@ -217,8 +218,8 @@ module axi_ad9684 #(
     .DRP_DISABLE (6'h00),
     .USERPORTS_DISABLE (0),
     .GPIO_DISABLE (0),
-    .START_CODE_DISABLE(0))
-  i_up_adc_common (
+    .START_CODE_DISABLE(0)
+  ) i_up_adc_common (
     .mmcm_rst (rst_s),
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
@@ -232,9 +233,19 @@ module axi_ad9684 #(
     .adc_start_code (),
     .adc_sref_sync(),
     .adc_sync (),
+    .adc_ext_sync_arm (),
+    .adc_ext_sync_disarm (),
+    .adc_ext_sync_manual_req (),
+    .adc_num_lanes (),
+    .adc_custom_control (),
+    .adc_crc_enable (),
+    .adc_sdr_ddr_n (),
+    .adc_symb_op (),
+    .adc_symb_8_16b (),
     .up_pps_rcounter(32'd0),
     .up_pps_status(1'd0),
     .up_pps_irq_mask(),
+    .up_adc_r1_mode (),
     .up_adc_ce(),
     .up_status_pn_err (up_status_pn_err_s),
     .up_status_pn_oos (up_status_pn_oos_s),
@@ -246,6 +257,11 @@ module axi_ad9684 #(
     .up_drp_rdata (up_drp_rdata_s),
     .up_drp_ready (up_drp_ready_s),
     .up_drp_locked (up_drp_locked_s),
+    .adc_custom_wr (),
+    .adc_write_req (),
+    .adc_custom_rd ('d0),
+    .adc_read_valid ('d0),
+    .adc_read_req (),
     .up_usr_chanmax_out (),
     .up_usr_chanmax_in (8'd1),
     .up_adc_gpio_in (32'd0),
@@ -265,8 +281,8 @@ module axi_ad9684 #(
 
   axi_ad9684_channel #(
     .CHANNEL_ID (0),
-    .Q_OR_I_N (0))
-  i_channel_0 (
+    .Q_OR_I_N (0)
+  ) i_channel_0 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_data (adc_rawdata_0_s),
@@ -293,8 +309,8 @@ module axi_ad9684 #(
 
   axi_ad9684_channel #(
     .CHANNEL_ID (1),
-    .Q_OR_I_N (1))
-  i_channel_1 (
+    .Q_OR_I_N (1)
+  ) i_channel_1 (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_data (adc_rawdata_1_s),
@@ -320,8 +336,8 @@ module axi_ad9684 #(
   // adc delay control instance
 
   up_delay_cntrl #(
-    .DATA_WIDTH(15))
-  i_delay_cntrl (
+    .DATA_WIDTH(15)
+  ) i_delay_cntrl (
     .delay_clk (delay_clk),
     .delay_rst (delay_rst),
     .delay_locked (delay_locked_s),

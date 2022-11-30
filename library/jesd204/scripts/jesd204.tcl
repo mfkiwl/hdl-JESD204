@@ -44,8 +44,8 @@
 
 proc adi_axi_jesd204_tx_create {ip_name num_lanes {num_links 1} {link_mode 1}} {
 
-  if {$num_lanes < 1 || $num_lanes > 16} {
-    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-16)"
+  if {$num_lanes < 1 || $num_lanes > 32} {
+    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-32)"
   }
 
   if {$num_links < 1 || $num_links > 8} {
@@ -122,8 +122,8 @@ proc adi_axi_jesd204_tx_create {ip_name num_lanes {num_links 1} {link_mode 1}} {
 
 proc adi_axi_jesd204_rx_create {ip_name num_lanes {num_links 1} {link_mode 1}} {
 
-  if {$num_lanes < 1 || $num_lanes > 16} {
-    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-16)"
+  if {$num_lanes < 1 || $num_lanes > 32} {
+    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-32)"
   }
 
   if {$num_links < 1 || $num_links > 8} {
@@ -215,8 +215,8 @@ proc adi_axi_jesd204_rx_create {ip_name num_lanes {num_links 1} {link_mode 1}} {
 proc adi_tpl_jesd204_tx_create {ip_name num_of_lanes num_of_converters samples_per_frame sample_width {link_layer_bytes_per_beat 4} {dma_sample_width 16}} {
 
 
-  if {$num_of_lanes < 1 || $num_of_lanes > 16} {
-    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-16)"
+  if {$num_of_lanes < 1 || $num_of_lanes > 32} {
+    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-32)"
   }
   # F = (M * N * S) / (L * 8)
   set bytes_per_frame [expr ($num_of_converters * $sample_width * $samples_per_frame) / ($num_of_lanes * 8)];
@@ -344,8 +344,8 @@ proc adi_tpl_jesd204_tx_create {ip_name num_of_lanes num_of_converters samples_p
 proc adi_tpl_jesd204_rx_create {ip_name num_of_lanes num_of_converters samples_per_frame sample_width {link_layer_bytes_per_beat 4} {dma_sample_width 16}} {
 
 
-  if {$num_of_lanes < 1 || $num_of_lanes > 16} {
-    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-16)"
+  if {$num_of_lanes < 1 || $num_of_lanes > 32} {
+    return -code 1 "ERROR: Invalid number of JESD204B lanes. (Supported range 1-32)"
   }
   # F = (M * N * S) / (L * 8)
   set bytes_per_frame [expr ($num_of_converters * $sample_width * $samples_per_frame) / ($num_of_lanes * 8)];
@@ -459,3 +459,34 @@ proc adi_tpl_jesd204_rx_create {ip_name num_of_lanes num_of_converters samples_p
 
   return -options $resultoptions $resulttext
 }
+
+# Calculate Link Layer interface width towards Transport Layer
+# TPL width must be set to an integer multiple of F
+proc adi_jesd204_calc_tpl_width {link_datapath_width jesd_l jesd_m jesd_s jesd_np {tpl_datapath_width {}}} {
+
+  set jesd_f [expr ($jesd_m*$jesd_s*$jesd_np)/(8*$jesd_l)]
+
+  if {$tpl_datapath_width != ""} {
+    set tpl_div [expr $tpl_datapath_width / $jesd_f]
+    set tpl_mod [expr $tpl_datapath_width % $jesd_f]
+
+    if {$tpl_div < 1 || $tpl_mod != 0 || (($tpl_div > 1) && ([expr $tpl_div % 2] != 0))} {
+      return -code 1 "ERROR: Invalid custom TPL width. Must be a power of 2 multiple of F"
+    } else {
+      return $tpl_datapath_width
+    }
+
+  # For F=3,6,12 get first pow 2 multiple of F greater than link_datapath_width
+  } elseif {$jesd_f % 3 == 0} {
+    set np12_datapath_width $jesd_f
+    while {$np12_datapath_width < $link_datapath_width} {
+        set np12_datapath_width [expr 2*$np12_datapath_width]
+    }
+    return $np12_datapath_width
+  } else {
+    return [expr max($jesd_f,$link_datapath_width)]
+  }
+
+}
+
+

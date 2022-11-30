@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -42,7 +42,8 @@ module axi_ad9671 #(
   parameter   FPGA_FAMILY = 0,
   parameter   SPEED_GRADE = 0,
   parameter   DEV_PACKAGE = 0,
-  parameter QUAD_OR_DUAL_N = 1) (
+  parameter QUAD_OR_DUAL_N = 1
+) (
 
   // jesd interface
   // rx_clk is (line-rate/40)
@@ -87,8 +88,8 @@ module axi_ad9671 #(
   output                  s_axi_rvalid,
   output      [ 1:0]      s_axi_rresp,
   output      [ 31:0]     s_axi_rdata,
-  input                   s_axi_rready);
-
+  input                   s_axi_rready
+);
 
   // internal registers
 
@@ -159,8 +160,8 @@ module axi_ad9671 #(
 
   axi_ad9671_if #(
     .QUAD_OR_DUAL_N (QUAD_OR_DUAL_N),
-    .ID (ID))
-  i_if (
+    .ID (ID)
+  )  i_if (
     .rx_clk (rx_clk),
     .rx_data (rx_data),
     .rx_sof (rx_sof),
@@ -197,7 +198,9 @@ module axi_ad9671 #(
   genvar n;
   generate
   for (n = 0; n < 8; n = n + 1) begin: g_channel
-  axi_ad9671_channel #(.CHANNEL_ID(n)) i_channel (
+  axi_ad9671_channel #(
+    .CHANNEL_ID(n)
+  ) i_channel (
     .adc_clk (adc_clk),
     .adc_rst (adc_rst),
     .adc_valid (adc_valid_s),
@@ -244,6 +247,19 @@ module axi_ad9671 #(
     .adc_start_code (adc_start_code),
     .adc_sref_sync (),
     .adc_sync (adc_sync),
+    .adc_ext_sync_arm (),
+    .adc_ext_sync_disarm (),
+    .adc_ext_sync_manual_req (),
+    .adc_num_lanes (),
+    .adc_custom_control (),
+    .adc_crc_enable (),
+    .adc_sdr_ddr_n (),
+    .adc_symb_op (),
+    .adc_symb_8_16b (),
+    .up_pps_rcounter ('d0),
+    .up_pps_status ('d0),
+    .up_pps_irq_mask (),
+    .up_adc_r1_mode (),
     .up_adc_ce (),
     .up_status_pn_err (up_status_pn_err),
     .up_status_pn_oos (up_status_pn_oos),
@@ -255,6 +271,11 @@ module axi_ad9671 #(
     .up_drp_rdata (32'd0),
     .up_drp_ready (1'd0),
     .up_drp_locked (1'd1),
+    .adc_custom_wr (),
+    .adc_write_req (),
+    .adc_custom_rd ('d0),
+    .adc_read_valid ('d0),
+    .adc_read_req (),
     .up_usr_chanmax_out (),
     .up_usr_chanmax_in (8'd7),
     .up_adc_gpio_in (32'd0),
@@ -302,6 +323,3 @@ module axi_ad9671 #(
     .up_rack (up_rack));
 
 endmodule
-
-// ***************************************************************************
-// ***************************************************************************

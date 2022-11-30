@@ -21,10 +21,11 @@
 # ***************************************************************************
 # ***************************************************************************
 
-source ../../scripts/adi_env.tcl
+source ../../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
 
 adi_ip_create ad_ip_jesd204_tpl_adc
+
 adi_ip_files ad_ip_jesd204_tpl_adc [list \
   "$ad_hdl_dir/library/common/ad_rst.v" \
   "$ad_hdl_dir/library/common/ad_perfect_shuffle.v" \
@@ -36,6 +37,7 @@ adi_ip_files ad_ip_jesd204_tpl_adc [list \
   "$ad_hdl_dir/library/common/up_clock_mon.v" \
   "$ad_hdl_dir/library/common/up_adc_common.v" \
   "$ad_hdl_dir/library/common/up_adc_channel.v" \
+  "$ad_hdl_dir/library/common/util_ext_sync.v" \
   "$ad_hdl_dir/library/common/ad_xcvr_rx_if.v" \
   "$ad_hdl_dir/library/xilinx/common/up_xfer_cntrl_constr.xdc" \
   "$ad_hdl_dir/library/xilinx/common/ad_rst_constr.xdc" \
@@ -55,6 +57,8 @@ adi_ip_properties ad_ip_jesd204_tpl_adc
 adi_init_bd_tcl
 adi_ip_bd ad_ip_jesd204_tpl_adc "bd/bd.tcl"
 
+set_property company_url {https://wiki.analog.com/resources/fpga/peripherals/jesd204/jesd204_tpl_adc} [ipx::current_core]
+
 set cc [ipx::current_core]
 
 set_property display_name "JESD204 Transport Layer for ADCs" $cc
@@ -70,14 +74,18 @@ adi_add_bus "link" "master" \
   ]
 adi_add_bus_clock "link_clk" "link"
 
+adi_set_ports_dependency "adc_sync_in"             "EXT_SYNC == 1"
+adi_set_ports_dependency "adc_sync_manual_req_out" "EXT_SYNC == 1"
+adi_set_ports_dependency "adc_sync_manual_req_in"  "EXT_SYNC == 1"
+
 foreach {p v} {
-  "NUM_LANES" "1 2 3 4 8 16" \
+  "NUM_LANES" "1 2 3 4 6 8 12 16 24 32" \
   "NUM_CHANNELS" "1 2 4 6 8 16 32 64" \
   "BITS_PER_SAMPLE" "8 12 16" \
   "DMA_BITS_PER_SAMPLE" "8 12 16" \
-  "CONVERTER_RESOLUTION" "8 11 12 16" \
+  "CONVERTER_RESOLUTION" "8 11 12 14 16" \
   "SAMPLES_PER_FRAME" "1 2 3 4 6 8 12 16" \
-  "OCTETS_PER_BEAT" "4 6 8 12" \
+  "OCTETS_PER_BEAT" "4 6 8 12 16 32 64" \
 } { \
   set_property -dict [list \
     "value_validation_type" "list" \
@@ -126,6 +134,9 @@ set i 0
 
 foreach {k v w} {
   "TWOS_COMPLEMENT" "Use twos complement" "checkBox" \
+  "EXT_SYNC" "Enable external sync" "checkBox" \
+  "PN7_ENABLE" "Enable PN7" "checkBox" \
+  "PN15_ENABLE" "Enable PN15" "checkBox" \
   } { \
   set p [ipgui::get_guiparamspec -name $k -component $cc]
   ipgui::move_param -component $cc -order $i $p -parent $datapath_group
