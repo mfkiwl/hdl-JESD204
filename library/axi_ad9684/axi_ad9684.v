@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2016-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -42,6 +42,7 @@ module axi_ad9684 #(
   parameter FPGA_FAMILY = 0,
   parameter SPEED_GRADE = 0,
   parameter DEV_PACKAGE = 0,
+  parameter IODELAY_ENABLE = 1,
   parameter IO_DELAY_GROUP = "dev_if_delay_group",
   parameter OR_STATUS = 1
 ) (
@@ -168,6 +169,7 @@ module axi_ad9684 #(
 
   axi_ad9684_if #(
     .FPGA_TECHNOLOGY(FPGA_TECHNOLOGY),
+    .IODELAY_ENABLE (IODELAY_ENABLE),
     .IO_DELAY_GROUP(IO_DELAY_GROUP),
     .OR_STATUS (OR_STATUS)
   ) i_ad9684_if (
@@ -257,11 +259,10 @@ module axi_ad9684 #(
     .up_drp_rdata (up_drp_rdata_s),
     .up_drp_ready (up_drp_ready_s),
     .up_drp_locked (up_drp_locked_s),
-    .adc_custom_wr (),
-    .adc_write_req (),
-    .adc_custom_rd ('d0),
-    .adc_read_valid ('d0),
-    .adc_read_req (),
+    .adc_config_wr (),
+    .adc_config_ctrl (),
+    .adc_config_rd ('d0),
+    .adc_ctrl_status ('d0),
     .up_usr_chanmax_out (),
     .up_usr_chanmax_in (8'd1),
     .up_adc_gpio_in (32'd0),

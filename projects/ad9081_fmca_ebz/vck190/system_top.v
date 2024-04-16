@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2021-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -281,21 +281,25 @@ module system_top  #(
     .ddr4_dimm1_dqs_t (ddr4_dqs_t),
     .ddr4_dimm1_odt (ddr4_odt),
     .ddr4_dimm1_reset_n (ddr4_reset_n),
-    .spi0_csn (spi0_csn),
+    .spi0_csn  (spi0_csn),
     .spi0_miso (spi0_miso),
     .spi0_mosi (spi0_mosi),
     .spi0_sclk (spi0_sclk),
-    .spi1_csn (spi1_csn),
+    .spi1_csn  (spi1_csn),
     .spi1_miso (spi1_miso),
     .spi1_mosi (spi1_mosi),
     .spi1_sclk (spi1_sclk),
     // FMC HPC
-    // TODO: Max 4 lanes
-    .GT_Serial_0_gtx_p (tx_data_p_loc[3:0]),
-    .GT_Serial_0_gtx_n (tx_data_n_loc[3:0]),
-    .GT_Serial_0_grx_p (rx_data_p_loc[3:0]),
-    .GT_Serial_0_grx_n (rx_data_n_loc[3:0]),
+    .GT_Serial_0_0_gtx_p (tx_data_p_loc[3:0]),
+    .GT_Serial_0_0_gtx_n (tx_data_n_loc[3:0]),
+    .GT_Serial_0_0_grx_p (rx_data_p_loc[3:0]),
+    .GT_Serial_0_0_grx_n (rx_data_n_loc[3:0]),
+    .GT_Serial_1_0_gtx_p (tx_data_p_loc[7:4]),
+    .GT_Serial_1_0_gtx_n (tx_data_n_loc[7:4]),
+    .GT_Serial_1_0_grx_p (rx_data_p_loc[7:4]),
+    .GT_Serial_1_0_grx_n (rx_data_n_loc[7:4]),
 
+    .gt_reset (~rstb),
     .ref_clk_q0 (ref_clk),
     .ref_clk_q1 (ref_clk),
 

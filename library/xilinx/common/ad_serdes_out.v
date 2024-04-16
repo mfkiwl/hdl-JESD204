@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -50,7 +50,6 @@ module ad_serdes_out #(
   input                       rst,
   input                       clk,
   input                       div_clk,
-  input                       loaden,
 
   // data interface
   input                       data_oe,
@@ -77,34 +76,42 @@ module ad_serdes_out #(
                           FPGA_TECHNOLOGY == ULTRASCALE_PLUS ? "ULTRASCALE_PLUS" :
                           "UNSUPPORTED";
 
-  // internal signals
-
-  wire    [(DATA_WIDTH-1):0]  data_out_s;
-  wire    [(DATA_WIDTH-1):0]  serdes_shift1_s;
-  wire    [(DATA_WIDTH-1):0]  serdes_shift2_s;
-  wire    [(DATA_WIDTH-1):0]  data_t;
-  wire    buffer_disable;
-
-  assign data_out_se =  data_out_s;
-
-  assign buffer_disable = ~data_oe;
-  // instantiations
+  // internal registers
 
   reg [6:0] serdes_rst_seq;
-  wire      serdes_rst     = serdes_rst_seq [6];
 
-  always @ (posedge div_clk)
-  begin
-      if   (rst) serdes_rst_seq [6:0] <= 7'b0001110;
-      else       serdes_rst_seq [6:0] <= {serdes_rst_seq [5:0], 1'b0};
+  // internal signals
+
+  wire  [(DATA_WIDTH-1):0]  data_out_s;
+  wire  [(DATA_WIDTH-1):0]  serdes_shift1_s;
+  wire  [(DATA_WIDTH-1):0]  serdes_shift2_s;
+  wire  [(DATA_WIDTH-1):0]  data_t;
+  wire  buffer_disable;
+  wire  serdes_rst = serdes_rst_seq[6];
+
+  // instantiations
+
+  assign data_out_se =  data_out_s;
+  assign buffer_disable = ~data_oe;
+
+  always @ (posedge div_clk) begin
+    if (rst) begin
+      serdes_rst_seq [6:0] <= 7'b0001110;
+    end else begin
+      serdes_rst_seq [6:0] <= {serdes_rst_seq [5:0], 1'b0};
+    end
   end
+
+  // transmit data path: oserdes -> obuf
 
   genvar l_inst;
   generate
   for (l_inst = 0; l_inst <= (DATA_WIDTH-1); l_inst = l_inst + 1) begin: g_data
 
+    // oserdes
+
     if (FPGA_TECHNOLOGY == SEVEN_SERIES) begin
-      OSERDESE2  #(
+      OSERDESE2 #(
         .DATA_RATE_OQ (DR_OQ_DDR),
         .DATA_RATE_TQ ("SDR"),
         .DATA_WIDTH (SERDES_FACTOR),
@@ -141,7 +148,7 @@ module ad_serdes_out #(
     end
 
     if (FPGA_TECHNOLOGY == ULTRASCALE || FPGA_TECHNOLOGY == ULTRASCALE_PLUS) begin
-      OSERDESE3  #(
+      OSERDESE3 #(
         .DATA_WIDTH (SERDES_FACTOR),
         .SIM_DEVICE (SIM_DEVICE)
       ) i_serdes (
@@ -161,24 +168,20 @@ module ad_serdes_out #(
         .RST (serdes_rst));
     end
 
-    if (CMOS_LVDS_N == 0) begin
+    // obuf
 
-      OBUFTDS i_obuf (
+    if (CMOS_LVDS_N == 0) begin
+      OBUFTDS i_obuftds (
         .T (data_t[l_inst]),
         .I (data_out_s[l_inst]),
         .O (data_out_p[l_inst]),
         .OB (data_out_n[l_inst]));
-
     end else begin
-
       OBUFT i_obuf (
         .T (data_t[l_inst]),
         .I (data_out_s[l_inst]),
         .O (data_out_p[l_inst]));
-
     end
-
   end
   endgenerate
-
 endmodule

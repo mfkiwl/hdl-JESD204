@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2014-2024 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 source $ad_hdl_dir/projects/common/coraz7s/coraz7s_system_bd.tcl
 source $ad_hdl_dir/projects/scripts/adi_pd.tcl
 
@@ -13,4 +18,3 @@ sysid_gen_sys_init_file
 set sys_dma_clk [get_bd_nets sys_dma_clk]
 
 source ../common/cn0540_bd.tcl
-

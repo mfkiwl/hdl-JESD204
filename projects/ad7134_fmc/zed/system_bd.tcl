@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2019-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 source $ad_hdl_dir/projects/common/zed/zed_system_bd.tcl
 source $ad_hdl_dir/projects/scripts/adi_pd.tcl
 
@@ -14,14 +19,5 @@ ad_ip_parameter rom_sys_0 CONFIG.PATH_TO_FILE "[pwd]/$mem_init_sys_path"
 ad_ip_parameter rom_sys_0 CONFIG.ROM_ADDR_BITS 9
 
 sysid_gen_sys_init_file
-
-# specify ADC resolution -- the design supports 16/24/32 bit resolutions
-
-set adc_resolution 24
-
-# ADC number of channels
-
-set adc_num_of_channels 8
-
 
 source ../common/ad7134_bd.tcl

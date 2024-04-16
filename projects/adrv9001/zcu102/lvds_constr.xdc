@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2020-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 set_property  -dict {PACKAGE_PIN Y3     IOSTANDARD LVDS  DIFF_TERM_ADV TERM_100}  [get_ports rx1_dclk_in_n]     ;## FMC_HPC0_LA00_CC_N IO_L13N_T2L_N1_GC_QBC_66
 set_property  -dict {PACKAGE_PIN Y4     IOSTANDARD LVDS  DIFF_TERM_ADV TERM_100}  [get_ports rx1_dclk_in_p]     ;## FMC_HPC0_LA00_CC_P IO_L13P_T2L_N0_GC_QBC_66
 set_property  -dict {PACKAGE_PIN Y1     IOSTANDARD LVDS  DIFF_TERM_ADV TERM_100}  [get_ports rx1_idata_in_n]    ;## FMC_HPC0_LA03_N    IO_L22N_T3U_N7_DBC_AD0N_66
@@ -47,12 +52,12 @@ create_clock -name rx2_dclk_out   -period  2.034 [get_ports rx2_dclk_in_p]
 create_clock -name tx1_dclk_out   -period  2.034 [get_ports tx1_dclk_in_p]
 create_clock -name tx2_dclk_out   -period  2.034 [get_ports tx2_dclk_in_p]
 
-# Allow max skew of 0.25 ns between input clocks
-set_clock_latency -source -early -0.125 [get_clocks rx1_dclk_out]
-set_clock_latency -source -early -0.125 [get_clocks rx2_dclk_out]
+# Allow max skew of 0.2 ns between input clocks
+set_clock_latency -source -early -0.1 [get_clocks rx1_dclk_out]
+set_clock_latency -source -early -0.1 [get_clocks rx2_dclk_out]
 
-set_clock_latency -source -late 0.125 [get_clocks rx1_dclk_out]
-set_clock_latency -source -late 0.125 [get_clocks rx2_dclk_out]
+set_clock_latency -source -late 0.1 [get_clocks rx1_dclk_out]
+set_clock_latency -source -late 0.1 [get_clocks rx2_dclk_out]
 
 set_property CLOCK_DELAY_GROUP BALANCE_CLOCKS_1 \
   [list [get_nets -of [get_pins i_system_wrapper/system_i/axi_adrv9001/inst/i_if/i_rx_1_phy/i_div_clk_buf/O]] \

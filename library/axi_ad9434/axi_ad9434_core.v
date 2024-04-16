@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -202,11 +202,10 @@ module axi_ad9434_core #(
     .up_drp_sel (up_drp_sel),
     .up_drp_wr (up_drp_wr),
     .up_drp_addr (up_drp_addr),
-    .adc_custom_wr (),
-    .adc_write_req (),
-    .adc_custom_rd ('d0),
-    .adc_read_valid ('d0),
-    .adc_read_req (),
+    .adc_config_wr (),
+    .adc_config_ctrl (),
+    .adc_config_rd ('d0),
+    .adc_ctrl_status ('d0),
     .up_drp_wdata (up_drp_wdata),
     .up_drp_rdata (up_drp_rdata),
     .up_drp_ready (up_drp_ready),

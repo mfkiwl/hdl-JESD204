@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -38,6 +38,7 @@
 module axi_ad9434_if #(
 
   parameter FPGA_TECHNOLOGY = 0,
+  parameter IODELAY_ENABLE = 1,
   parameter IO_DELAY_GROUP = "dev_if_delay_group"
 ) (
 
@@ -102,6 +103,7 @@ module axi_ad9434_if #(
   // data interface
   ad_serdes_in #(
     .FPGA_TECHNOLOGY(FPGA_TECHNOLOGY),
+    .IODELAY_ENABLE (IODELAY_ENABLE),
     .IODELAY_CTRL(0),
     .IODELAY_GROUP(IO_DELAY_GROUP),
     .DDR_OR_SDR_N(SDR),
@@ -111,9 +113,6 @@ module axi_ad9434_if #(
     .rst(adc_rst),
     .clk(adc_clk_in),
     .div_clk(adc_div_clk),
-    .loaden(1'b0),
-    .phase(8'b0),
-    .locked(1'b0),
     .data_s0(adc_data[47:36]),
     .data_s1(adc_data[35:24]),
     .data_s2(adc_data[23:12]),
@@ -135,6 +134,7 @@ module axi_ad9434_if #(
   // over-range interface
   ad_serdes_in #(
     .FPGA_TECHNOLOGY(FPGA_TECHNOLOGY),
+    .IODELAY_ENABLE (IODELAY_ENABLE),
     .IODELAY_CTRL(1),
     .IODELAY_GROUP(IO_DELAY_GROUP),
     .DDR_OR_SDR_N(SDR),
@@ -144,9 +144,6 @@ module axi_ad9434_if #(
     .rst(adc_rst),
     .clk(adc_clk_in),
     .div_clk(adc_div_clk),
-    .loaden(1'b0),
-    .phase(8'b0),
-    .locked(1'b0),
     .data_s0(adc_or_s[3]),
     .data_s1(adc_or_s[2]),
     .data_s2(adc_or_s[1]),
@@ -183,8 +180,6 @@ module axi_ad9434_if #(
     .clk (adc_clk_in),
     .div_clk (adc_div_clk),
     .out_clk (),
-    .loaden (),
-    .phase (),
     .up_clk (up_clk),
     .up_rstn (up_rstn),
     .up_drp_sel (up_drp_sel),
@@ -200,7 +195,7 @@ module axi_ad9434_if #(
 
   // adc status: adc is up, if both the MMCM_OR_BUFR_N and DELAY blocks are up
   always @(posedge adc_div_clk) begin
-    if(adc_rst == 1'b1) begin
+    if (adc_rst == 1'b1) begin
       adc_status_m1 <= 1'b0;
       adc_status <= 1'b0;
     end else begin

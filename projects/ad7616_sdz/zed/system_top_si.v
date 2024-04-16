@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -83,13 +83,13 @@ module system_top (
 
   input                   otg_vbusoc,
 
-  output                  spi_sclk,
-  output                  spi_sdo,
-  input       [ 1:0]      spi_sdi,
-  output                  spi_cs_n,
+  output                  ad7616_spi_sclk,
+  output                  ad7616_spi_sdo,
+  input       [ 1:0]      ad7616_spi_sdi,
+  output                  ad7616_spi_cs,
 
   output                  adc_reset_n,
-  output                  adc_convst,
+  output                  adc_cnvst,
   input                   adc_busy,
   output                  adc_seq_en,
   output      [ 1:0]      adc_hw_rngsel,
@@ -198,11 +198,11 @@ module system_top (
     .iic_mux_sda_t (iic_mux_sda_t_s),
     .otg_vbusoc (otg_vbusoc),
     .spdif (spdif),
-    .rx_cnvst (adc_convst),
-    .rx_sclk (spi_sclk),
-    .rx_sdo (spi_sdo),
-    .rx_sdi (spi_sdi),
-    .rx_cs_n (spi_cs_n),
-    .rx_busy (adc_busy));
+    .ad7616_spi_sdo (ad7616_spi_sdo),
+    .ad7616_spi_sdi (ad7616_spi_sdi),
+    .ad7616_spi_cs (ad7616_spi_cs),
+    .ad7616_spi_sclk (ad7616_spi_sclk),
+    .rx_busy (adc_busy),
+    .rx_cnvst (adc_cnvst));
 
 endmodule

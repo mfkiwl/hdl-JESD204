@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2020 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -40,6 +40,7 @@ module adrv9001_rx #(
   parameter FPGA_TECHNOLOGY = 0,
   parameter NUM_LANES = 3,
   parameter DRP_WIDTH = 5,
+  parameter IODELAY_ENABLE = 1,
   parameter IODELAY_CTRL = 0,
   parameter USE_BUFG = 0,
   parameter IO_DELAY_GROUP = "dev_if_delay_group"
@@ -111,6 +112,7 @@ module adrv9001_rx #(
     .CMOS_LVDS_N (CMOS_LVDS_N),
     .FPGA_TECHNOLOGY (FPGA_TECHNOLOGY),
     .IODELAY_CTRL (IODELAY_CTRL),
+    .IODELAY_ENABLE (IODELAY_ENABLE),
     .IODELAY_GROUP (IO_DELAY_GROUP),
     .DDR_OR_SDR_N (DDR_OR_SDR_N),
     .DATA_WIDTH (NUM_LANES),
@@ -120,9 +122,6 @@ module adrv9001_rx #(
     .rst (adc_rst|ssi_rst),
     .clk (adc_clk_in_fast),
     .div_clk (adc_clk_div),
-    .loaden (1'b0),
-    .phase (8'b0),
-    .locked (1'b0),
     .data_s0 (data_s0),
     .data_s1 (data_s1),
     .data_s2 (data_s2),

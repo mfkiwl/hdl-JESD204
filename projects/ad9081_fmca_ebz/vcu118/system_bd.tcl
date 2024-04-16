@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2019-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 ## ADC FIFO depth in samples per converter
 set adc_fifo_samples_per_converter [expr $ad_project_params(RX_KS_PER_CHANNEL)*1024]
 ## DAC FIFO depth in samples per converter
@@ -9,8 +14,12 @@ source $ad_hdl_dir/projects/common/xilinx/dacfifo_bd.tcl
 source $ad_hdl_dir/projects/ad9081_fmca_ebz/common/ad9081_fmca_ebz_bd.tcl
 source $ad_hdl_dir/projects/scripts/adi_pd.tcl
 
-ad_ip_parameter axi_mxfe_rx_jesd/rx CONFIG.NUM_INPUT_PIPELINE 2
-ad_ip_parameter axi_mxfe_tx_jesd/tx CONFIG.NUM_OUTPUT_PIPELINE 1
+if {$INTF_CFG != "TX"} {
+  ad_ip_parameter axi_mxfe_rx_jesd/rx CONFIG.NUM_INPUT_PIPELINE 2
+}
+if {$INTF_CFG != "RX"} {
+  ad_ip_parameter axi_mxfe_tx_jesd/tx CONFIG.NUM_OUTPUT_PIPELINE 1
+}
 
 set mem_init_sys_path [get_env_param ADI_PROJECT_DIR ""]mem_init_sys.txt;
 

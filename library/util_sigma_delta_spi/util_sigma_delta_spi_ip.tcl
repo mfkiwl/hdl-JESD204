@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2015-2024 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 source ../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
 
@@ -9,8 +14,8 @@ adi_ip_files util_sigma_delta_spi [list \
 adi_ip_properties_lite util_sigma_delta_spi
 
 adi_add_bus "m_spi" "master" \
-	"analog.com:interface:spi_master_rtl:1.0" \
-	"analog.com:interface:spi_master:1.0" \
+	"analog.com:interface:spi_engine_rtl:1.0" \
+	"analog.com:interface:spi_engine:1.0" \
 	{
 		{"m_sclk" "SCLK"} \
 		{"m_sdi" "SDI"} \
@@ -20,8 +25,8 @@ adi_add_bus "m_spi" "master" \
 	}
 
 adi_add_bus "s_spi" "slave" \
-	"analog.com:interface:spi_master_rtl:1.0" \
-	"analog.com:interface:spi_master:1.0" \
+	"analog.com:interface:spi_engine_rtl:1.0" \
+	"analog.com:interface:spi_engine:1.0" \
 	{
 		{"s_sclk" "SCLK"} \
 		{"s_sdi" "SDI"} \

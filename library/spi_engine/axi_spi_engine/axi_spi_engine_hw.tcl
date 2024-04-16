@@ -1,3 +1,7 @@
+###############################################################################
+## Copyright (C) 2020-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
 
 package require qsys 14.0
 source ../../../scripts/adi_env.tcl
@@ -104,12 +108,6 @@ proc p_elaboration {} {
     set_port_property up_raddr termination true
 
   }
-
-  ad_interface signal  pulse_gen_period  output  32
-  ad_interface signal  pulse_gen_width   output  32
-  ad_interface signal  pulse_gen_load    output   1
-
-  lappend disabled_intfs if_pulse_gen_period if_pulse_gen_width if_pulse_gen_load
 
   foreach interface $disabled_intfs {
     set_interface_property $interface ENABLED false

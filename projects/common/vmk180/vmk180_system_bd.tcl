@@ -1,3 +1,7 @@
+###############################################################################
+## Copyright (C) 2021-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
 
 # create board design
 # default ports
@@ -49,7 +53,6 @@ set_property -dict [list \
     PMC_CRP_PL0_REF_CTRL_FREQMHZ 100 \
     PMC_GPIO0_MIO_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 0 .. 25}}} \
     PMC_GPIO1_MIO_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 26 .. 51}}} \
-    PMC_I2CPMC_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 46 .. 47}}} \
     PMC_MIO37 {{AUX_IO 0} {DIRECTION out} {DRIVE_STRENGTH 8mA} {OUTPUT_DATA high} {PULL pullup} {SCHMITT 0} {SLEW slow} {USAGE GPIO}} \
     PMC_OSPI_PERIPHERAL {{ENABLE 0} {IO {PMC_MIO 0 .. 11}} {MODE Single}} \
     PMC_QSPI_COHERENCY 0 \
@@ -81,6 +84,7 @@ set_property -dict [list \
     PS_HSDP_EGRESS_TRAFFIC JTAG \
     PS_HSDP_INGRESS_TRAFFIC JTAG \
     PS_HSDP_MODE None \
+    PS_I2C0_PERIPHERAL {ENABLE 0} \
     PS_I2C1_PERIPHERAL {{ENABLE 1} {IO {PMC_MIO 44 .. 45}}} \
     PS_MIO19 {{AUX_IO 0} {DIRECTION in} {DRIVE_STRENGTH 8mA} {OUTPUT_DATA default} {PULL disable} {SCHMITT 0} {SLEW slow} {USAGE Reserved}} \
     PS_MIO21 {{AUX_IO 0} {DIRECTION in} {DRIVE_STRENGTH 8mA} {OUTPUT_DATA default} {PULL disable} {SCHMITT 0} {SLEW slow} {USAGE Reserved}} \
@@ -162,23 +166,35 @@ set sys_cpu_resetn        [get_bd_nets sys_cpu_resetn]
 set sys_dma_reset         [get_bd_nets sys_350m_reset]
 set sys_dma_resetn        [get_bd_nets sys_350m_resetn]
 
-# spi
+#
+
+ad_ip_instance xlconcat spi0_csn_sources
+ad_ip_parameter spi0_csn_sources config.num_ports {3}
+ad_connect spi0_csn_sources/dout spi0_csn
 
 ad_connect  sys_cips/spi0_sck_o spi0_sclk
 ad_connect  sys_cips/spi0_sck_i GND
 ad_connect  sys_cips/spi0_io0_o spi0_mosi
 ad_connect  sys_cips/spi0_io0_i spi0_miso
 ad_connect  sys_cips/spi0_io1_i GND
-ad_connect  sys_cips/spi0_ss_o spi0_csn
-ad_connect  sys_cips/spi0_ss_i VCC
+ad_connect  sys_cips/spi0_ss_o  spi0_csn_sources/in0
+ad_connect  sys_cips/spi0_ss1_o spi0_csn_sources/in1
+ad_connect  sys_cips/spi0_ss2_o spi0_csn_sources/in2
+ad_connect  sys_cips/spi0_ss_i  VCC
+
+ad_ip_instance xlconcat spi1_csn_sources
+ad_ip_parameter spi1_csn_sources config.num_ports {3}
+ad_connect spi1_csn_sources/dout spi1_csn
 
 ad_connect  sys_cips/spi1_sck_o spi1_sclk
 ad_connect  sys_cips/spi1_sck_i GND
 ad_connect  sys_cips/spi1_io0_o spi1_mosi
 ad_connect  sys_cips/spi1_io0_i spi1_miso
 ad_connect  sys_cips/spi1_io1_i GND
-ad_connect  sys_cips/spi1_ss_o spi1_csn
-ad_connect  sys_cips/spi1_ss_i VCC
+ad_connect  sys_cips/spi1_ss_o  spi1_csn_sources/in0
+ad_connect  sys_cips/spi1_ss1_o spi1_csn_sources/in1
+ad_connect  sys_cips/spi1_ss2_o spi1_csn_sources/in2
+ad_connect  sys_cips/spi1_ss_i  VCC
 
 # system id
 

@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -51,6 +51,7 @@ module axi_ad9361_tx #(
   parameter   INIT_DELAY = 0,
   parameter   DAC_DDS_DISABLE = 0,
   parameter   DAC_DDS_TYPE = 1,
+  parameter   DAC_DDS_PHASE_DW = 16,
   parameter   DAC_DDS_CORDIC_DW = 14,
   parameter   DAC_DDS_CORDIC_PHASE_DW = 13,
   parameter   USERPORTS_DISABLE = 0,
@@ -226,6 +227,7 @@ module axi_ad9361_tx #(
     .DISABLE (0),
     .DAC_DDS_DISABLE (DAC_DDS_DISABLE),
     .DAC_DDS_TYPE (DAC_DDS_TYPE),
+    .DAC_DDS_PHASE_DW (DAC_DDS_PHASE_DW),
     .DAC_DDS_CORDIC_DW (DAC_DDS_CORDIC_DW),
     .DAC_DDS_CORDIC_PHASE_DW (DAC_DDS_CORDIC_PHASE_DW),
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
@@ -261,6 +263,7 @@ module axi_ad9361_tx #(
     .DISABLE (0),
     .DAC_DDS_DISABLE (DAC_DDS_DISABLE),
     .DAC_DDS_TYPE (DAC_DDS_TYPE),
+    .DAC_DDS_PHASE_DW (DAC_DDS_PHASE_DW),
     .DAC_DDS_CORDIC_DW (DAC_DDS_CORDIC_DW),
     .DAC_DDS_CORDIC_PHASE_DW (DAC_DDS_CORDIC_PHASE_DW),
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
@@ -296,6 +299,7 @@ module axi_ad9361_tx #(
     .DISABLE (MODE_1R1T),
     .DAC_DDS_DISABLE (DAC_DDS_DISABLE),
     .DAC_DDS_TYPE (DAC_DDS_TYPE),
+    .DAC_DDS_PHASE_DW (DAC_DDS_PHASE_DW),
     .DAC_DDS_CORDIC_DW (DAC_DDS_CORDIC_DW),
     .DAC_DDS_CORDIC_PHASE_DW (DAC_DDS_CORDIC_PHASE_DW),
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
@@ -331,6 +335,7 @@ module axi_ad9361_tx #(
     .DISABLE (MODE_1R1T),
     .DAC_DDS_DISABLE (DAC_DDS_DISABLE),
     .DAC_DDS_TYPE (DAC_DDS_TYPE),
+    .DAC_DDS_PHASE_DW (DAC_DDS_PHASE_DW),
     .DAC_DDS_CORDIC_DW (DAC_DDS_CORDIC_DW),
     .DAC_DDS_CORDIC_PHASE_DW (DAC_DDS_CORDIC_PHASE_DW),
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
@@ -380,6 +385,10 @@ module axi_ad9361_tx #(
     .dac_sync (dac_sync),
     .dac_frame (),
     .dac_clksel (dac_clksel),
+    .dac_custom_wr(),
+    .dac_custom_rd(32'b0),
+    .dac_custom_control(),
+    .dac_status_if_busy(1'b0),
     .dac_par_type (),
     .dac_par_enb (),
     .dac_r1_mode (dac_r1_mode),

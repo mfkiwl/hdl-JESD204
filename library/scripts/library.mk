@@ -1,5 +1,5 @@
 ####################################################################################
-## Copyright (c) 2018 - 2021 Analog Devices, Inc.
+## Copyright (c) 2018 - 2023 Analog Devices, Inc.
 ## SPDX short identifier: BSD-1-Clause
 ####################################################################################
 
@@ -22,6 +22,9 @@ CLEAN_TARGET += *.log
 CLEAN_TARGET += component.xml
 CLEAN_TARGET += *.jou
 CLEAN_TARGET +=  xgui
+CLEAN_TARGET +=  gui
+CLEAN_TARGET += *.runs
+CLEAN_TARGET += *.gen
 CLEAN_TARGET += *.ip_user_files
 CLEAN_TARGET += *.srcs
 CLEAN_TARGET += *.hw
@@ -48,7 +51,7 @@ CLEAN_TARGET += tb/libraries
 
 GENERIC_DEPS += $(HDL_LIBRARY_PATH)../scripts/adi_env.tcl
 
-.PHONY: all intel intel_dep xilinx xilinx_dep clean clean-all
+.PHONY: all intel xilinx clean clean-all
 
 all: intel xilinx
 
@@ -56,46 +59,49 @@ clean: clean-all
 
 clean-all:
 	$(call clean, \
-		$(CLEAN_TARGET), \
+		$(CLEAN_TARGET) .lock, \
 		$(HL)$(LIBRARY_NAME)$(NC) library)
 
 ifneq ($(INTEL_DEPS),)
 
 INTEL_DEPS += $(GENERIC_DEPS)
 INTEL_DEPS += $(HDL_LIBRARY_PATH)scripts/adi_ip_intel.tcl
-INTEL_DEPS += $(foreach dep,$(INTEL_LIB_DEPS),$(HDL_LIBRARY_PATH)$(dep)/.timestamp_intel)
+_INTEL_LIB_DEPS = $(foreach dep,$(INTEL_LIB_DEPS),$(HDL_LIBRARY_PATH)$(dep)/.timestamp_intel)
 
-intel: intel_dep .timestamp_intel
+intel: .timestamp_intel
 
-.timestamp_intel: $(INTEL_DEPS)
+.timestamp_intel: $(INTEL_DEPS) $(_INTEL_LIB_DEPS)
 	touch $@
 
-intel_dep:
-	@for lib in $(INTEL_LIB_DEPS); do \
-		$(MAKE) -C $(HDL_LIBRARY_PATH)$${lib} intel || exit $$?; \
-	done
+$(_INTEL_LIB_DEPS):
+	$(MAKE) -C $(dir $@) intel
+
 endif
 
 ifneq ($(XILINX_DEPS),)
 
 XILINX_DEPS += $(GENERIC_DEPS)
 XILINX_DEPS += $(HDL_LIBRARY_PATH)scripts/adi_ip_xilinx.tcl
-XILINX_DEPS += $(foreach dep,$(XILINX_LIB_DEPS),$(HDL_LIBRARY_PATH)$(dep)/component.xml)
+_XILINX_LIB_DEPS = $(foreach dep,$(XILINX_LIB_DEPS),$(HDL_LIBRARY_PATH)$(dep)/component.xml)
+_XILINX_INTF_DEPS = $(foreach dep,$(XILINX_INTERFACE_DEPS),$(HDL_LIBRARY_PATH)$(dep))
 
-xilinx: xilinx_dep component.xml
+xilinx: component.xml
 
-component.xml: $(XILINX_DEPS)
+.DELETE_ON_ERROR:
+
+component.xml: $(XILINX_DEPS) $(_XILINX_INTF_DEPS) $(_XILINX_LIB_DEPS)
 	-rm -rf $(CLEAN_TARGET)
 	$(call build, \
 		$(VIVADO) $(LIBRARY_NAME)_ip.tcl, \
 		$(LIBRARY_NAME)_ip.log, \
 		$(HL)$(LIBRARY_NAME)$(NC) library)
 
-xilinx_dep:
-	@for lib in $(XILINX_LIB_DEPS); do \
-		$(MAKE) -C $(HDL_LIBRARY_PATH)$${lib} xilinx || exit $$?; \
-	done
-	@for intf in $(XILINX_INTERFACE_DEPS); do \
-		$(MAKE) -C $(HDL_LIBRARY_PATH)$${intf} xilinx || exit $$?; \
-	done
+$(_XILINX_INTF_DEPS):
+	$(MAKE) -C $(dir $@) $(notdir $@)
+
+$(_XILINX_LIB_DEPS):
+	flock $(dir $@).lock -c "$(MAKE) -C $(dir $@) xilinx"; exit $$?
+
+%.xml:
+	$(MAKE) -C $(dir $@) $(notdir $@)
 endif

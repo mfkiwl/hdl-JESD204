@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -44,6 +44,7 @@ module axi_ad9361_tx_channel #(
   parameter   DISABLE = 0,
   parameter   DAC_DDS_DISABLE = 0,
   parameter   DAC_DDS_TYPE = 1,
+  parameter   DAC_DDS_PHASE_DW = 16,
   parameter   DAC_DDS_CORDIC_DW = 14,
   parameter   DAC_DDS_CORDIC_PHASE_DW = 13,
   parameter   USERPORTS_DISABLE = 0,
@@ -105,11 +106,11 @@ module axi_ad9361_tx_channel #(
   wire    [15:0]  dac_iqcor_data_s;
   wire    [11:0]  dac_dds_data_s;
   wire    [15:0]  dac_dds_scale_1_s;
-  wire    [15:0]  dac_dds_init_1_s;
-  wire    [15:0]  dac_dds_incr_1_s;
+  wire    [DAC_DDS_PHASE_DW-1:0]  dac_dds_init_1_s;
+  wire    [DAC_DDS_PHASE_DW-1:0]  dac_dds_incr_1_s;
   wire    [15:0]  dac_dds_scale_2_s;
-  wire    [15:0]  dac_dds_init_2_s;
-  wire    [15:0]  dac_dds_incr_2_s;
+  wire    [DAC_DDS_PHASE_DW-1:0]  dac_dds_init_2_s;
+  wire    [DAC_DDS_PHASE_DW-1:0]  dac_dds_incr_2_s;
   wire    [15:0]  dac_pat_data_1_s;
   wire    [15:0]  dac_pat_data_2_s;
   wire    [ 3:0]  dac_data_sel_s;
@@ -321,7 +322,7 @@ module axi_ad9361_tx_channel #(
   ad_dds #(
     .DISABLE (DAC_DDS_DISABLE),
     .DDS_DW (12),
-    .PHASE_DW (16),
+    .PHASE_DW (DAC_DDS_PHASE_DW),
     .DDS_TYPE (DAC_DDS_TYPE),
     .CORDIC_DW (DAC_DDS_CORDIC_DW),
     .CORDIC_PHASE_DW (DAC_DDS_CORDIC_PHASE_DW),
@@ -349,6 +350,7 @@ module axi_ad9361_tx_channel #(
     .COMMON_ID (6'h11),
     .CHANNEL_ID (CHANNEL_ID),
     .DDS_DISABLE (DAC_DDS_DISABLE),
+    .DDS_PHASE_DW (DAC_DDS_PHASE_DW),
     .USERPORTS_DISABLE (USERPORTS_DISABLE),
     .IQCORRECTION_DISABLE (IQCORRECTION_DISABLE)
   ) i_up_dac_channel (

@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2020 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -47,6 +47,7 @@ module axi_adrv9001 #(
   parameter RX_USE_BUFG = 0,
   parameter TX_USE_BUFG = 0,
   parameter IODELAY_CTRL = 1,
+  parameter IODELAY_ENABLE = 1,
   parameter IO_DELAY_GROUP = "dev_if_delay_group",
   parameter FPGA_TECHNOLOGY = 0,
   parameter FPGA_FAMILY = 0,
@@ -282,6 +283,7 @@ module axi_adrv9001 #(
     .RX_USE_BUFG (RX_USE_BUFG),
     .TX_USE_BUFG (TX_USE_BUFG),
     .IODELAY_CTRL (IODELAY_CTRL),
+    .IODELAY_ENABLE (IODELAY_ENABLE),
     .IO_DELAY_GROUP (IO_DELAY_GROUP),
     .DISABLE_RX2_SSI (DISABLE_RX2_SSI),
     .DISABLE_TX2_SSI (DISABLE_TX2_SSI),

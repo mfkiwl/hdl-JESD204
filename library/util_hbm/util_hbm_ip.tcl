@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2022-2024 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 source ../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
 
@@ -148,7 +153,7 @@ foreach dir {"SRC" "DST"} {
 
 set_property -dict [list \
     "value_validation_type" "pairs" \
-    "value" "24" \
+    "value" "28" \
     "value_validation_pairs" {\
       "256MB" "28" \
       "512MB" "29" \
@@ -204,7 +209,7 @@ set_property -dict [list \
 # HBM_SEGMENTS_PER_MASTER = Storage size (MB) / 256 (MB) / number of masters
 set_property -dict [list \
     "enablement_value" "false" \
-    "value_tcl_expr" {expr  int(ceil(2**($LENGTH_WIDTH-28) / ${NUM_M}.0)) } \
+    "value_tcl_expr" { ceil(2**($LENGTH_WIDTH-28) / ${NUM_M}) } \
   ] \
   [ipx::get_user_parameters HBM_SEGMENTS_PER_MASTER -of_objects $cc]
 

@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2017-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 source ../../scripts/adi_env.tcl
 source $ad_hdl_dir/library/scripts/adi_ip_xilinx.tcl
 
@@ -7,6 +12,8 @@ add_files -fileset [get_filesets sources_1] [list \
   "cic_int.v" \
   "cic_comb.v" \
 ]
+
+set_property source_mgmt_mode DisplayOnly [current_project]
 
 adi_ip_properties_lite util_cic
 

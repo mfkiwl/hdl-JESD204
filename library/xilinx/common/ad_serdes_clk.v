@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -40,6 +40,8 @@ module ad_serdes_clk #(
 
   parameter       FPGA_TECHNOLOGY = 0,
   parameter       DDR_OR_SDR_N = 1,
+  // single ended - 0
+  // differential - 1
   parameter       CLKIN_DS_OR_SE_N = 1,
   parameter       SERDES_FACTOR = 8,
   parameter       MMCM_OR_BUFR_N = 1,
@@ -58,8 +60,6 @@ module ad_serdes_clk #(
   output          clk,
   output          div_clk,
   output          out_clk,
-  output          loaden,
-  output  [ 7:0]  phase,
 
   // drp interface
 
@@ -82,8 +82,6 @@ module ad_serdes_clk #(
 
   // defaults
 
-  assign loaden = 'd0;
-  assign phase = 'd0;
   assign up_drp_rdata[31:16] = 'd0;
 
   // instantiations
@@ -132,7 +130,7 @@ module ad_serdes_clk #(
       .up_drp_rdata (up_drp_rdata[15:0]),
       .up_drp_ready (up_drp_ready),
       .up_drp_locked (up_drp_locked));
-    end
+  end
   endgenerate
 
   generate

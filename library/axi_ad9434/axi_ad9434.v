@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2017 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -38,11 +38,11 @@
 module axi_ad9434 #(
 
   parameter ID = 0,
-
   parameter FPGA_TECHNOLOGY = 0,
   parameter FPGA_FAMILY = 0,
   parameter SPEED_GRADE = 0,
   parameter DEV_PACKAGE = 0,
+  parameter IODELAY_ENABLE = 1,
   parameter IO_DELAY_GROUP = "dev_if_delay_group"
 ) (
 
@@ -133,6 +133,7 @@ module axi_ad9434 #(
 
   axi_ad9434_if #(
     .FPGA_TECHNOLOGY(FPGA_TECHNOLOGY),
+    .IODELAY_ENABLE (IODELAY_ENABLE),
     .IO_DELAY_GROUP(IO_DELAY_GROUP)
   ) i_if (
     .adc_clk_in_p(adc_clk_in_p),

@@ -1,3 +1,7 @@
+###############################################################################
+## Copyright (C) 2017-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
 
 if {[info exists DEBUG_BUILD] == 0} {
   set DEBUG_BUILD 1
@@ -261,7 +265,6 @@ ad_connect axi_dac_interpolate/trigger_la  logic_analyzer/trigger_out_adc
 
 ad_connect axi_dac_interpolate/dac_valid_out_a  axi_ad9963/dma_valid_i
 ad_connect axi_dac_interpolate/dac_valid_out_b  axi_ad9963/dma_valid_q
-ad_connect axi_dac_interpolate/hold_last_sample  axi_ad9963/hold_last_sample
 
 ad_connect /axi_ad9963/tx_data    txd
 ad_connect /axi_ad9963/tx_iq      txiq
@@ -335,6 +338,10 @@ ad_connect ad9963_dac_dmac_b/m_src_axi sys_ps7/S_AXI_HP3
 
 create_bd_addr_seg -range 0x20000000 -offset 0x00000000 [get_bd_addr_spaces ad9963_dac_dmac_b/m_src_axi] \
                     [get_bd_addr_segs sys_ps7/S_AXI_HP3/HP3_DDR_LOWOCM] SEG_sys_ps7_HP3_DDR_LOWOCM
+create_bd_addr_seg -range 0x20000000 -offset 0x00000000 [get_bd_addr_spaces axi_rd_wr_combiner_converter/m_axi] \
+                    [get_bd_addr_segs sys_ps7/S_AXI_HP2/HP2_DDR_LOWOCM] SEG_sys_ps7_HP2_DDR_LOWOCM
+create_bd_addr_seg -range 0x20000000 -offset 0x00000000 [get_bd_addr_spaces axi_rd_wr_combiner_logic/m_axi] \
+                    [get_bd_addr_segs sys_ps7/S_AXI_HP1/HP1_DDR_LOWOCM] SEG_sys_ps7_HP1_DDR_LOWOCM
 
 # Map rd-wr combiner
 assign_bd_address [get_bd_addr_segs { \

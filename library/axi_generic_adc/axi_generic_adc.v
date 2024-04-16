@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2014 - 2022 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2015-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -158,11 +158,10 @@ module axi_generic_adc #(
     .up_drp_rdata (32'd0),
     .up_drp_ready (1'd0),
     .up_drp_locked (1'd1),
-    .adc_custom_wr (),
-    .adc_write_req (),
-    .adc_custom_rd ('d0),
-    .adc_read_valid ('d0),
-    .adc_read_req (),
+    .adc_config_wr (),
+    .adc_config_ctrl (),
+    .adc_config_rd ('d0),
+    .adc_ctrl_status ('d0),
     .up_usr_chanmax_out (),
     .up_usr_chanmax_in (NUM_OF_CHANNELS),
     .up_adc_gpio_in (32'b0),

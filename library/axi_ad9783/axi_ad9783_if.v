@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright 2021 (c) Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2021-2023 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -26,7 +26,7 @@
 //
 //   2. An ADI specific BSD license, which can be found in the top level directory
 //      of this repository (LICENSE_ADIBSD), and also on-line at:
-//      https://github.com/analogdevicesinc/hdl/blob/master/LICENSE_ADIBSD
+//      https://github.com/analogdevicesinc/hdl/blob/main/LICENSE_ADIBSD
 //      This will allow to generate bit files and not release the source code,
 //      as long as it attaches to an ADI device.
 //
@@ -98,7 +98,6 @@ module axi_ad9783_if #(
     .rst (dac_rst),
     .clk (dac_clk_s),
     .div_clk (dac_div_clk),
-    .loaden (1'b0),
     .data_oe (1'b1),
     .data_s0 (dac_data_a0),
     .data_s1 (dac_data_b0),
@@ -123,7 +122,6 @@ module axi_ad9783_if #(
     .rst (dac_rst),
     .clk (dac_clk_s),
     .div_clk (dac_div_clk),
-    .loaden (1'b0),
     .data_oe (1'b1),
     .data_s0 (1'b1),
     .data_s1 (1'b0),

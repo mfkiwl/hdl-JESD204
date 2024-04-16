@@ -1,3 +1,7 @@
+###############################################################################
+## Copyright (C) 2020-2023 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
 
 package require qsys 14.0
 source ../../../scripts/adi_env.tcl
@@ -6,6 +10,7 @@ source ../../scripts/adi_ip_intel.tcl
 ad_ip_create spi_engine_offload {SPI Engine Offload} p_elaboration
 ad_ip_files spi_engine_offload [list\
   $ad_hdl_dir/library/util_cdc/sync_bits.v \
+  $ad_hdl_dir/library/util_cdc/sync_event.v \
   spi_engine_offload.v]
 
 # parameters
@@ -58,7 +63,7 @@ proc p_elaboration {} {
   ad_interface clock   spi_clk     input 1
   ad_interface resetn  spi_resetn  input 1 if_spi_clk
 
-  ad_interface signal  trigger     input 1
+  ad_interface signal  trigger     input 1 if_pwm
 
   ## command interface
 

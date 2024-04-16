@@ -1,3 +1,8 @@
+###############################################################################
+## Copyright (C) 2022-2024 Analog Devices, Inc. All rights reserved.
+### SPDX short identifier: ADIBSD
+###############################################################################
+
 # density 4GB,8GB
 proc ad_create_hbm {ip_name {density "4GB"}} {
   global hbm_sim;
@@ -28,12 +33,12 @@ proc ad_create_hbm {ip_name {density "4GB"}} {
   }
 }
 
-proc ad_create_util_hbm {name rx_tx_n src_width dst_width mem_size {axi_data_width 256} {mem_type 2}} {
+proc ad_create_util_hbm {name tx_rx_n src_width dst_width mem_size {axi_data_width 256} {mem_type 2}} {
 
   if {$mem_type == 2} {
     # HBM
     # split converter side bus into multiple AXI masters
-    set number_of_masters [expr int(ceil((${rx_tx_n} == 1 ? ${dst_width}.0 : ${src_width}.0) / ${axi_data_width}.0))]
+    set number_of_masters [expr int(ceil((${tx_rx_n} == 1 ? ${dst_width}.0 : ${src_width}.0) / ${axi_data_width}.0))]
   } else {
     # DDR we have always one master
     set number_of_masters 1
@@ -44,7 +49,7 @@ proc ad_create_util_hbm {name rx_tx_n src_width dst_width mem_size {axi_data_wid
     SRC_DATA_WIDTH $src_width \
     DST_DATA_WIDTH $dst_width \
     AXI_DATA_WIDTH $axi_data_width \
-    TX_RX_N $rx_tx_n \
+    TX_RX_N $tx_rx_n \
     NUM_M $number_of_masters \
     MEM_TYPE $mem_type \
   ]
