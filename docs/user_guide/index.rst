@@ -9,12 +9,12 @@ User Guide
    Introduction <introduction>
    Git repository <git_repository>
    Releases <releases>
-   Build an HDL project <build_hdl>
+   Build a HDL project <build_hdl>
    HDL architecture <architecture>
-   IP cores <ip_cores>
+   IP cores <ip_cores/index>
    Porting reference designs <porting_project>
    Customize HDL projects <customize_hdl>
-   HDL coding guideline <hdl_coding_guideline>
+   HDL coding guidelines <hdl_coding_guidelines>
    Documentation guidelines <docs_guidelines>
    Third party forks <third_party>
 
@@ -32,10 +32,10 @@ Contents
 #. :ref:`releases`: Releases and supported tool versions
 #. :ref:`build_hdl`: Building and generating the programming files
 #. :ref:`architecture`: HDL project architecture explained
-#. :ref:`ip_cores`: List of IP cores
+#. :ref:`user_guide ip_cores`: List of IP cores and IP guides.
 #. :ref:`porting_project`: How to port a project to a non-supported carrier
 #. :ref:`customize_hdl`: Using and modifying the HDL design
-#. :ref:`hdl_coding_guideline`: The Verilog/VHDL coding guidelines that the
+#. :ref:`hdl_coding_guidelines`: The Verilog/VHDL coding guidelines that the
    HDL team follows
 #. :ref:`docs_guidelines`: Documentation guidelines
 #. :ref:`third_party`: Third party forks with derived work
