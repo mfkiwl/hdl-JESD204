@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2014-2024 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -139,7 +139,11 @@ module axi_dmac_response_manager #(
 
   always @(posedge req_clk)
   begin
-    if (response_dest_valid & response_dest_ready) begin
+    if (req_resetn == 1'b0) begin
+      req_eot <= 1'b0;
+      req_response_partial <= 1'b0;
+      req_response_dest_data_burst_length <= 'h0;
+    end else if (response_dest_valid & response_dest_ready) begin
       req_eot <= response_dest_resp_eot;
       req_response_partial <= response_dest_partial;
       req_response_dest_data_burst_length <= response_dest_data_burst_length;

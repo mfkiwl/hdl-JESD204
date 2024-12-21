@@ -10,7 +10,9 @@ that it would create a tremendous maintenance workload, that would require a lot
 of human resources, and would increase the required time for testing.
 
 The general rule of thumb is to support a given project with a fairly popular
-carrier (e.g. ZC706 or A10SoC), which is powerful enough to showcase the board
+carrier (e.g. :xilinx:`ZC706` or
+:intel:`A10SoC <content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html>`),
+which is powerful enough to showcase the board
 features and maximum performance.
 
 All the HDL projects were designed to maximize source code reuse, minimize
@@ -113,10 +115,10 @@ the **adi_project_create** process:
 
 .. code:: tcl
 
-   if [regexp "_zcu102$" $project_name] {
-       set p_device "xczu9eg-ffvb1156-1-i-es1"
-       set p_board "xilinx.com:zcu102:part0:1.2"
-       set sys_zynq 2
+   if [regexp "_zcu102" $project_name] {
+     set device "xczu9eg-ffvb1156-2-e"
+     set board [lindex [lsearch -all -inline [get_board_parts] *zcu102*] end]
+     set sys_zynq 2
    }
 
 .. tip::
@@ -128,16 +130,17 @@ the **adi_project_create** process:
 
 The **sys_zynq** constant variable should be set in the following way:
 
-- 0 - 7 Series FPGA (e.g. Kintex7, Virtex7)
-- 1 - Zynq7000 SoC
-- 2 - Zynq UltraScale+ SoC
-- 3 - Versal
+*  0 - 7 Series FPGA (e.g. Kintex7, Virtex7)
+*  1 - Zynq7000 SoC
+*  2 - Zynq UltraScale+ SoC
+*  3 - Versal
 
 Example with an Intel board
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In this section, we are presenting all the necessary steps to create a base
-design for the Intel Arria 10 SoC development board (abbreviated, `A10SoC`_).
+design for the Intel Arria 10 SoC development board (abbreviated,
+:intel:`A10SoC <content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html>`).
 
 First, you need to create a new directory in ``hdl/projects/common`` with the
 name of the carrier.
@@ -372,5 +375,4 @@ To create a carrier common FMC connections file:
      * Two parameters indicating both FMC ports in the desired order for projects
        that use both FMC connectors.
 
-.. _A10SoC: https://www.intel.com/content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html
 .. _lfcpnx: https://www.latticesemi.com/en/Products/DevelopmentBoardsAndKits/CertusPro-NXEvaluationBoard

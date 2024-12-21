@@ -160,7 +160,7 @@ Available starting from version 1.07.a;
 ENDFIELD
 
 FIELD
-[12] ''ASYNC_CLK''
+[12] ASYNC_CLK
 ASYNC_CLK
 RO
 This bit is set if link clock and device clock are connected to different sources.
@@ -172,7 +172,11 @@ FIELD
 [9:8]
 DECODER
 RO
-Decoder presence: 01 - 8B10B decoder \\ 10 - 64B66B decoder
+Decoder presence:
+
+* 01 - 8B10B decoder
+* 10 - 64B66B decoder
+
 ENDFIELD
 
 FIELD
@@ -560,10 +564,16 @@ RO
 ENDFIELD
 
 FIELD
-[9:0] 0x00000000
-BUFFER_DEALY
+[9:2] 0x00000000
+BUFFER_DELAY
 RW
 Buffer release opportunity offset from LMFC.
+ENDFIELD
+
+FIELD
+[1:0] 0x00000000
+RESERVED
+RO
 ENDFIELD
 
 ############################################################################################
@@ -669,8 +679,20 @@ FIELD
 [1:0] 0x00000000
 STATUS_STATE
 RO-V
-8B/10B : State of the [[#b10b_link_state_machine|8B/10B link state machine]]. (0 = RESET, 1 = WAIT_FOR_PHY, 2 = CGS, 3 = SYNCHRONIZED) \\
-64B/66B : State of the [[#b66b_link_state_machine|64B/66B link state machine]]. (0 = RESET, 1 = WAIT_BS, 2 = BLOCK_SYNC, 3 = DATA)
+
+* State of the :ref:`8B/10B link state machine <axi_jesd204_rx_8b10b_link_state_machine>`.
+
+  - 0 = RESET
+  - 1 = WAIT_FOR_PHY
+  - 2 = CGS
+  - 3 = SYNCHRONIZED
+* State of the :ref:`64B/66B link state machine <axi_jesd204_rx_64b66b_link_state_machine>`.
+
+  - 0 = RESET
+  - 1 = WAIT_BS
+  - 2 = BLOCK_SYNC
+  - 3 = DATA
+
 ENDFIELD
 
 ############################################################################################
@@ -692,11 +714,11 @@ FIELD
 [10:8] 0x00000000
 EMB_STATE
 RO
-State of Extended multiblock alignment: \\
+State of Extended multiblock alignment:
 
-001 - EMB_INIT \\
-010 - EMB_HUNT \\
-100 - EMB_LOCK \\
+ - 001 - EMB_INIT
+ - 010 - EMB_HUNT
+ - 100 - EMB_LOCK
 
 Valid for 64b66b encoder.
 ENDFIELD

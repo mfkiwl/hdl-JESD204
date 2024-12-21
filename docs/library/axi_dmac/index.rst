@@ -25,6 +25,8 @@ Features
 - Cyclic transfers
 - 2D transfers
 - Scatter-Gather transfers
+- Framelock
+- AutoRun
 
 Utilization
 --------------------------------------------------------------------------------
@@ -102,6 +104,8 @@ Configuration Parameters
      - Whether to insert an extra register slice on the source data path.
    * - AXI_SLICE_SRC
      - Whether to insert an extra register slice on the destination data path.
+   * - AXIS_TUSER_SYNC
+     - Transfer Start Synchronization on TUSER
    * - SYNC_TRANSFER_START
      - Enable the transfer start synchronization feature.
    * - CYCLIC
@@ -479,6 +483,19 @@ from the internal buffer will be cleared/lost. In case of AXIS the DMAC will
 wait for data to be accepted if valid is high since it can't just de-assert
 valid without breaking the interface semantics
 
+AutoRun mode
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When the ``AUTORUN`` parameter is set the DMAC can initiate transfers without
+software intervention. Once the core comes out of reset, the core will operate
+on a transfer defined through the ``AUTORUN_*`` synthesis parameters.
+This is useful mostly in ``CYCLIC`` mode.
+In non cyclic mode, once the initial
+transfer is done the core will go to idle state and will wait for software
+interaction if that exists.
+In this mode the s_axi AXI configuration interface
+is optional.
+
 .. _axi_dmac interrupts:
 
 Interrupts
@@ -589,7 +606,7 @@ the following order:
    * - Size
      - Name
      - Description
-   * - 32‑bit
+   * - 32-bit
      - flags
      - | This field includes 2 control bits:
 
@@ -598,25 +615,25 @@ the following order:
          next DMA descriptor pointed to by ``next_sg_addr`` will be loaded.
        * bit1: if set, an end-of-transfer interrupt will be raised after the
          memory segment pointed to by this descriptor has been transferred.
-   * - 32‑bit
+   * - 32-bit
      - id
      - This field corresponds to an identifier of the descriptor.
-   * - 64‑bit
+   * - 64-bit
      - dest_addr
      - This field contains the destination address of the transfer.
-   * - 64‑bit
+   * - 64-bit
      - src_addr
      - This field contains the source address of the transfer.
-   * - 64‑bit
+   * - 64-bit
      - next_sg_addr
      - This field contains the address of the next descriptor.
-   * - 32‑bit
+   * - 32-bit
      - y_len
      - This field contains the number of rows to transfer, minus one.
-   * - 32‑bit
+   * - 32-bit
      - x_len
      - This field contains the number of bytes to transfer, minus one.
-   * - 32‑bit
+   * - 32-bit
      - src_stride
      - This field contains the number of bytes between the start of one row and
        the next row for the source address.
@@ -653,22 +670,97 @@ have the distinct advantage of generating fewer interrupts by treating the
 chained descriptor transfers as a single transfer, thus improving the performance
 of the application.
 
+External Synchronization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This feature allows external components to throttle the consumption of
+descriptors queued by the software. A transfer will start only after the
+assertion of the external sync signal for at least one clock cycle.
+
+The sync signal can be either in source or destination clock domain or both.
+This feature does not ensure fixed latency from the assertion of external sync
+signal and the availability of the data at the destination interface.
+
+Framelock Synchronization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This feature adds support for multiple 2D frame buffers, which are used in a
+cyclic way. On the same set of buffers, a second DMAC core can operate.
+The "Framelock" mechanism ensures no buffer is accessed by two DMACs at the same
+time.
+
+The core can operate in two roles:
+
+* Writer mode - available in s2mm configuration.
+* Reader mode - available in mm2s configuration.
+
+And two modes:
+
+* Frame conversion (dynamic mode):
+
+  - Writer mode - the writer will always skip the current in-use reader's buffer.
+  - Reader mode - the reader will stay behind the writer's buffer by either
+    repeating or skipping buffers according to the speed relationship of the two cores.
+
+* Output delay (simple mode):
+
+  - Writer mode - the writer will cycle through the buffers regardless of the reader.
+  - Reader mode - the reader will always read a buffer at a predefined distance
+    from the one currently accessed by the writer.
+
+Also, in simple mode:
+
+* If 'wait for writer' is enabled the reader will output a frame only after
+  the master wrote one to the memory
+* If the 'wait for writer' is not enabled the slave will start reading a
+  buffer whenever it completed a previous buffer and receives an external sync
+  signal if the external synchronization support is enabled.
+
+.. caution::
+
+   In dynamic mode, the reader can still read a buffer being currently accessed
+   by the writer if the number of frames and distance are close.
+   Still, the distance is mainly used in output delay mode.
+
+The writer and reader DMAC cores must be connected through the dedicated
+"framelock" interface. They must be programmed with similar settings regarding
+the buffers size, start address and stride through the ``FRAMELOCK_CONFIG`` and
+``FRAMELOCK_STRIDE`` registers.
+
+Notice that the reader DMA will start to read the frames only after the writer
+finished to store in the DDR at least ``FRAMELOCK_CONFIG_DISTANCE+1`` frames.
+This means that while the FRAMELOCK_CONFIG_DISTANCE+1 frames are written into the
+memory, the reader DMA won’t output anything.
+
 Transfer Start Synchronization
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the transfer start synchronization feature of the DMA controller is enabled
-the start of a transfer is synchronized to a flag in the data stream. This is
-primarily useful if the data stream does not have any back-pressure and one unit
+If the ``SYNC_TRANSFER_START`` HDL synthesis configuration parameter is set, the
+transfer start synchronization feature of the DMA controller is enabled. This
+means that the start of a transfer is synchronized to a flag in the data stream
+or a sync signal.
+
+This is useful if the data stream does not have any back-pressure and one unit
 of data spans multiple beats (e.g. packetized data). This ensures that the data
 is properly aligned to the beginning of the memory buffer.
 
-Data that is received before the synchronization flag is asserted will be
-ignored by the DMA controller.
+In addition, this feature allows the implementation of external timing
+synchronization for precisely timed buffers (For example, in combination with the
+:git-hdl:`Timing-Division Duplexing Controller <library/axi_tdd>`).
 
-For the FIFO write interface the ``fifo_wr_sync`` signal is the synchronization
-flag signal. For the AXI-Streaming interface the synchronization flag is carried
-in ``s_axis_user[0]``. In both cases the synchronization flag is qualified by
-the same control signal as the data.
+On the transmit side, both the FIFO and AXI-Streaming interfaces use the ``sync``
+signal as the synchronization signal.
+
+On the receive side, for the FIFO write interface the ``sync`` signal represents
+the synchronization flag signal. For the AXI-Streaming interface the synchronization
+signal is carried in either ``s_axis_user[0]`` or ``sync``, depending on the
+value of ``S_AXIS_USER_SYNC`` synthesis configuration parameter. In both cases
+the synchronization signal is qualified by the same control signal as the data.
+
+.. note::
+
+   The synchronization signal is assumed to be synchronous with the clock of the
+   interface which needs to be triggered by the transfer start synchronization.
 
 Cache Coherency
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -801,3 +893,17 @@ Glossary
        is based on the ``X_LENGTH`` and ``Y_LENGTH`` registers. This can occur
        on AXIS source interfaces when TLAST asserts earlier than the programmed
        length.
+
+Software Support
+--------------------------------------------------------------------------------
+
+* No-OS project at :git-no-OS:`drivers/axi_core/axi_dmac`
+* No-OS device driver at  :git-no-OS:`drivers/axi_core/axi_dmac/axi_dmac.c`
+* No-OS device driver documentation
+  :dokuwiki:`on wiki <resources/tools-software/uc-drivers/jesd204/axi_adxcvr>`
+
+References
+--------------------------------------------------------------------------------
+
+* HDL IP core at :git-hdl:`library/axi_dmac`
+* :dokuwiki:`High-Speed DMA Controller Peripheral on wiki <resources/fpga/docs/axi_dmac>`

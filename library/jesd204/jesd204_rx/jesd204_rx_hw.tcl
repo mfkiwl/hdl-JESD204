@@ -1,5 +1,5 @@
 ###############################################################################
-## Copyright (C) 2017-2022 Analog Devices, Inc. All rights reserved.
+## Copyright (C) 2017-2022, 2024 Analog Devices, Inc. All rights reserved.
 ### SPDX short identifier: ADIJESD204
 ###############################################################################
 
@@ -22,10 +22,15 @@ ad_ip_files jesd204_rx [list \
   jesd204_lane_latency_monitor.v \
   jesd204_rx_cgs.v \
   jesd204_rx_ctrl.v \
+  jesd204_rx_ctrl_64b.v \
   jesd204_rx_lane.v \
+  error_monitor.v \
+  jesd204_rx_lane_64b.v \
+  jesd204_rx_header.v \
   jesd204_rx_frame_align.v \
   jesd204_rx_constr.sdc \
   ../jesd204_common/jesd204_eof_generator.v \
+  ../jesd204_common/jesd204_crc12.v \
   ../jesd204_common/jesd204_frame_mark.v \
   ../jesd204_common/jesd204_frame_align_replace.v \
   ../jesd204_common/jesd204_lmfc.v \
@@ -40,6 +45,11 @@ ad_ip_files jesd204_rx [list \
 ]
 
 # parameters
+ad_ip_parameter LINK_MODE INTEGER 1 true { \
+  DISPLAY_NAME "Link Layer mode" \
+  ALLOWED_RANGES {"1:8B10B" "2:64B66B"} \
+  HDL_PARAMETER true \
+}
 
 add_parameter NUM_LANES INTEGER 1
 set_parameter_property NUM_LANES DISPLAY_NAME "Number of Lanes"
@@ -59,6 +69,12 @@ set_parameter_property NUM_INPUT_PIPELINE HDL_PARAMETER true
 add_parameter ASYNC_CLK BOOLEAN false
 set_parameter_property ASYNC_CLK DISPLAY_NAME "Link and device clock asynchronous"
 set_parameter_property ASYNC_CLK HDL_PARAMETER true
+
+ad_ip_parameter DATA_PATH_WIDTH INTEGER 4 true { \
+  DISPLAY_NAME "Physical layer datapath widthin" \
+  DISPLAY_UNITS "octets" \
+  ALLOWED_RANGES {4 8} \
+}
 
 ad_ip_parameter TPL_DATA_PATH_WIDTH INTEGER 4 true { \
   DISPLAY_NAME "Transport layer datapath width" \
@@ -124,7 +140,7 @@ add_interface_port config cfg_disable_scrambler disable_scrambler Input 1
 add_interface_port config cfg_disable_char_replacement disable_char_replacement Input 1
 add_interface_port config cfg_frame_align_err_threshold frame_align_err_threshold Input 8
 add_interface_port config ctrl_err_statistics_reset err_statistics_reset Input 1
-add_interface_port config ctrl_err_statistics_mask err_statistics_mask Input 3
+add_interface_port config ctrl_err_statistics_mask err_statistics_mask Input 7
 
 # device clock domain config interface
 
@@ -151,6 +167,7 @@ add_interface_port status status_ctrl_state ctrl_state Output 2
 add_interface_port status status_lane_cgs_state lane_cgs_state Output 2*NUM_LANES
 add_interface_port status status_lane_ifs_ready lane_ifs_ready Output NUM_LANES
 add_interface_port status status_lane_latency lane_latency Output 14*NUM_LANES
+add_interface_port status status_lane_emb_state lane_emb_state Output 3*NUM_LANES
 add_interface_port status status_err_statistics_cnt err_statistics_cnt Output 32*NUM_LANES
 add_interface_port status status_lane_frame_align_err_cnt lane_frame_align_err_cnt Output 8*NUM_LANES
 add_interface_port status status_synth_params0 synth_params0 Output 32
@@ -181,7 +198,7 @@ add_interface_port ilas_config ilas_config_valid valid Output NUM_LANES
 add_interface rx_eof conduit end
 #set_interface_property rx_eof associatedClock clock
 #set_interface_property rx_eof associatedReset reset
-add_interface_port rx_eof rx_eof export Output 4
+add_interface_port rx_eof rx_eof export Output TPL_DATA_PATH_WIDTH
 set_port_property rx_eof TERMINATION TRUE
 
 # rx_sof interface
@@ -189,7 +206,7 @@ set_port_property rx_eof TERMINATION TRUE
 add_interface rx_sof conduit end
 #set_interface_property rx_sof associatedClock clock
 #set_interface_property rx_sof associatedReset reset
-add_interface_port rx_sof rx_sof export Output 4
+add_interface_port rx_sof rx_sof export Output TPL_DATA_PATH_WIDTH
 
 # lmfc_clk interface
 
@@ -210,6 +227,7 @@ set_port_property lmfc_edge TERMINATION TRUE
 proc jesd204_rx_elaboration_callback {} {
   set num_lanes [get_parameter_value "NUM_LANES"]
   set tpl_width [get_parameter_value "TPL_DATA_PATH_WIDTH"]
+  set phy_width [get_parameter_value "DATA_PATH_WIDTH"]
 
   # rx_data interface
 
@@ -224,21 +242,34 @@ proc jesd204_rx_elaboration_callback {} {
 
   for {set i 0 } {$i < $num_lanes} {incr i} {
     add_interface rx_phy${i} conduit end
-#    set_interface_property rx_phy${i} associatedClock clock
-#    set_interface_property rx_phy${i} associatedReset reset
-    add_interface_port rx_phy${i} rx_phy${i}_data char Input 32
+
+    add_interface_port rx_phy${i} rx_phy${i}_data char Input [expr 8*$phy_width]
     set_port_property rx_phy${i}_data fragment_list \
-      [format "phy_data(%d:%d)" [expr 32*$i+31] [expr 32*$i]]
-    add_interface_port rx_phy${i} rx_phy${i}_charisk charisk Input 4
+      [format "phy_data(%d:%d)" [expr (8*$phy_width)*($i+1)-1] [expr 8*$phy_width*$i]]
+
+    add_interface_port rx_phy${i} rx_phy${i}_charisk charisk Input $phy_width
     set_port_property rx_phy${i}_charisk fragment_list \
-      [format "phy_charisk(%d:%d)" [expr 4*$i+3] [expr 4*$i]]
-    add_interface_port rx_phy${i} rx_phy${i}_disperr disperr Input 4
+      [format "phy_charisk(%d:%d)" [expr $phy_width*($i+1)-1] [expr $phy_width*$i]]
+
+    add_interface_port rx_phy${i} rx_phy${i}_disperr disperr Input $phy_width
     set_port_property rx_phy${i}_disperr fragment_list \
-      [format "phy_disperr(%d:%d)" [expr 4*$i+3] [expr 4*$i]]
-    add_interface_port rx_phy${i} rx_phy${i}_notintable notintable Input 4
+      [format "phy_disperr(%d:%d)" [expr $phy_width*($i+1)-1] [expr $phy_width*$i]]
+
+    add_interface_port rx_phy${i} rx_phy${i}_notintable notintable Input $phy_width
     set_port_property rx_phy${i}_notintable fragment_list \
-      [format "phy_notintable(%d:%d)" [expr 4*$i+3] [expr 4*$i]]
+      [format "phy_notintable(%d:%d)" [expr $phy_width*($i+1)-1] [expr $phy_width*$i]]
+
     add_interface_port rx_phy${i} rx_phy${i}_patternalign_en patternalign_en Output 1
     set_port_property rx_phy${i}_patternalign_en fragment_list "phy_en_char_align"
+
+    if {[get_parameter_value "LINK_MODE"]==2} {
+      add_interface_port rx_phy${i} rx_phy${i}_header header Input 2
+      set_port_property rx_phy${i}_header fragment_list \
+        [format "phy_header(%d:%d)" [expr 2*($i+1)-1] [expr 2*$i]]
+
+      add_interface_port rx_phy${i} rx_phy${i}_block_sync block_sync Input 1
+      set_port_property rx_phy${i}_block_sync fragment_list \
+        [format "phy_block_sync(%d:%d)" [expr $i] [expr $i]]
+    }
   }
 }

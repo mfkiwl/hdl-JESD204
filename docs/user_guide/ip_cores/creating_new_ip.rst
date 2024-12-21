@@ -32,7 +32,7 @@ One file can have more than one register map, and they are bounded by the header
 .. code::
 
    TITLE
-   [USING <regmap_to_inherit>]
+   [USING <regmap_to_inherit> ...]
    <title> (<ip_name>)
    <unique_id>
    ENDTITLE
@@ -46,8 +46,8 @@ Example:
    AXI_SPI_ENGINE
    ENDTITLE
 
-The ``USING`` line is only present if the register map imports other register
-map :ref:`for look-up <hdl-regmap-using>`.
+The ``USING`` method is only present if the register map imports other register
+maps :ref:`for look-up <hdl-regmap-using>`.
 
 The register and fields are defined with the following syntax:
 
@@ -55,14 +55,14 @@ The register and fields are defined with the following syntax:
 
 
    REG
-   0x00000000
+   <address>
    [WHERE n IS ...]
    <name>
    <description>
    ENDREG
 
    FIELD
-   [31:0] 0x00000000
+   [31:0] <default>
    [WHERE n IS ...]
    <description>
    <access>
@@ -100,19 +100,70 @@ For example:
 The ``WHERE`` line is only present if using ranged :ref:`register/fields <hdl-regmap-ranged>`.
 
 Noticed that the description can be multi-line and can also include Sphinx
-syntax, parsed during build
+syntax, parsed during build.
 The file content is always 90-columns wide.
-A field default value shall be a parameter, by escaping it with "double" single
-quotes ``''``, e.g.
+There are multiple ways to define the default value for a field.
+All parameter values used for defining or calculating the default
+value of a field must be a configuration parameter.
+In cases where expressions are used to calculate the field values, these
+must be compatible SystemVerilog, as the expressions are used in the
+simulation environment as well.
 
 .. code::
 
    FIELD
-   [31:0] ''ID''
+   [31:0]
+   SCRATCH
+   RO
+   Value of the Scratch field is undefined.
+   In a simulation environment this value appears as X for all bits.
+   ENDFIELD
+
+   FIELD
+   [31:0] 0x12345678
+   VERSION
+   RO
+   Value of the Version is hardcoded in the IP.
+   ENDFIELD
+
+   FIELD
+   [31:0] ID
    PERIPHERAL_ID
    RO
    Value of the ID configuration parameter.
    In case of multiple instances, each instance will have a unique ID.
+   ENDFIELD
+
+   FIELD
+   [31:0] SPECIAL = (VALUE1+(VALUE2-VALUE3)*VALUE4)/VALUE5
+   SPECIAL
+   RO
+   Value of the SPECIAL field is calculated using an expression.
+   Example of simple operations
+   ENDFIELD
+
+   FIELD
+   [31:0] SPECIAL = (VALUE1>VALUE2)?VALUE3:VALUE4
+   SPECIAL
+   RO
+   Value of the SPECIAL field is calculated using an expression.
+   Example of conditional calculation
+   ENDFIELD
+
+   FIELD
+   [31:0] SPECIAL = `MAX(VALUE1,`MIN(VALUE2,VALUE3))
+   SPECIAL
+   RO
+   Value of the SPECIAL field is calculated using an expression.
+   Example of min and max value calculation
+   ENDFIELD
+
+   FIELD
+   [31:0] SPECIAL = $clog2(VALUE1**VALUE2)
+   SPECIAL
+   RO
+   Value of the SPECIAL field is calculated using an expression.
+   Example of log2 and exponentiation calculation
    ENDFIELD
 
 Examples:
@@ -126,6 +177,20 @@ Examples:
 Importing with Using Method
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+The ``USING`` method allows to look-up a register map to import register and
+fields.
+A register map can look-up multiple register maps by repeating the method for
+each register map, for example:
+
+.. code::
+
+   TITLE
+   USING COMMON_REGS
+   USING COMMON_REGS_EXTRA
+   My IP (my_ip)
+   MY_IP
+   ENDTITLE
+
 If using the ``USING`` method for look-up, registers and fields are imported
 with the following syntax:
 
@@ -136,9 +201,10 @@ with the following syntax:
    ENDREG
 
    FIELD
-   <field_to_import>
+   [<field_to_import> ...]
    ENDFIELD
 
+That means, only include the register/field name, and nothing else.
 For example:
 
 .. code::
@@ -152,6 +218,19 @@ For example:
    SYMB_8_16B
    ENDFIELD
 
+If inheriting registers from multiple register maps, consider explicitly
+setting the source register map:
+
+.. code::
+
+   REG
+   COMMON_EXTRA.CTRL
+   ENDREG
+
+   FIELD
+   SOME_FIELD
+   ENDFIELD
+
 Some considerations:
 
 * Imported registers shall have non-imported fields, for example, when importing
@@ -159,6 +238,8 @@ Some considerations:
 * Imported fields must be inside a imported register, since the field name is not
   unique.
 * Multiple fields can be imported from a single ``FIELD`` group.
+* Multiple register maps can be used for lookup. Add each in a different ``USING``
+  method.
 
 .. _hdl-regmap-ranged:
 
@@ -166,10 +247,19 @@ Ranged Registers and Fields
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Registers and fields can use a special ``n`` variable and the ``WHERE`` method
-to define an incrementing/repeating register/field.
+to define an incrementing/repeating register/field. There is an option increase
+the address increment value by an additional parameter. This parameter must be
+in hexadecimal format as well.
 The syntax is ``WHERE n IS FROM <lower> TO <UPPER>``, for example, for registers:
 
 .. code::
+
+    REG
+    0x0102 + n
+    WHERE n IS FROM 0 TO 15
+    CHAN_CNTRLn_3
+    DAC Channel Control & Status (channel - 0)
+    ENDREG
 
     REG
     0x0102 + 0x16*n
@@ -178,7 +268,7 @@ The syntax is ``WHERE n IS FROM <lower> TO <UPPER>``, for example, for registers
     DAC Channel Control & Status (channel - 0)
     ENDREG
 
-and for fields:
+And for fields:
 
 .. code::
 
@@ -189,6 +279,13 @@ and for fields:
    RW
    Controls the EYESCANRESET pin of the GTH/GTY transceivers for lane n.
    ENDFIELD
+
+To ease the process of creating a new regmap with imported registers you can
+use the generic adc/dac templates that include all available registers:
+
+* :git-hdl:`docs/regmap/adi_regmap_common_template.txt`
+* :git-hdl:`docs/regmap/adi_regmap_axi_adc_template.txt`
+* :git-hdl:`docs/regmap/adi_regmap_axi_dac_template.txt`
 
 Xilinx
 --------------------------------------------------------------------------------

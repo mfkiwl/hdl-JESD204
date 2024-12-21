@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright (C) 2018-2023 Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2018-2024 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -36,7 +36,7 @@
 `timescale 1ns/100ps
 
 module regmap_tb;
-  parameter VCD_FILE = {`__FILE__,"cd"};
+  parameter VCD_FILE = {"regmap_tb.vcd"};
 
   `define TIMEOUT 1000000
   `include "tb_base.v"
@@ -169,9 +169,9 @@ module regmap_tb;
     for (i = 0; i < NUM_REGS; i = i + 1)
       expected_reg_mem[i] <= 'h00;
     /* Non zero power-on-reset values */
-    set_reset_reg_value('h00, 32'h00040361); /* PCORE version register */
+    set_reset_reg_value('h00, 32'h00040564); /* PCORE version register */
     set_reset_reg_value('h0c, 32'h444d4143); /* PCORE magic register */
-    set_reset_reg_value('h10, 32'h00002101); /* Interface Description*/
+    set_reset_reg_value('h10, 32'h00072101); /* Interface Description*/
     set_reset_reg_value('h80, 'h3); /* IRQ mask */
 
     set_reset_reg_value('h40c, 'h3); /* Flags */
@@ -412,6 +412,7 @@ module regmap_tb;
     .irq(irq),
 
     .response_eot(response_eot),
+    .response_sg_desc_id('h0),
     .response_measured_burst_length(response_measured_burst_length),
     .response_partial(response_partial),
     .response_valid(response_valid),

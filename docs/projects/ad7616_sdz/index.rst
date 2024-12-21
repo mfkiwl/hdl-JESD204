@@ -26,32 +26,34 @@ high-speed serial and parallel interfaces.
 Supported boards
 -------------------------------------------------------------------------------
 
--  :adi:`EVAL-AD7616 <EVAL-AD7616>`
+- :adi:`EVAL-AD7616`
 
 Supported devices
 -------------------------------------------------------------------------------
 
--  :adi:`AD7616`
+- :adi:`AD7616`
 
 Supported carriers
 -------------------------------------------------------------------------------
 
--  :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
--  :xilinx:`ZC706` on FMC LPC slot
+- :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
+- :xilinx:`ZC706` on FMC LPC slot
 
 Other required hardware
 -------------------------------------------------------------------------------
 
--   :adi:`SDP-I-FMC <EVAL-SDP-I-FMC>`
+- :adi:`SDP-I-FMC <EVAL-SDP-I-FMC>`
 
 Block design
 -------------------------------------------------------------------------------
 
 The data path of the HDL design is simple as follows:
 
--  the parallel interface is controlled by the axi_ad7616 IP core
--  the serial interface is controlled by the SPI Engine Framework
--  data is written into memory by a DMA (axi_dmac core)
+-  the parallel interface is controlled by the
+   :dokuwiki:`axi_ad7616 <resources/fpga/docs/axi_ad7616>` IP core
+-  the serial interface is controlled by the :ref:`SPI_Engine <spi_engine>`
+   Framework
+-  data is written into memory by a DMA (:ref:`axi_dmac core <axi_dmac>`)
 -  all the control pins of the device are driven by GPIOs
 
 Block diagram
@@ -78,29 +80,29 @@ AD7616_SDZ parallel interface
 Configuration modes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The SER_PAR_N configuration parameter defines the interface type (Serial or
-Parallel). By default it is set to 1. Depending on the required interface mode,
+The INTF configuration parameter defines the interface type (Serial or
+Parallel). By default it is set to Parallel (0). Depending on the required interface mode,
 some hardware modifications need to be done on the board and/or make command:
 
 In case of the **PARALLEL** interface:
 
-.. code-block::
+.. shell:: bash
 
-   make SER_PAR_N=0
+   $make INTF=0
 
 In case of the **SERIAL** interface:
 
-.. code-block::
+.. shell:: bash
 
-   make SER_PAR_N=1
+   $make INTF=1
 
 .. note::
 
    This switch is a *hardware* switch. Please rebuild the  design if the
    variable has been changed.
 
-   -   SL5 - unmounted - Parallel interface
-   -   SL5 - mounted - Serial interface
+   - SL5 - unmounted - Parallel interface
+   - SL5 - mounted - Serial interface
 
 Jumper setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,13 +125,12 @@ CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The addresses are dependent on the architecture of the FPGA, having an offset
-added to the base address from HDL(see more at :ref:`architecture`).
+added to the base address from HDL(see more at :ref:`architecture cpu-intercon-addr`).
 
 ========================  ===========
-Instance                  Address
+Instance                  Zynq
 ========================  ===========
 axi_ad7616_dma            0x44A3_0000
-spi_clkgen                0x44A7_0000
 ad7616_pwm_gen            0x44B0_0000
 spi_ad7616_axi_regmap **  0x44A0_0000
 axi_ad7616 *              0x44A8_0000
@@ -138,8 +139,8 @@ axi_ad7616 *              0x44A8_0000
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated only for SER_PAR_N=0 (parallel interface)
-   -   ``**`` instantiated only for SER_PAR_N=1 (serial interface)
+   - ``*`` instantiated only for INTF=0 (parallel interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
 I2C connections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -185,7 +186,7 @@ GPIOs
 
 The Software GPIO number is calculated as follows:
 
--  Zynq-7000: if PS7 is used, then offset is 54
+- Zynq-7000: if PS7 is used, then offset is 54
 
 .. list-table::
    :widths: 25 25 25 25
@@ -231,7 +232,7 @@ The Software GPIO number is calculated as follows:
 .. admonition:: Legend
    :class: note
 
-   -   ``**`` instantiated only for SER_PAR_N=1 (serial interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
 Interrupts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -249,37 +250,39 @@ axi_ad7616 *    10  54         87
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated only for SER_PAR_N=0 (parallel interface)
-   -   ``**`` instantiated only for SER_PAR_N=1 (serial interface)
+   - ``*`` instantiated only for INTF=0 (parallel interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
 Building the HDL project
 -------------------------------------------------------------------------------
 
 The design is built upon ADI's generic HDL reference design framework.
-ADI does not distribute the bit/elf files of these projects so they
-must be built from the sources available :git-hdl:`here </>`. To get
-the source you must
+ADI distributes the bit/elf files of these projects as part of the
+:dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
+If you want to build the sources, ADI makes them available on the
+:git-hdl:`HDL repository </>`. To get the source you must
 `clone <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`__
 the HDL repository, and then build the project as follows:.
 
 **Linux/Cygwin/WSL**
 
-.. code-block::
-   :linenos:
+.. shell::
 
-   user@analog:~$ cd hdl/projects/ad7616_sdz/zed
-   user@analog:~/hdl/projects/ad7616_sdz/zed$ make SER_PAR_N=0
+   $cd hdl/projects/ad7616_sdz/zed
+   $make INTF=0
+
+The default configuration is Parallel Mode (0).
 
 The result of the build, if parameters were used, will be in a folder named
 by the configuration used:
 
 if the following command was run
 
-``make SER_PAR_N=0``
+``make INTF=0``
 
 then the folder name will be:
 
-``SERPARN0``
+``INTF0``
 
 A more comprehensive build guide can be found in the :ref:`build_hdl` user guide.
 
@@ -291,13 +294,13 @@ Connections and hardware changes
    **The following hardware changes are required:**
 
    (**Please note:** Because of the **SDP-I-FMC** the level of the **VADJ** in
-   the carrier board needs to be set to **3.3V**.
+   the carrier board needs to be set to **3.3V**.)
 
    Depending on the required interface mode, some hardware modifications need to
    be done.
 
-   -   **SL5** - unmounted - Parallel interface
-   -   **SL5** - mounted - Serial interface
+   - **SL5** - unmounted - Parallel interface
+   - **SL5** - mounted - Serial interface
 
 Resources
 -------------------------------------------------------------------------------
@@ -305,14 +308,13 @@ Resources
 Hardware related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Product datasheet: :adi:`AD7616`
-
--  `UG-1012, Evaluation Board User Guide <https://www.analog.com/media/en/technical-documentation/user-guides/EVAL-AD7616SDZ-7616-PSDZ-UG-1012.pdf>`__
+- Product datasheet: :adi:`AD7616`
+- `UG-1012, Evaluation Board User Guide <https://www.analog.com/media/en/technical-documentation/user-guides/EVAL-AD7616SDZ-7616-PSDZ-UG-1012.pdf>`__
 
 HDL related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-hdl:`AD7616_SDZ HDL project source code <projects/ad7616_sdz>`
+- :git-hdl:`AD7616_SDZ HDL project source code <projects/ad7616_sdz>`
 
 .. list-table::
    :widths: 30 35 35
@@ -326,61 +328,62 @@ HDL related
      - ---
    * - AXI_AD7616
      - :git-hdl:`library/axi_ad7616` *
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_ad7616>`
-   * - AXI_CLKGEN
-     - :git-hdl:`library/axi_clkgen`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_clkgen>`
+     - :ref:`axi_ad7616`
    * - AXI_DMAC
      - :git-hdl:`library/axi_dmac`
-     - :ref:`here <axi_dmac>`
+     - :ref:`axi_dmac`
+   * - AXI_CLKGEN
+     - :git-hdl:`library/axi_clkgen`
+     - :ref:`axi_clkgen`
    * - AXI_HDMI_TX
      - :git-hdl:`library/axi_hdmi_tx`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_hdmi_tx>`
+     - :ref:`axi_hdmi_tx`
    * - AXI_I2S_ADI
      - :git-hdl:`library/axi_i2s_adi`
      - ---
    * - AXI_PWM_GEN
      - :git-hdl:`library/axi_pwm_gen`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_pwm_gen>`
+     - :ref:`axi_pwm_gen`
    * - AXI_SPDIF_TX
      - :git-hdl:`library/axi_spdif_tx`
      - ---
    * - AXI_SPI_ENGINE
      - :git-hdl:`library/spi_engine/axi_spi_engine`  **
-     - :ref:`here <spi_engine axi>`
+     - :ref:`spi_engine axi`
    * - AXI_SYSID
      - :git-hdl:`library/axi_sysid`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :ref:`axi_sysid`
    * - SPI_ENGINE_EXECUTION
      - :git-hdl:`library/spi_engine/spi_engine_execution` **
-     - :ref:`here <spi_engine execution>`
+     - :ref:`spi_engine execution`
    * - SPI_ENGINE_INTERCONNECT
      - :git-hdl:`library/spi_engine/spi_engine_interconnect` **
-     - :ref:`here <spi_engine interconnect>`
+     - :ref:`spi_engine interconnect`
    * - SPI_ENGINE_OFFLOAD
      - :git-hdl:`library/spi_engine/spi_engine_offload` **
-     - :ref:`here <spi_engine offload>`
+     - :ref:`spi_engine offload`
    * - SYNC_BITS
      - :git-hdl:`library/util_cdc/sync_bits.v`
      - ---
    * - SYSID_ROM
      - :git-hdl:`library/sysid_rom`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :ref:`here <axi_sysid>`
+   * - UTIL_CPACK2
+     - :git-hdl:`library/util_pack/util_cpack2` *
+     - :ref:`here <util_cpack2>`
 
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated only for SER_PAR_N=0 (parallel interface)
-   -   ``**`` instantiated only for SER_PAR_N=1 (serial interface)
+   - ``*`` instantiated only for INTF=0 (parallel interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
--  :ref:`SPI Engine Framework documentation <spi_engine>`
+- :ref:`SPI Engine Framework documentation <spi_engine>`
 
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-no-os:`AD7616_SDZ No-OS project source code <projects/ad7616-sdz>`
-
--  :dokuwiki:`How to build No-OS <resources/no-os/build>`
+- :git-no-os:`AD7616_SDZ No-OS project source code <projects/ad7616-sdz>`
 
 .. include:: ../common/more_information.rst
 

@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright (C) 2018-2023 Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2018-2024 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -36,7 +36,7 @@
 `timescale 1ns/100ps
 
 module dma_write_tb;
-  parameter VCD_FILE = {`__FILE__,"cd"};
+  parameter VCD_FILE = {"dma_write_tb.vcd"};
   parameter WIDTH_DEST = 32;
   parameter WIDTH_SRC = 32;
   parameter REQ_LEN_INC = 4;
@@ -149,12 +149,12 @@ module dma_write_tb;
     .req_dest_stride(24'h00),
     .req_src_stride(24'h00),
     .req_sync_transfer_start(1'b0),
+    .req_sync(1'b1),
 
     .fifo_wr_clk(clk),
     .fifo_wr_en(fifo_wr_en),
     .fifo_wr_din(fifo_wr_din),
     .fifo_wr_overflow(fifo_wr_overflow),
-    .fifo_wr_sync(1'b1),
     .fifo_wr_xfer_req(fifo_wr_xfer_req));
 
   always @(posedge clk) begin: fifo_wr

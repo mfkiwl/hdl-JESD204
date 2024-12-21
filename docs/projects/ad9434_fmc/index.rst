@@ -11,7 +11,7 @@ The :adi:`AD9434` is a 12-bit monolithic sampling analog-to-digital converter
 operates at up to a 500 MSPS conversion rate and is optimized for outstanding
 dynamic performance in wideband carrier and broadband systems. All necessary
 functions, including a sample-and-hold and voltage reference, are included on
-the chip to provide a complete signal conversion solution. This reference 
+the chip to provide a complete signal conversion solution. This reference
 design includes a data capture interface and the external DDR-DRAM interface
 for sample storage. It allows programming the device and monitoring its internal
 status registers. The board also provides other options to drive the clock and
@@ -76,11 +76,19 @@ For LVPECL and LVDS configurations, appropriate charge pump filter circuit
 values are necessary to have an optimized clock buffer performance from
 :adi:`AD9517-4`.
 
+.. warning::
+
+   On Zedboard, the frequency is set to 463.82MHz, because there is a limitation
+   for BUFG input clock frequency to 464MHz, which is below the maximum
+   sampling rate of the ADC (500MSPS).
+
+   Thus the adc_clk period is set to 2.156ns (463.82MHz) on Zedboard.
+
 CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The addresses are dependent on the architecture of the FPGA, having an offset
-added to the base address from HDL(see more at :ref:`architecture`).
+added to the base address from HDL(see more at :ref:`architecture cpu-intercon-addr`).
 
 ==================== ===============
 Instance             Zynq/Microblaze
@@ -106,7 +114,7 @@ SPI connections
      - 1
    * - PS
      - SPI 0
-     - AD9434BCPZ
+     - AD9434
      - 0
 
 Interrupts
@@ -127,9 +135,10 @@ Building the HDL project
 -------------------------------------------------------------------------------
 
 The design is built upon ADI's generic HDL reference design framework.
-ADI does not distribute the bit/elf files of these projects so they
-must be built from the sources available :git-hdl:`here </>`. To get
-the source you must
+ADI distributes the bit/elf files of these projects as part of the
+:dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
+If you want to build the sources, ADI makes them available on the
+:git-hdl:`HDL repository </>`. To get the source you must
 `clone <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`__
 the HDL repository.
 
@@ -139,10 +148,10 @@ make command by typing in your command prompt (this example is for
 
 **Linux/Cygwin/WSL**
 
-.. code-block::
+.. shell::
 
-   user@analog:~$ cd hdl/projects/ad9434_fmc/zc706
-   user@analog:~/hdl/projects/ad9434_fmc/zc706$ make
+   $cd hdl/projects/ad9434_fmc/zc706
+   $make
 
 A more comprehensive build guide can be found in the :ref:`build_hdl` user
 guide.
@@ -167,13 +176,14 @@ Here you can find the quick start guides available for these evaluation boards:
 Hardware related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- Product datasheets: :adi:`AD9434`
+- Product datasheet: :adi:`AD9434`
+- Schematic file: `ad9434_fmc_500ebz_sch.pdf <https://wiki.analog.com/_media/resources/eval/ad9434_fmc_500ebz_sch.pdf>`__
 - :dokuwiki:`EVAL-AD9434 user guide <resources/eval/ad9434fmc-500ebz>`
 
 HDL related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-hdl:`AD9434-FMC HDL project source code <projects/ad9434_fmc>`
+- :git-hdl:`AD9434-FMC HDL project source code <projects/ad9434_fmc>`
 
 .. list-table::
    :widths: 30 35 35
@@ -183,26 +193,26 @@ HDL related
      - Source code link
      - Documentation link
    * - AXI_AD9434
-     - :git-hdl:`library/axi_ad9434 <library/axi_ad9434>`
+     - :git-hdl:`library/axi_ad9434`
      - ---
    * - AXI_DMAC
-     - :git-hdl:`library/axi_dmac <library/axi_dmac>`
-     - :ref:`here <axi_dmac>`
+     - :git-hdl:`library/axi_dmac`
+     - :ref:`axi_dmac`
    * - AXI_CLKGEN
-     - :git-hdl:`library/axi_clkgen <library/axi_clkgen>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_clkgen>`
+     - :git-hdl:`library/axi_clkgen`
+     - :ref:`axi_clkgen`
    * - AXI_HDMI_TX
-     - :git-hdl:`library/axi_hdmi_tx <library/axi_hdmi_tx>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_hdmi_tx>`
+     - :git-hdl:`library/axi_hdmi_tx`
+     - :ref:`axi_hdmi_tx`
    * - AXI_SPDIF_TX
-     - :git-hdl:`library/axi_spdif_tx <library/axi_spdif_tx>`
+     - :git-hdl:`library/axi_spdif_tx`
      - ---
    * - AXI_SYSID
-     - :git-hdl:`library/axi_sysid <library/axi_sysid>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :git-hdl:`library/axi_sysid`
+     - :ref:`axi_sysid`
    * - SYSID_ROM
-     - :git-hdl:`library/sysid_rom <library/sysid_rom>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :git-hdl:`library/sysid_rom`
+     - :ref:`axi_sysid`
 
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

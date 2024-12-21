@@ -3,19 +3,19 @@
 ADRV9026 HDL reference design
 ===============================================================================
 
-The ADRV9026 is a highly integrated, radio frequency (RF) agile transceiver 
-offering four independently controlled transmitters, dedicated observation 
-receiver inputs for monitoring each transmitter channel, four independently 
-controlled receivers, integrated synthesizers, and digital signal processing 
-functions providing a complete transceiver solution. The device provides the 
-performance demanded by cellular infrastructure applications, such as small 
-cell base station radios, macro 3G/4G/5G systems, and massive multiple 
+The ADRV9026 is a highly integrated, radio frequency (RF) agile transceiver
+offering four independently controlled transmitters, dedicated observation
+receiver inputs for monitoring each transmitter channel, four independently
+controlled receivers, integrated synthesizers, and digital signal processing
+functions providing a complete transceiver solution. The device provides the
+performance demanded by cellular infrastructure applications, such as small
+cell base station radios, macro 3G/4G/5G systems, and massive multiple
 in/multiple out (MIMO) base stations.
 
 Supported boards
 -------------------------------------------------------------------------------
 
--  :adi:`ADRV9026/ADRV9029 <EVAL-ADRV9026>`
+- :adi:`ADRV9026/ADRV9029 <EVAL-ADRV9026>`
 
 Supported carriers
 -------------------------------------------------------------------------------
@@ -28,11 +28,17 @@ Supported carriers
      - Carrier
      - FMC slot
    * - :adi:`ADRV9026/ADRV9029 <EVAL-ADRV9026>`
-     - `A10SoC`_
+     - :intel:`A10SoC <content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html>`
      - FMCA
    * -
      - :xilinx:`ZCU102`
      - FMC HPC1
+   * -
+     - :xilinx:`VCK190`
+     - FMCP1
+   * -
+     - :xilinx:`VCU118`
+     - FMCP
 
 Block design
 -------------------------------------------------------------------------------
@@ -52,23 +58,23 @@ Example block design for Single link; M=8; L=4
 
 The Rx links (ADC Path) operate with the following parameters:
 
--  Rx Deframer parameters: L=4, M=8, F=4, S=1, NP=16, N=16 
--  Sample Rate: 250 MSPS
--  Dual link: No
--  RX_DEVICE_CLK: 250 MHz (Lane Rate/40)
--  REF_CLK: 500MHz (Lane Rate/20)
--  JESD204B Lane Rate: 10Gbps
--  QPLL0 or CPLL
+- Rx Deframer parameters: L=4, M=8, F=4, S=1, NP=16, N=16
+- Sample Rate: 250 MSPS
+- Dual link: No
+- RX_DEVICE_CLK: 250 MHz (Lane Rate/40)
+- REF_CLK: 500MHz (Lane Rate/20)
+- JESD204B Lane Rate: 10Gbps
+- QPLL0 or CPLL
 
 The Tx links (DAC Path) operate with the following parameters:
 
--  Tx Framer parameters: L=4, M=8, F=4, S=1, NP=16, N=16 
--  Sample Rate: 250 MSPS
--  Dual link: No
--  TX_DEVICE_CLK: 250 MHz (Lane Rate/40)
--  REF_CLK: 500MHz (Lane Rate/20)
--  JESD204B Lane Rate: 10Gbps
--  QPLL0 or CPLL
+- Tx Framer parameters: L=4, M=8, F=4, S=1, NP=16, N=16
+- Sample Rate: 250 MSPS
+- Dual link: No
+- TX_DEVICE_CLK: 250 MHz (Lane Rate/40)
+- REF_CLK: 500MHz (Lane Rate/20)
+- JESD204B Lane Rate: 10Gbps
+- QPLL0 or CPLL
 
 Configuration modes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -85,23 +91,22 @@ for each project.
    **system_project.tcl** file, located in
    hdl/projects/adrv9026/$CARRIER/system_project.tcl
 
-.. warning::
-
-   ``Lane Rate = I/Q Sample Rate x M x N' x (10 \ 8) \ L``
+.. math::
+   Lane Rate = Sample Rate*\frac{M}{L}*N'* \frac{10}{8}
 
 The following are the parameters of this project that can be configured:
 
--  JESD_MODE: used link layer encoder mode
+- JESD_MODE: used link layer encoder mode
 
-   -  64B66B - 64b66b link layer defined in JESD204C
-   -  8B10B  - 8b10b link layer defined in JESD204B
+   - 64B66B - 64b66b link layer defined in JESD204C
+   - 8B10B - 8b10b link layer defined in JESD204B
 
--  RX_LANE_RATE: lane rate of the Rx link 
--  TX_LANE_RATE: lane rate of the Tx link 
--  [RX/TX]_JESD_M: number of converters per link
--  [RX/TX]_JESD_L: number of lanes per link
--  [RX/TX]_JESD_S: number of samples per frame
--  [RX/TX]_NUM_LINKS: number of links
+- RX_LANE_RATE: lane rate of the Rx link
+- TX_LANE_RATE: lane rate of the Tx link
+- [RX/TX]_JESD_M: number of converters per link
+- [RX/TX]_JESD_L: number of lanes per link
+- [RX/TX]_JESD_S: number of samples per frame
+- [RX/TX]_NUM_LINKS: number of links
 
 Clock scheme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -115,20 +120,20 @@ CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The addresses are dependent on the architecture of the FPGA, having an offset
-added to the base address from HDL (see more at :ref:`architecture`).
+added to the base address from HDL (see more at :ref:`architecture cpu-intercon-addr`).
 
-==================== ===========
-Instance             ZynqMP     
-==================== ===========
-axi_adrv9026_tx_jesd 0x84A90000 
-axi_adrv9026_rx_jesd 0x84AA0000
-axi_adrv9026_tx_dma  0x9c420000
-axi_adrv9026_rx_dma  0x9c400000
-tx_adrv9026_tpl_core 0x84A04000
-rx_adrv9026_tpl_core 0x84A00000
-axi_adrv9026_tx_xcvr 0x84A80000
-axi_adrv9026_rx_xcvr 0x84A60000
-==================== ===========
+==================== ==================== =============== =========== ===========
+Instance             Depends on parameter Zynq/Microblaze ZynqMP      Versal
+==================== ==================== =============== =========== ===========
+rx_adrv9026_tpl_core                      0x44A0_0000     0x84A0_0000 0xA4A0_0000
+tx_adrv9026_tpl_core                      0x44A0_4000     0x84A0_4000 0xA4A0_4000
+axi_adrv9026_rx_xcvr $ADI_PHY_SEL==1      0x44A6_0000     0x84A6_0000 0xA4A6_0000
+axi_adrv9026_tx_xcvr $ADI_PHY_SEL==1      0x44A8_0000     0x84A8_0000 0xA4A8_0000
+axi_adrv9026_tx_jesd                      0x44A9_0000     0x84A9_0000 0xA4A9_0000
+axi_adrv9026_rx_jesd                      0x44AA_0000     0x84AA_0000 0xA4AA_0000
+axi_adrv9026_rx_dma                       0x7C40_0000     0x9C40_0000 0xBC40_0000
+axi_adrv9026_tx_dma                       0x7C42_0000     0x9C42_0000 0xBC42_0000
+==================== ==================== =============== =========== ===========
 
 SPI connections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -145,13 +150,16 @@ SPI connections
      - spi0
      - ADRV9026
      - 0
-   * - 
-     - 
+   * -
+     -
      - AD9528
      - 1
 
 GPIOs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+ZCU102
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. list-table::
    :widths: 25 20 20 15
@@ -242,6 +250,98 @@ GPIOs
      - 50:32
      - 128:110
 
+VCU118
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. list-table::
+   :widths: 25 20 20 15
+   :header-rows: 2
+
+   * - GPIO signal
+     - Direction
+     - HDL GPIO EMIO
+     - Software GPIO
+   * -
+     - (from FPGA view)
+     -
+     - Microblaze
+   * - ad9528_reset_b
+     - INOUT
+     - 62
+     - 62
+   * - ad9528_reset_b
+     - INOUT
+     - 61
+     - 61
+   * - adrv9026_tx1_enable
+     - INOUT
+     - 60
+     - 60
+   * - adrv9026_tx2_enable
+     - INOUT
+     - 59
+     - 59
+   * - adrv9026_tx3_enable
+     - INOUT
+     - 58
+     - 58
+   * - adrv9026_tx4_enable
+     - INOUT
+     - 57
+     - 57
+   * - adrv9026_rx1_enable
+     - INOUT
+     - 56
+     - 56
+   * - adrv9026_rx2_enable
+     - INOUT
+     - 55
+     - 55
+   * - adrv9026_rx3_enable
+     - INOUT
+     - 54
+     - 54
+   * - adrv9026_rx4_enable
+     - INOUT
+     - 53
+     - 53
+   * - adrv9026_test
+     - INOUT
+     - 52
+     - 52
+   * - adrv9026_reset_b
+     - INOUT
+     - 51
+     - 51
+   * - adrv9026_gpint1
+     - INOUT
+     - 50
+     - 50
+   * - adrv9026_gpint2
+     - INOUT
+     - 49
+     - 49
+   * - adrv9026_orx_ctrl_a
+     - INOUT
+     - 48
+     - 48
+   * - adrv9026_orx_ctrl_b
+     - INOUT
+     - 47
+     - 47
+   * - adrv9026_orx_ctrl_c
+     - INOUT
+     - 46
+     - 46
+   * - adrv9026_orx_ctrl_d
+     - INOUT
+     - 45
+     - 45
+   * - adrv9026_gpio[0:18]
+     - INOUT
+     - 44:26
+     - 44:26
+
 Interrupts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -256,60 +356,70 @@ axi_adrv9026_tx_dma  13  108          140
 axi_adrv9026_rx_dma  14  109          141
 ==================== === ============ =============
 
+Microblaze
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+==================== === ============
+Instance name        HDL Microblaze
+==================== === ============
+axi_adrv9026_tx_jesd 15  15
+axi_adrv9026_rx_jesd 14  14
+axi_adrv9026_tx_dma  13  13
+axi_adrv9026_rx_dma  12  12
+==================== === ============
+
 Building the HDL project
 -------------------------------------------------------------------------------
 
 The design is built upon ADI's generic HDL reference design framework.
-ADI does not distribute the bit/elf files of these projects so they
-must be built from the sources available :git-hdl:`here </>`. To get
-the source you must
+ADI distributes the bit/elf files of these projects as part of the
+:dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
+If you want to build the sources, ADI makes them available on the
+:git-hdl:`HDL repository </>`. To get the source you must
 `clone <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`__
 the HDL repository.
 
-Then go to the :git-hdl:`projects/adrv9026 <projects/adrv9026>`
-location and run the make command by typing in your command prompt:
+Then go to the project location, choose your carrier and run the make command
+by typing in your command prompt:
 
 **Linux/Cygwin/WSL**
 
-.. code-block::
-   :linenos:
+.. shell::
 
-   user@analog:~$ cd hdl/projects/adrv9026/zcu102
-   user@analog:~/hdl/projects/adrv9026/zcu102$ make
+   $cd hdl/projects/adrv9026/zcu102
+   $make
 
-   user@analog:~$ cd hdl/projects/adrv9026/a10soc
-   user@analog:~/hdl/projects/adrv9026/a10soc$ make
+   $cd hdl/projects/adrv9026/a10soc
+   $make
 
 The following dropdowns contain tables with the parameters that can be used to
 configure this project, depending on the carrier used.
-Where a cell contains a --- (dash) it means that the parameter doesn't exist
-for that project (adrv9026/carrier or adrv9026/carrier).
 
-.. collapsible:: Default values of the ``make`` parameters for ADRV9026
+.. collapsible:: Default values of the make parameters for ADRV9026
 
    +-------------------+------------------------------------------------------+
    | Parameter         | Default value of the parameters depending on carrier |
    +-------------------+---------------------------+--------------------------+
-   |                   |           A10SoC          |          ZCU102          |
-   +===================+===========================+==========================+
-   | JESD_MODE         |           8B10B           |          8B10B           |
-   +-------------------+---------------------------+--------------------------+
-   | RX_LANE_RATE      |             10            |            10            |
-   +-------------------+---------------------------+--------------------------+
-   | TX_LANE_RATE      |             10            |            10            |
-   +-------------------+---------------------------+--------------------------+
-   | RX_JESD_M         |              8            |             8            |
-   +-------------------+---------------------------+--------------------------+
-   | RX_JESD_L         |              4            |             4            |
-   +-------------------+---------------------------+--------------------------+
-   | RX_JESD_S         |              1            |             1            |
-   +-------------------+---------------------------+--------------------------+
-   | TX_JESD_M         |              8            |             8            |
-   +-------------------+---------------------------+--------------------------+
-   | TX_JESD_L         |              4            |             4            |
-   +-------------------+---------------------------+--------------------------+
-   | TX_JESD_S         |              1            |             1            |
-   +-------------------+---------------------------+--------------------------+
+   |                   |             ZCU102/A10SoC/VCK190/VCU118              |
+   +===================+======================================================+
+   | JESD_MODE         |                       8B10B                          |
+   +-------------------+------------------------------------------------------+
+   | RX_LANE_RATE      |                         10                           |
+   +-------------------+------------------------------------------------------+
+   | TX_LANE_RATE      |                         10                           |
+   +-------------------+------------------------------------------------------+
+   | RX_JESD_M         |                          8                           |
+   +-------------------+------------------------------------------------------+
+   | RX_JESD_L         |                          4                           |
+   +-------------------+------------------------------------------------------+
+   | RX_JESD_S         |                          1                           |
+   +-------------------+------------------------------------------------------+
+   | TX_JESD_M         |                          8                           |
+   +-------------------+------------------------------------------------------+
+   | TX_JESD_L         |                          4                           |
+   +-------------------+------------------------------------------------------+
+   | TX_JESD_S         |                          1                           |
+   +-------------------+------------------------------------------------------+
 
 A more comprehensive build guide can be found in the :ref:`build_hdl` user guide.
 
@@ -352,7 +462,7 @@ Resources
 Systems related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :dokuwiki:`[Wiki] ADRV9026 & ADRV9029 Prototyping Platform User Guide <resources/eval/user-guides/adrv9025>`
+- :dokuwiki:`[Wiki] ADRV9026 & ADRV9029 Prototyping Platform User Guide <resources/eval/user-guides/adrv9025>`
 
 Here you can find the quick start guides available for these evaluation boards:
 
@@ -368,15 +478,13 @@ Here you can find the quick start guides available for these evaluation boards:
 Hardware related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Product datasheets:
-
-   -  :adi:`ADRV9026`
--  `UG-1578, Device User Guide <https://www.analog.com/media/radioverse-adrv9026/adrv9026-system-development-user-guide-ug-1727.pdf>`__
+- Product datasheet: :adi:`ADRV9026`
+- `UG-1578, Device User Guide <https://www.analog.com/media/radioverse-adrv9026/adrv9026-system-development-user-guide-ug-1727.pdf>`__
 
 HDL related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-hdl:`ADRV9026 HDL project source code <projects/adrv9026>`
+- :git-hdl:`ADRV9026 HDL project source code <projects/adrv9026>`
 
 .. list-table::
    :widths: 30 40 35
@@ -387,51 +495,49 @@ HDL related
      - Documentation link
    * - AXI_DMAC
      - :git-hdl:`library/axi_dmac`
-     - :ref:`here <axi_dmac>`
+     - :ref:`axi_dmac`
    * - AXI_SYSID
      - :git-hdl:`library/axi_sysid`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :ref:`axi_sysid`
    * - SYSID_ROM
      - :git-hdl:`library/sysid_rom`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
-   * - UTIL_CPACK2
-     - :git-hdl:`library/util_pack/util_cpack2`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/util_cpack>`
+     - :ref:`axi_sysid`
    * - UTIL_UPACK2
      - :git-hdl:`library/util_pack/util_upack2`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/util_upack>`
+     - :ref:`util_upack2`
+   * - UTIL_CPACK2
+     - :git-hdl:`library/util_pack/util_cpack2`
+     - :ref:`util_upack2`
    * - UTIL_ADXCVR for AMD
      - :git-hdl:`library/xilinx/util_adxcvr`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/util_xcvr>`
+     - :ref:`util_adxcvr`
    * - AXI_ADXCVR for Intel
      - :git-hdl:`library/intel/axi_adxcvr`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_adxcvr>`
+     - :ref:`axi_adxcvr intel`
    * - AXI_ADXCVR for AMD
      - :git-hdl:`library/xilinx/axi_adxcvr`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_adxcvr>`
+     - :ref:`axi_adxcvr amd`
    * - AXI_JESD204_RX
      - :git-hdl:`library/jesd204/axi_jesd204_rx`
-     - :dokuwiki:`[Wiki] <resources/fpga/peripherals/jesd204/axi_jesd204_rx>`
+     - :ref:`axi_jesd204_rx`
    * - AXI_JESD204_TX
      - :git-hdl:`library/jesd204/axi_jesd204_tx`
-     - :dokuwiki:`[Wiki] <resources/fpga/peripherals/jesd204/axi_jesd204_tx>`
+     - :ref:`axi_jesd204_tx`
    * - JESD204_TPL_ADC
      - :git-hdl:`library/jesd204/ad_ip_jesd204_tpl_adc`
-     - :dokuwiki:`[Wiki] <resources/fpga/peripherals/jesd204/jesd204_tpl_adc>`
+     - :ref:`ad_ip_jesd204_tpl_adc`
    * - JESD204_TPL_DAC
      - :git-hdl:`library/jesd204/ad_ip_jesd204_tpl_dac`
-     - :dokuwiki:`[Wiki] <resources/fpga/peripherals/jesd204/jesd204_tpl_dac>`
+     - :ref:`ad_ip_jesd204_tpl_dac`
 
--  :dokuwiki:`[Wiki] Generic JESD204B block designs <resources/fpga/docs/hdl/generic_jesd_bds>`
--  :ref:`jesd204`
+- :dokuwiki:`[Wiki] Generic JESD204B block designs <resources/fpga/docs/hdl/generic_jesd_bds>`
+- :ref:`jesd204`
 
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :dokuwiki:`[Wiki] ADRV9026 Linux driver wiki page <resources/tools-software/linux-drivers/iio-transceiver/adrv9025>`
+- :dokuwiki:`[Wiki] ADRV9026 Linux driver wiki page <resources/tools-software/linux-drivers/iio-transceiver/adrv9025>`
 
 .. include:: ../common/more_information.rst
 
 .. include:: ../common/support.rst
-
-.. _A10SoC: https://www.intel.com/content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html

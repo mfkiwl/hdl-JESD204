@@ -45,7 +45,7 @@
 /projects/ad7134_fmc/      pop.ioan-daniel@analog.com  sergiu.arpadi@analog.com
 
 # Code owners for ad719x_asdz folder
-/projects/ad719x_asdz/     iulia.moldovan@analog.com  cristianmihai.popa@analog.com
+/projects/ad719x_asdz/     iulia.moldovan@analog.com  stanca.pop@analog.com
 
 # Code owners for ad738x_fmc folder
 /projects/ad738x_fmc/      pop.ioan-daniel@analog.com  sergiu.arpadi@analog.com
@@ -115,9 +115,6 @@
 # Code owners for ad9783_ebz folder
 /projects/ad9783_ebz/       iulia.moldovan@analog.com  cristianmihai.popa@analog.com
 
-# Code owners for ad_fmclidar1_ebz folder
-/projects/ad_fmclidar1_ebz/ adrian.costina@analog.com andrei.grozav@analog.com
-
 # Code owners for ad_quadmxfe1_ebz folder
 /projects/ad_quadmxfe1_ebz/ filip.gherman@analog.com  iulia.moldovan@analog.com  laez.barbosa@analog.com
 
@@ -138,6 +135,9 @@
 
 # Code owners for adrv9026 folder
 /projects/adrv9026/         andrei.dragomir@analog.com  iulia.moldovan@analog.com
+
+# Code owners for adrv904x folder
+/projects/adrv904x/         andrei.dragomir@analog.com  iulia.moldovan@analog.com
 
 # Code owners for adrv9361z7035 folder
 /projects/adrv9361z7035/    andrei.grozav@analog.com  jorge.marques@analog.com
@@ -210,9 +210,6 @@
 
 # Code owners for fmcomms8 folder
 /projects/fmcomms8/         andrei.dragomir@analog.com  iulia.moldovan@analog.com
-
-# Code owners for imageon folder
-/projects/imageon/          alin-tudor.sferle@analog.com  adrian.costina@analog.com
 
 # Code owners for jupiter_sdr folder
 /projects/jupiter_sdr/      andrei.grozav@analog.com  alin-tudor.sferle@analog.com

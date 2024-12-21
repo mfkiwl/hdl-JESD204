@@ -27,6 +27,8 @@ ad_ip_files axi_dmac [list \
   $ad_hdl_dir/library/common/ad_mem_asym.v \
   inc_id.vh \
   resp.vh \
+  axi_dmac_ext_sync.v \
+  axi_dmac_framelock.v \
   axi_dmac_burst_memory.v \
   axi_dmac_regmap.v \
   axi_dmac_regmap_request.v \
@@ -60,7 +62,11 @@ set_qip_strings { "set_instance_assignment -name MESSAGE_DISABLE 276027 -entity 
 
 # parameters
 
+set tab_ip "General settings"
+add_display_item "" $tab_ip GROUP "tab"
+
 set group "General Configuration"
+add_display_item $tab_ip $group "group"
 
 add_parameter ID INTEGER 0
 set_parameter_property ID DISPLAY_NAME "Core ID"
@@ -84,6 +90,9 @@ add_parameter MAX_BYTES_PER_BURST INTEGER 128
 set_parameter_property MAX_BYTES_PER_BURST DISPLAY_NAME "Maximum bytes per burst"
 set_parameter_property MAX_BYTES_PER_BURST HDL_PARAMETER true
 set_parameter_property MAX_BYTES_PER_BURST GROUP $group
+
+set group "Endpoint Configuration"
+add_display_item $tab_ip $group "group"
 
 add_parameter DMA_AXI_ADDR_WIDTH INTEGER 32
 set_parameter_property DMA_AXI_ADDR_WIDTH DISPLAY_NAME "DMA AXI Address Width"
@@ -137,7 +146,7 @@ foreach {suffix group} { \
     "DEST" "Destination" \
   } {
 
-  add_display_item "Endpoint Configuration" $group "group"
+  add_display_item "Endpoint Configuration" $group "group" "tab"
 
   add_parameter DMA_TYPE_$suffix INTEGER 0
   set_parameter_property DMA_TYPE_$suffix DISPLAY_NAME "Type"
@@ -166,8 +175,17 @@ foreach {suffix group} { \
   set_parameter_property AXI_SLICE_$suffix GROUP $group
 }
 
+add_parameter AXIS_TUSER_SYNC INTEGER 1
+set_parameter_property AXIS_TUSER_SYNC DISPLAY_NAME "TUSER Synchronization"
+set_parameter_property AXIS_TUSER_SYNC DESCRIPTION "Transfer Start Synchronization on TUSER"
+set_parameter_property AXIS_TUSER_SYNC DISPLAY_HINT boolean
+set_parameter_property AXIS_TUSER_SYNC HDL_PARAMETER true
+set_parameter_property AXIS_TUSER_SYNC GROUP "Source"
+
 # FIFO interface
 set_parameter_property DMA_TYPE_SRC DEFAULT_VALUE 2
+
+add_display_item "Endpoint Configuration" "Scatter-Gather" "group"
 
 # Scatter-Gather interface
 add_parameter DMA_AXI_PROTOCOL_SG INTEGER 1
@@ -175,7 +193,7 @@ set_parameter_property DMA_AXI_PROTOCOL_SG DISPLAY_NAME "AXI Protocol"
 set_parameter_property DMA_AXI_PROTOCOL_SG HDL_PARAMETER true
 set_parameter_property DMA_AXI_PROTOCOL_SG ALLOWED_RANGES { "0:AXI4" "1:AXI3" }
 set_parameter_property DMA_AXI_PROTOCOL_SG VISIBLE true
-set_parameter_property DMA_AXI_PROTOCOL_SG GROUP $group
+set_parameter_property DMA_AXI_PROTOCOL_SG GROUP "Scatter-Gather"
 
 add_parameter DMA_DATA_WIDTH_SG INTEGER 64
 set_parameter_property DMA_DATA_WIDTH_SG DISPLAY_NAME "Bus Width"
@@ -183,9 +201,10 @@ set_parameter_property DMA_DATA_WIDTH_SG UNITS Bits
 set_parameter_property DMA_DATA_WIDTH_SG HDL_PARAMETER true
 set_parameter_property DMA_DATA_WIDTH_SG ALLOWED_RANGES {64}
 set_parameter_property DMA_DATA_WIDTH_SG VISIBLE true
-set_parameter_property DMA_DATA_WIDTH_SG GROUP $group
+set_parameter_property DMA_DATA_WIDTH_SG GROUP "Scatter-Gather"
 
 set group "Features"
+add_display_item $tab_ip $group "group"
 
 add_parameter CYCLIC INTEGER 1
 set_parameter_property CYCLIC DISPLAY_NAME "Cyclic Transfer Support"
@@ -218,7 +237,35 @@ set_parameter_property CACHE_COHERENT DISPLAY_HINT boolean
 set_parameter_property CACHE_COHERENT HDL_PARAMETER true
 set_parameter_property CACHE_COHERENT GROUP $group
 
+set group_2d "2D settings"
+add_display_item "Features" $group_2d "group"
+
+add_parameter DMA_2D_TLAST_MODE INTEGER 0
+set_parameter_property DMA_2D_TLAST_MODE DISPLAY_NAME "AXIS TLAST function"
+set_parameter_property DMA_2D_TLAST_MODE HDL_PARAMETER true
+set_parameter_property DMA_2D_TLAST_MODE ALLOWED_RANGES { "0:End of Frame" "1:End of Line" }
+set_parameter_property DMA_2D_TLAST_MODE GROUP $group_2d
+
+add_parameter FRAMELOCK INTEGER 0
+set_parameter_property FRAMELOCK DISPLAY_NAME "Frame Lock Support"
+set_parameter_property FRAMELOCK DISPLAY_HINT boolean
+set_parameter_property FRAMELOCK HDL_PARAMETER true
+set_parameter_property FRAMELOCK GROUP $group_2d
+
+add_parameter MAX_NUM_FRAMES_WIDTH INTEGER 4
+set_parameter_property MAX_NUM_FRAMES_WIDTH DISPLAY_NAME "Max Number Of Frame Buffers"
+set_parameter_property MAX_NUM_FRAMES_WIDTH HDL_PARAMETER true
+set_parameter_property MAX_NUM_FRAMES_WIDTH ALLOWED_RANGES {"2:4" "3:8" "4:16" "5:32"}
+set_parameter_property MAX_NUM_FRAMES_WIDTH GROUP $group_2d
+
+add_parameter USE_EXT_SYNC INTEGER 0
+set_parameter_property USE_EXT_SYNC DISPLAY_NAME "External Synchronization Support"
+set_parameter_property USE_EXT_SYNC DISPLAY_HINT boolean
+set_parameter_property USE_EXT_SYNC HDL_PARAMETER true
+set_parameter_property USE_EXT_SYNC GROUP $group
+
 set group "Clock Domain Configuration"
+add_display_item $tab_ip $group "group"
 
 add_parameter AUTO_ASYNC_CLK BOOLEAN 1
 set_parameter_property AUTO_ASYNC_CLK DISPLAY_NAME "Automatically Detect Clock Domains"
@@ -302,6 +349,7 @@ proc axi_dmac_validate {} {
   set auto_clk [get_parameter_value AUTO_ASYNC_CLK]
   set type_src [get_parameter_value DMA_TYPE_SRC]
   set type_dest [get_parameter_value DMA_TYPE_DEST]
+  set sync_start [get_parameter_value SYNC_TRANSFER_START]
 
   set max_burst 32768
 
@@ -376,6 +424,9 @@ proc axi_dmac_validate {} {
 
   set_parameter_property MAX_BYTES_PER_BURST ALLOWED_RANGES "1:$max_burst"
 
+  set_parameter_property AXIS_TUSER_SYNC ENABLED [expr {$type_src == 1 && $sync_start == 1} ? true : false]
+  set_parameter_property AXIS_TUSER_SYNC VISIBLE [expr {$type_src == 1} ? true : false]
+
   set cache_coherent [get_parameter_value CACHE_COHERENT]
   set axcache_auto [get_parameter_value AXI_AXCACHE_AUTO]
   set axprot_auto [get_parameter_value AXI_AXPROT_AUTO]
@@ -395,6 +446,18 @@ proc axi_dmac_validate {} {
 
   set_parameter_value AXI_AXCACHE [expr {$cache_coherent == true} ? [expr {$axcache_auto == true} ? $axcache_default : $axcache_manual] : $axcache_default]
   set_parameter_value AXI_AXPROT [expr {$cache_coherent == true} ? [expr {$axprot_auto == true} ? $axprot_default : $axprot_manual]  : $axprot_default]
+
+  if {([get_parameter_value CYCLIC] == 0 ||
+       [get_parameter_value DMA_2D_TRANSFER] == 0) &&
+       [get_parameter_value FRAMELOCK] == 1 } {
+    send_message error "FRAMELOCK can be set only in 2D Cyclic mode"
+  }
+
+  upvar defaults d
+  foreach {p desc} $d {
+    set_parameter_property $p ENABLED [get_parameter_value AUTORUN]
+  }
+
 }
 
 # conditional interfaces
@@ -472,8 +535,12 @@ ad_interface clock   fifo_wr_clk       input   1                       clk
 ad_interface signal  fifo_wr_en        input   1                       valid
 ad_interface signal  fifo_wr_din       input   DMA_DATA_WIDTH_SRC      data
 ad_interface signal  fifo_wr_overflow  output  1                       ovf
-ad_interface signal  fifo_wr_sync      input   1                       sync
 ad_interface signal  fifo_wr_xfer_req  output  1                       xfer_req
+
+ad_interface signal  sync              input   1                       sync
+# External synchronization interface
+ad_interface signal  src_ext_sync      input   1                       src_sync
+ad_interface signal  dest_ext_sync     input   1                       dest_sync
 
 proc add_axi_master_interface {axi_type port suffix} {
   add_interface $port $axi_type start
@@ -570,6 +637,7 @@ proc axi_dmac_elaborate {} {
   }
 
   # axis destination/source
+  set_display_item_property  "AXI Stream common config" VISIBLE false
 
   if {[get_parameter_value DMA_TYPE_DEST] != 1} {
     lappend disabled_intfs if_m_axis_aclk if_m_axis_xfer_req m_axis
@@ -592,6 +660,7 @@ proc axi_dmac_elaborate {} {
     if {[get_parameter_value HAS_AXIS_TUSER] == 0} {
       set_port_property m_axis_user termination true
     }
+    set_display_item_property  "AXI Stream common config" VISIBLE true
   }
 
   if {[get_parameter_value DMA_TYPE_SRC] != 1} {
@@ -623,6 +692,7 @@ proc axi_dmac_elaborate {} {
         set_port_property s_axis_user termination_value 0
       }
     }
+    set_display_item_property  "AXI Stream common config" VISIBLE true
   }
 
   # fifo destination/source
@@ -630,31 +700,66 @@ proc axi_dmac_elaborate {} {
   if {[get_parameter_value DMA_TYPE_DEST] != 2} {
     lappend disabled_intfs \
       if_fifo_rd_clk if_fifo_rd_en if_fifo_rd_valid if_fifo_rd_dout \
-	  if_fifo_rd_underflow if_fifo_rd_xfer_req
+      if_fifo_rd_underflow if_fifo_rd_xfer_req
   }
 
   if {[get_parameter_value DMA_TYPE_SRC] != 2} {
     lappend disabled_intfs \
       if_fifo_wr_clk if_fifo_wr_en if_fifo_wr_din if_fifo_wr_overflow \
-      if_fifo_wr_sync if_fifo_wr_xfer_req
+      if_fifo_wr_xfer_req
   }
 
-  if {[get_parameter_value DMA_TYPE_SRC] == 2 &&
-      [get_parameter_value SYNC_TRANSFER_START] == 0} {
-    set_port_property fifo_wr_sync termination true
-    set_port_property fifo_wr_sync termination_value 1
+  if {[get_parameter_value SYNC_TRANSFER_START] == 0 || \
+     ([get_parameter_value DMA_TYPE_SRC] == 1 && \
+      [get_parameter_value AXIS_TUSER_SYNC] == 1)} {
+    lappend disabled_intfs if_sync
   }
 
   if {[get_parameter_value ENABLE_DIAGNOSTICS_IF] != 1} {
     lappend disabled_intfs diagnostics_if
   }
 
+  if {[get_parameter_value USE_EXT_SYNC] != 1} {
+    lappend disabled_intfs \
+      if_src_ext_sync if_dest_ext_sync
+  }
+
   foreach intf $disabled_intfs {
     set_interface_property $intf ENABLED false
   }
+
+  if {[get_parameter_value FRAMELOCK] == 1} {
+    set_parameter_property MAX_NUM_FRAMES_WIDTH VISIBLE true
+
+    set flock_width [get_parameter_value MAX_NUM_FRAMES_WIDTH]
+    set flock_width [expr int($flock_width)]
+    # MM writer is master
+    if {[get_parameter_value DMA_TYPE_DEST] == 0 &&
+        [get_parameter_value DMA_TYPE_SRC] != 0} {
+      add_interface m_frame_lock_if conduit end
+      add_interface_port m_frame_lock_if m_frame_out       m2s_flock_if       Output $flock_width
+      add_interface_port m_frame_lock_if m_frame_out_valid m2s_flock_if_valid Output 1
+      add_interface_port m_frame_lock_if m_frame_in        s2m_flock_if       Input  $flock_width
+      add_interface_port m_frame_lock_if m_frame_in_valid  s2m_flock_if_valid Input  1
+    }
+    # MM reader is slave
+    if {[get_parameter_value DMA_TYPE_SRC]  == 0 &&
+        [get_parameter_value DMA_TYPE_DEST] != 0} {
+      add_interface s_frame_lock_if conduit end
+      add_interface_port s_frame_lock_if s_frame_in        m2s_flock_if       Input  $flock_width
+      add_interface_port s_frame_lock_if s_frame_in_valid  m2s_flock_if_valid Input  1
+      add_interface_port s_frame_lock_if s_frame_out       s2m_flock_if       Output $flock_width
+      add_interface_port s_frame_lock_if s_frame_out_valid s2m_flock_if_valid Output 1
+    }
+
+  } else {
+    set_parameter_property MAX_NUM_FRAMES_WIDTH VISIBLE false
+  }
+
 }
 
 set group "Debug"
+add_display_item $tab_ip $group "group"
 
 add_parameter DISABLE_DEBUG_REGISTERS INTEGER 0
 set_parameter_property DISABLE_DEBUG_REGISTERS DISPLAY_NAME "Disable debug registers"
@@ -671,7 +776,8 @@ set_parameter_property ENABLE_DIAGNOSTICS_IF GROUP $group
 add_interface diagnostics_if conduit end
 add_interface_port diagnostics_if dest_diag_level_bursts dest_diag_level_bursts Output "8"
 
-set group "AXI Stream interface common configuration"
+set group "AXI Stream common config"
+add_display_item "Endpoint Configuration" $group "group" "tab"
 
 add_parameter HAS_AXIS_TSTRB INTEGER 0
 set_parameter_property HAS_AXIS_TSTRB DISPLAY_NAME "AXI Stream interface has TSTRB"
@@ -718,3 +824,37 @@ set_parameter_property HAS_AXIS_TUSER DISPLAY_NAME "AXI Stream interface has TUS
 set_parameter_property HAS_AXIS_TUSER DISPLAY_HINT boolean
 set_parameter_property HAS_AXIS_TUSER HDL_PARAMETER false
 set_parameter_property HAS_AXIS_TUSER GROUP $group
+
+set tab_ip "Autorun settings"
+add_display_item "" $tab_ip GROUP "tab"
+
+add_parameter AUTORUN BOOLEAN 0
+set_parameter_property AUTORUN DISPLAY_NAME "Enable autorun mode"
+set_parameter_property AUTORUN DISPLAY_HINT boolean
+set_parameter_property AUTORUN HDL_PARAMETER true
+set_parameter_property AUTORUN GROUP $tab_ip
+
+set group "Register Defaults"
+add_display_item $tab_ip $group "group"
+
+set defaults [list \
+  "AUTORUN_FLAGS"            "Flags" \
+  "AUTORUN_SRC_ADDR"         "Source address" \
+  "AUTORUN_DEST_ADDR"        "Destination address" \
+  "AUTORUN_X_LENGTH"         "X length" \
+  "AUTORUN_Y_LENGTH"         "Y length" \
+  "AUTORUN_SRC_STRIDE"       "Source stride" \
+  "AUTORUN_DEST_STRIDE"      "Destination stride" \
+  "AUTORUN_SG_ADDRESS"       "Scatter-Gather start address" \
+  "AUTORUN_FRAMELOCK_CONFIG" "Framelock config" \
+  "AUTORUN_FRAMELOCK_STRIDE" "Framelock stride" \
+]
+
+foreach {p desc} $defaults {
+  add_parameter $p STD_LOGIC_VECTOR
+  set_parameter_property $p DISPLAY_NAME $desc
+  set_parameter_property $p HDL_PARAMETER true
+  set_parameter_property $p VISIBLE true
+  set_parameter_property $p GROUP $group
+  set_parameter_property $p WIDTH 32
+}

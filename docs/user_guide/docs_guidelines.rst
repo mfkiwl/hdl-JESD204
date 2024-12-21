@@ -8,8 +8,79 @@ all source code is available at the path :git-hdl:`docs`.
 
 To contribute to it, open a pull request with the changes to
 :git-hdl:`this repository </>`, just make sure to read the general
-:ref-doctools:`docs_guidelines` first **and** the additional guidelines
+:external+doctools:ref:`docs_guidelines` first **and** the additional guidelines
 below specific to the HDL repository.
+
+Before creating a new page
+--------------------------------------------------------------------------------
+
+This section has the sole role to present the steps that are required to be
+able to create and build a new documentation related page. Some steps are
+recommended to be revised regularly to keep the necessary tools updated.
+
+First, make sure you have the latest version of ``pip`` installed. It must be
+newer than 23 version. If not, update it by running the following command:
+
+.. shell:: bash
+   :no-path:
+
+   $pip install pip --upgrade
+
+Then install the necessary documentation tools by running (:git-hdl:`HDL <>`
+repository is the working directory):
+
+.. shell:: bash
+
+   ~/hdl
+   $cd docs/
+   $pip install -r requirements.txt --upgrade
+
+Use the same command to regularly update the documentation tools.
+Specially if something looks broken.
+
+Before building a page, it's recommended to build all the projects from
+``/library``. Some references (files used in specific parts of the page) are
+directly taken from the libraries' project folder (e.g.: ``/library/axi_dmac/component.xml``)
+after being built. Build the libraries by running:
+
+.. shell:: bash
+
+   ~/hdl
+   $cd library/
+   $make
+
+Now, after the page has been written, inside ``/docs`` folder run the following
+command:
+
+.. shell:: bash
+
+   ~/hdl
+   $cd docs/
+   $make html
+
+The generated documentation will be available at ``/docs/_build/html``.
+
+It's recommended to clean the cached data when changing the document structure,
+like adding a new page or if other major changes have been made.
+This is because Sphinx rebuilds only "touched" pages and, for example,
+adding a page changes the sidebar navigation for all pages.
+This is done by running the below commands (inside ``/docs`` folder):
+
+.. shell:: bash
+
+   ~/hdl/docs
+   $make clean
+   $make html
+
+Or more straight forward (clean & rebuild):
+
+.. shell:: bash
+
+   ~/hdl/docs
+   $make clean html
+
+Make sure to read the next chapters as they provide more info on how to write
+a HDL specific Sphinx documentation page.
 
 Templates
 --------------------------------------------------------------------------------
@@ -28,7 +99,7 @@ and make sure to remove any placeholder text and instructive comment.
 
    The old wiki uses `dokuwiki <https://www.dokuwiki.org/dokuwiki>`_. When
    importing text from there, consider ``pandoc`` and the tips accross the
-   :ref-doctools:`docs_guidelines` to convert it to reST.
+   :external+doctools:ref:`docs_guidelines` to convert it to reST.
 
 Common sections
 --------------------------------------------------------------------------------
@@ -42,7 +113,7 @@ they're not included in any toctree.
 
 They are inserted like this:
 
-.. code-block::
+.. code-block:: rst
 
    .. include:: ../common/more_information.rst
 

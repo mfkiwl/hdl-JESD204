@@ -27,43 +27,55 @@ lower Vdrive operation, diagnostics, additional oversampling ratios and per
 channel analog input range selection with bipolar differential, bipolar
 single-ended and unipolar single-ended options.
 
-The :adi:`EVAL-AD7606B-FMCZ <EVAL-AD7606B-FMCZ>` and
-:adi:`EVAL-AD7606C-18 <EVAL-AD7606C-18>` evaluation boards are designed to
-help users to easily evaluate the features of :adi:`AD7606B`,
+The :adi:`EVAL-AD7606B-FMCZ` and :adi:`EVAL-AD7606C-18` evaluation boards
+are designed to help users to easily evaluate the features of :adi:`AD7606B`,
 :adi:`AD7606C-16` and :adi:`AD7606C-18` analog-to-digital converters (ADCs).
 
 Supported boards
 -------------------------------------------------------------------------------
 
--  :adi:`EVAL-AD7606B <EVAL-AD7606B>`
--  :adi:`EVAL-AD7606C-16 <AD7606C-16>`
--  :adi:`EVAL-AD7606C-18 <EVAL-AD7606C-18>`
+- :adi:`EVAL-AD7606B`
+- :adi:`EVAL-AD7606C-16`
+- :adi:`EVAL-AD7606C-18`
+- :adi:`EVAL-AD7605-4`
+- :adi:`EVAL-AD7606-8`
+- :adi:`EVAL-AD7606-6`
+- :adi:`EVAL-AD7606-4`
+- :adi:`EVAL-AD7607`
+- :adi:`EVAL-AD7608`
+- :adi:`EVAL-AD7609`
 
 Supported devices
 -------------------------------------------------------------------------------
 
--  :adi:`AD7606B`
--  :adi:`AD7606C-16`
--  :adi:`AD7606C-18`
--  :adi:`ADP7118`
--  :adi:`ADR4525`
+- :adi:`AD7606B`
+- :adi:`AD7606C-16`
+- :adi:`AD7606C-18`
+- :adi:`AD7606`
+- :adi:`AD7606-6`
+- :adi:`AD7606-4`
+- :adi:`AD7607`
+- :adi:`AD7608`
+- :adi:`AD7609`
+- :adi:`ADP7118`
+- :adi:`ADR4525`
 
 Supported carriers
 -------------------------------------------------------------------------------
 
--  :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
+- :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
 
 Block design
 -------------------------------------------------------------------------------
 
 The data path of the HDL design is simple as follows:
 
--  the parallel interface is controlled by the
-   :dokuwiki:`axi_ad7606x <resources/fpga/docs/axi_ad7606x>` IP core
--  the serial interface is controlled by the :ref:`SPI_Engine <spi_engine>`
-   Framework
--  data is written into memory by a DMA (:ref:`axi_dmac core <axi_dmac>`)
--  all the control pins of the device are driven by GPIOs
+- the parallel interface is controlled by the
+  :ref:`axi_ad7606x IP core <axi_ad7606x>`
+- the serial interface is controlled by the :ref:`SPI_Engine <spi_engine>`
+  Framework
+- data is written into memory by a DMA (:ref:`axi_dmac core <axi_dmac>`)
+- all the control pins of the device are driven by GPIOs
 
 Block diagram
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -95,36 +107,29 @@ hardware modifications need to be done on the board and/or ``make`` command:
 
 In case of the **PARALLEL** interface:
 
-.. code-block::
+.. shell:: bash
 
-   make INTF=0
+   $make INTF=0
 
 In case of the **SERIAL** interface:
 
-.. code-block::
+.. shell:: bash
 
-   make INTF=1
+   $make INTF=1
 
 .. note::
 
    This switch is a **hardware** switch. Please rebuild the design if the
    variable has been changed.
 
-   -   JP5 - Position A - Serial interface
-   -   JP5 - Position B - Parallel interface
-
-The DEV_CONFIG configuration parameter defines the device which will be used:
--  Options: 0 - AD7606B, 1 - AD7606C-16, 2 - AD7606C-18.
-By default it is set to 0.
+   - JP5 - Position A - Serial interface
+   - JP5 - Position B - Parallel interface
 
 The NUM_OF_SDI configuration parameter defines the number of SDI lines used:
--  Options: 1, 2, 4, 8.
-By default is set to 8.
+**{1, 2, 4, 8}**. By default is set to 8.
 
-The EXT_CLK configuration parameter defines the external clock option for
-the ADC clock:
--  Options: 0 - No, 1 - Yes.
-By default is set to 0.
+The ADC_N_BITS configuration parameter specifies the ADC resolution:
+**{16, 18}**. By default it is set to 16.
 
 Jumper setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -158,10 +163,10 @@ CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The addresses are dependent on the architecture of the FPGA, having an offset
-added to the base address from HDL (see more at :ref:`architecture`).
+added to the base address from HDL (see more at :ref:`architecture cpu-intercon-addr`).
 
 ========================  ===========
-Instance                  Address
+Instance                  Zynq
 ========================  ===========
 axi_ad7606x_dma           0x44A3_0000
 spi_clkgen                0x44A7_0000
@@ -173,8 +178,8 @@ axi_ad7606x *             0x44A0_0000
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated only for INTF=0 (parallel interface)
-   -   ``**`` instantiated only for INTF=1 (serial interface)
+   - ``*`` instantiated only for INTF=0 (parallel interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
 I2C connections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -220,7 +225,7 @@ GPIOs
 
 The Software GPIO number is calculated as follows:
 
--  Zynq-7000: if PS7 is used, then offset is 54
+- Zynq-7000: if PS7 is used, then offset is 54
 
 .. list-table::
    :widths: 25 25 25 25
@@ -266,8 +271,8 @@ The Software GPIO number is calculated as follows:
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated only for INTF=0 (parallel interface)
-   -   ``**`` instantiated only for INTF=1 (serial interface)
+   - ``*`` instantiated only for INTF=0 (parallel interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
 Interrupts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -284,37 +289,37 @@ spi_ad7606 **   12  56         88
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated only for INTF=0 (parallel interface)
-   -   ``**`` instantiated only for INTF=1 (serial interface)
+   - ``*`` instantiated only for INTF=0 (parallel interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
 Building the HDL project
 -------------------------------------------------------------------------------
 
 The design is built upon ADI's generic HDL reference design framework.
-ADI does not distribute the bit/elf files of these projects so they
-must be built from the sources available :git-hdl:`here <main:/>`. To get
-the source you must
+ADI distributes the bit/elf files of these projects as part of the
+:dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
+If you want to build the sources, ADI makes them available on the
+:git-hdl:`HDL repository </>`. To get the source you must
 `clone <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`__
 the HDL repository, and then build the project as follows:.
 
 **Linux/Cygwin/WSL**
 
-.. code-block::
-   :linenos:
+.. shell::
 
-   user@analog:~$ cd hdl/projects/ad7606x_fmc/zed
-   user@analog:~/hdl/projects/ad7606x_fmc/zed$ make DEV_CONFIG=2 INTF=0
+   $cd hdl/projects/ad7606x_fmc/zed
+   $make INTF=0 ADC_N_BITS=16
 
 The result of the build, if parameters were used, will be in a folder named
 by the configuration used:
 
 if the following command was run
 
-``make DEV_CONFIG=2 INTF=0``
+``make INTF=0 ADC_N_BITS=16``
 
 then the folder name will be:
 
-``DEVCONFIG2_INTF0``
+``INTF0_ADC_N_BITS16``
 
 A more comprehensive build guide can be found in the :ref:`build_hdl` user guide.
 
@@ -328,9 +333,9 @@ Connections and hardware changes
    Depending on the required interface mode, some hardware modifications need to
    be done.
 
-   -   **JP5** - A - Serial interface
-   -   **JP5** - B - Parallel interface
-   -   **JP7, JP12, JP13, JP14** - B - Differential operation
+   - **JP5** - A - Serial interface
+   - **JP5** - B - Parallel interface
+   - **JP7, JP12, JP13, JP14** - B - Differential operation
 
 Resources
 -------------------------------------------------------------------------------
@@ -338,20 +343,27 @@ Resources
 Hardware related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Product datasheets:
+- Product datasheets:
 
-   -  :adi:`AD7606`
-   -  :adi:`AD7606B`
-   -  :adi:`AD7606C-16`
-   -  :adi:`AD7606C-18`
-   -  :adi:`ADP7118`
-   -  :adi:`ADR4525`
-   -  :adi:`UG-1870, Evaluation Board User Guide <media/en/technical-documentation/user-guides/eval-ad7606c-fmcz-ug-1870.pdf>`
+  - :adi:`AD7606`
+  - :adi:`AD7606B`
+  - :adi:`AD7606C-16`
+  - :adi:`AD7606C-18`
+  - :adi:`AD7605-4`
+  - :adi:`AD7606`
+  - :adi:`AD7606-6`
+  - :adi:`AD7606-4`
+  - :adi:`AD7607`
+  - :adi:`AD7608`
+  - :adi:`AD7609`
+  - :adi:`ADP7118`
+  - :adi:`ADR4525`
+  - :adi:`UG-1870, Evaluation Board User Guide <media/en/technical-documentation/user-guides/eval-ad7606c-fmcz-ug-1870.pdf>`
 
 HDL related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-hdl:`AD7606X_FMC HDL project source code <projects/ad7606x_fmc>`
+- :git-hdl:`AD7606X_FMC HDL project source code <projects/ad7606x_fmc>`
 
 .. list-table::
    :widths: 30 35 35
@@ -364,68 +376,67 @@ HDL related
      - :git-hdl:`library/util_cdc/sync_bits.v <library/util_cdc/sync_bits.v>` **
      - ---
    * - AD_EDGE_DETECT
-     - :git-hdl:`library/common/ad_edge_detect.v <library/common/ad_edge_detect.v>`
+     - :git-hdl:`library/common/ad_edge_detect.v`
      - ---
    * - AXI_AD7606x
-     - :git-hdl:`library/axi_ad7606x <library/axi_ad7606x>` *
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_ad7606x>`
+     - :git-hdl:`library/axi_ad7606x` *
+     - :ref:`axi_ad7606x`
    * - AXI_CLKGEN
-     - :git-hdl:`library/axi_clkgen <library/axi_clkgen>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_clkgen>`
+     - :git-hdl:`library/axi_clkgen`
+     - :ref:`axi_clkgen`
    * - AXI_DMAC
-     - :git-hdl:`library/axi_dmac <library/axi_dmac>`
-     - :ref:`here <axi_dmac>`
+     - :git-hdl:`library/axi_dmac`
+     - :ref:`axi_dmac`
    * - AXI_HDMI_TX
-     - :git-hdl:`library/axi_hdmi_tx <library/axi_hdmi_tx>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_hdmi_tx>`
+     - :git-hdl:`library/axi_hdmi_tx`
+     - :ref:`axi_hdmi_tx`
    * - AXI_I2S_ADI
-     - :git-hdl:`library/axi_i2s_adi <library/axi_i2s_adi>`
+     - :git-hdl:`library/axi_i2s_adi`
      - ---
    * - AXI_PWM_GEN
-     - :git-hdl:`library/axi_pwm_gen <library/axi_pwm_gen>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_pwm_gen>`
+     - :git-hdl:`library/axi_pwm_gen`
+     - :ref:`axi_pwm_gen`
    * - AXI_SPDIF_TX
-     - :git-hdl:`library/axi_spdif_tx <library/axi_spdif_tx>`
+     - :git-hdl:`library/axi_spdif_tx`
      - ---
    * - AXI_SYSID
-     - :git-hdl:`library/axi_sysid <library/axi_sysid>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :git-hdl:`library/axi_sysid`
+     - :ref:`axi_sysid`
    * - AXI_SPI_ENGINE
-     - :git-hdl:`library/spi_engine/axi_spi_engine <library/spi_engine/axi_spi_engine>`  **
-     - :ref:`here <spi_engine axi>`
+     - :git-hdl:`library/spi_engine/axi_spi_engine`  **
+     - :ref:`spi_engine axi`
    * - SPI_ENGINE_EXECUTION
-     - :git-hdl:`library/spi_engine/spi_engine_execution <library/spi_engine/spi_engine_execution>` **
-     - :ref:`here <spi_engine execution>`
+     - :git-hdl:`library/spi_engine/spi_engine_execution` **
+     - :ref:`spi_engine execution`
    * - SPI_ENGINE_INTERCONNECT
-     - :git-hdl:`library/spi_engine/spi_engine_interconnect <library/spi_engine/spi_engine_interconnect>` **
-     - :ref:`here <spi_engine interconnect>`
+     - :git-hdl:`library/spi_engine/spi_engine_interconnect` **
+     - :ref:`spi_engine interconnect`
    * - SPI_ENGINE_OFFLOAD
-     - :git-hdl:`library/spi_engine/spi_engine_offload <library/spi_engine/spi_engine_offload>` **
-     - :ref:`here <spi_engine offload>`
+     - :git-hdl:`library/spi_engine/spi_engine_offload` **
+     - :ref:`spi_engine offload`
    * - SYSID_ROM
-     - :git-hdl:`library/sysid_rom <library/sysid_rom>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :git-hdl:`library/sysid_rom`
+     - :ref:`axi_sysid`
    * - UTIL_I2C_MIXER
-     - :git-hdl:`library/util_i2c_mixer <library/util_i2c_mixer>`
+     - :git-hdl:`library/util_i2c_mixer`
      - ---
    * - UTIL_CPACK2
      - :git-hdl:`library/util_pack/util_cpack2 <library/util_pack/util_cpack2>` *
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/util_cpack>`
+     - :ref:`util_cpack2`
 
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated only for INTF=0 (parallel interface)
-   -   ``**`` instantiated only for INTF=1 (serial interface)
+   - ``*`` instantiated only for INTF=0 (parallel interface)
+   - ``**`` instantiated only for INTF=1 (serial interface)
 
--  :ref:`SPI Engine Framework documentation <spi_engine>`
+- :ref:`SPI Engine Framework documentation <spi_engine>`
 
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-no-os:`AD7606_FMC No-OS driver source code <drivers/adc/ad7606>`
--  :dokuwiki:`AD7606 - No-OS Driver [Wiki] <resources/tools-software/uc-drivers/ad7606>`
--  :dokuwiki:`How to build No-OS <resources/no-os/build>`
+- :git-no-os:`AD7606_FMC No-OS driver source code <drivers/adc/ad7606>`
+- :dokuwiki:`AD7606 - No-OS Driver [Wiki] <resources/tools-software/uc-drivers/ad7606>`
 
 .. include:: ../common/more_information.rst
 

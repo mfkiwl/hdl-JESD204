@@ -1,15 +1,21 @@
 .. _axi_ad9671:
 
-AXI AD9671
+AXI AD9671 (OBSOLETE)
 ================================================================================
 
 .. hdl-component-diagram::
 
-The :git-hdl:`AXI AD9671 <library/axi_ad9671>` IP core
+.. warning::
+
+   The support for :git-hdl:`AXI AD9671 <hdl_2022_r2:library/axi_ad9671>`
+   has been discontinued.
+   This page is kept for legacy purposes only.
+
+The :git-hdl:`AXI AD9671 <hdl_2022_r2:library/axi_ad9671>` IP core
 can be used to interface the :adi:`AD9671` Octal Ultrasound AFE with digital
 demodulator.
 An AXI Memory Map interface is used for configuration.
-Data is received from Xilinx JESD IP.
+Data is received from AMD Xilinx JESD IP.
 
 More about the generic framework interfacing ADCs can be read in :ref:`axi_adc`.
 
@@ -154,9 +160,8 @@ module (at IP level).
 References
 -------------------------------------------------------------------------------
 
-* :git-hdl:`library/axi_ad9671`
+* HDL IP core at :git-hdl:`library/axi_ad9671`
 * :adi:`AD9671`
-* :git-linux:`/`
 * :ref:`jesd204`
 * :adi:`Analog Device's JESD204B Survival Guide <media/en/technical-documentation/technical-articles/JESD204B-Survival-Guide.pdf>`
 * :intel:`JESD204B Intel FPGA IP User Guide <content/dam/support/us/en/programmable/support-resources/bulk-container/pdfs/literature/ug/archives/ug-jesd204b-18-1.pdf>`

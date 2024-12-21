@@ -138,7 +138,7 @@ can all be active at the same time.
 The external synchronization capability allows the alignment of frames between
 multiple devices in different locations, for example using a GPSDO 1 PPS output.
 The internal sync signal is generated based on a dedicated counter, when its
-value matches the one defined in ``SYNC_COUNTER_LOW`` / ``SYNC_COUNTER_HIGH``.
+value matches the one defined in ``SYNC_PERIOD_LOW`` / ``SYNC_PERIOD_HIGH``.
 The software generated sync pulse is triggered at an arbitrary point in time
 when writing a ‘1’ value in ``SYNC_SOFT``.
 
@@ -166,8 +166,8 @@ The following registers will not be updated unless the peripheral is disabled:
 - ``STARTUP_DELAY``
 - ``FRAME_LENGTH``
 - ``CHANNEL_POLARITY``
-- ``SYNC_COUNTER_LOW``
-- ``SYNC_COUNTER_HIGH``
+- ``SYNC_PERIOD_LOW``
+- ``SYNC_PERIOD_HIGH``
 - ``CHX_ON``
 - ``CHX_OFF``
 
@@ -190,3 +190,9 @@ Register Map
 
 .. hdl-regmap::
    :name: TDDN_CNTRL
+
+References
+--------------------------------------------------------------------------------
+
+* HDL IP core at :git-hdl:`library/axi_tdd`
+* :dokuwiki:`Generic Time-Division Duplexing Controller on wiki <resources/fpga/docs/axi_tdd>`

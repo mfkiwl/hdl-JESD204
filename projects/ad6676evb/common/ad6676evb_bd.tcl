@@ -1,5 +1,5 @@
 ###############################################################################
-## Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
+## Copyright (C) 2014-2024 Analog Devices, Inc. All rights reserved.
 ### SPDX short identifier: ADIBSD
 ###############################################################################
 
@@ -9,10 +9,10 @@
 source $ad_hdl_dir/library/jesd204/scripts/jesd204.tcl
 
 # JESD204B interface configuration parameters
-set RX_NUM_OF_LANES $ad_project_params(RX_JESD_L)
-set RX_NUM_OF_CONVERTERS 2
-set RX_SAMPLES_PER_FRAME 1
-set RX_SAMPLE_WIDTH 16
+set RX_NUM_OF_LANES $ad_project_params(RX_JESD_L)  ; # L
+set RX_NUM_OF_CONVERTERS 2                         ; # M
+set RX_SAMPLES_PER_FRAME 1                         ; # S
+set RX_SAMPLE_WIDTH 16                             ; # N/NP
 
 set RX_SAMPLES_PER_CHANNEL [expr ($RX_NUM_OF_LANES*32) / ($RX_NUM_OF_CONVERTERS*$RX_SAMPLE_WIDTH)] ; # (L * 32) / (M * N)
 
@@ -97,6 +97,7 @@ for {set i 0} {$i < $RX_NUM_OF_CONVERTERS} {incr i} {
 }
 ad_connect  axi_ad6676_core/link_clk axi_ad6676_dma/fifo_wr_clk
 ad_connect  axi_ad6676_dma/fifo_wr axi_ad6676_cpack/packed_fifo_wr
+ad_connect  axi_ad6676_dma/sync axi_ad6676_cpack/packed_sync
 
 # interconnect (cpu)
 

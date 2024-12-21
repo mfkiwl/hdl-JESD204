@@ -1,4 +1,4 @@
-.. _ad9783_ebz_hdl:
+.. _ad9783_ebz:
 
 AD9783-EBZ HDL project
 ===============================================================================
@@ -20,19 +20,19 @@ The :adi:`EVAL-AD9783` board is connected to the FPGA carrier through
 Supported boards
 -------------------------------------------------------------------------------
 
--  :adi:`EVAL-AD9783`
+- :adi:`EVAL-AD9783`
 
 Supported devices
 -------------------------------------------------------------------------------
 
--  :adi:`AD9780`
--  :adi:`AD9781`
--  :adi:`AD9783`
+- :adi:`AD9780`
+- :adi:`AD9781`
+- :adi:`AD9783`
 
 Supported carriers
 -------------------------------------------------------------------------------
 
--  :xilinx:`ZCU102` on FMC HPC0 slot
+- :xilinx:`ZCU102` on FMC HPC0 slot
 
 Block design
 -------------------------------------------------------------------------------
@@ -50,8 +50,8 @@ The data path and clock domains are depicted in the below diagram:
 Clock scheme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  External clock source connected to J1 (CLOCK IN)
--  For maximum performance, give a 500 MHz clock
+- External clock source connected to J1 (CLOCK IN)
+- For maximum performance, give a 500 MHz clock
 
 To make the connection between the :adi:`EVAL-AD9783` evaluation board and
 the carrier using SPI, some hardware changes must be done to the evaluation
@@ -62,14 +62,14 @@ CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The addresses are dependent on the architecture of the FPGA, having an offset
-added to the base address from HDL (see more at :ref:`architecture`).
+added to the base address from HDL (see more at :ref:`architecture cpu-intercon-addr`).
 
-============== =============== ===========
-Instance       Zynq/Microblaze ZynqMP
-============== =============== ===========
-axi_ad9783     0x7420_0000     0x9420_0000
-axi_ad9783_dma 0x7C42_0000     0x9C42_0000
-============== =============== ===========
+============== ===========
+Instance       ZynqMP
+============== ===========
+axi_ad9783     0x9420_0000
+axi_ad9783_dma 0x9C42_0000
+============== ===========
 
 SPI connections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -106,18 +106,19 @@ Building the HDL project
 -------------------------------------------------------------------------------
 
 The design is built upon ADI's generic HDL reference design framework.
-ADI does not distribute the bit/elf files of these projects so they
-must be built from the sources available :git-hdl:`here </>`. To get
-the source you must
+ADI distributes the bit/elf files of these projects as part of the
+:dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
+If you want to build the sources, ADI makes them available on the
+:git-hdl:`HDL repository </>`. To get the source you must
 `clone <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`__
 the HDL repository, and then build the project as follows:
 
 **Linux/Cygwin/WSL**
 
-.. code-block::
+.. shell::
 
-   user@analog:~$ cd hdl/projects/ad9783_ebz/zcu102
-   user@analog:~/hdl/projects/ad9783_ebz/zcu102$ make
+   $cd hdl/projects/ad9783_ebz/zcu102
+   $make
 
 A more comprehensive build guide can be found in the :ref:`build_hdl` user guide.
 
@@ -152,18 +153,18 @@ Here you can find the quick start guides available for these evaluation boards:
 Hardware related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Product datasheets:
+- Product datasheets:
 
-   -  :adi:`AD9780`
-   -  :adi:`AD9781`
-   -  :adi:`AD9783`
-   -  :adi:`EVAL-AD9783`
-   -  :adi:`AD-DAC-FMC`-ADP
+  - :adi:`AD9780`
+  - :adi:`AD9781`
+  - :adi:`AD9783`
+  - :adi:`EVAL-AD9783`
+  - :adi:`AD-DAC-FMC`-ADP
 
 HDL related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-hdl:`AD9783_EBZ HDL project source code <projects/ad9783_ebz>`
+- :git-hdl:`AD9783_EBZ HDL project source code <projects/ad9783_ebz>`
 
 .. list-table::
    :widths: 30 35 35
@@ -174,25 +175,25 @@ HDL related
      - Documentation link
    * - AXI_AD9783
      - :git-hdl:`library/axi_ad9783`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_ad9783>`
+     - :ref:`axi_ad9783`
    * - AXI_DMAC
      - :git-hdl:`library/axi_dmac`
-     - :ref:`here <axi_dmac>`
+     - :ref:`axi_dmac`
    * - AXI_SYSID
      - :git-hdl:`library/axi_sysid`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :ref:`axi_sysid`
    * - SYSID_ROM
      - :git-hdl:`library/sysid_rom`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :ref:`axi_sysid`
    * - UTIL_UPACK2
      - :git-hdl:`library/util_pack/util_upack2`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/util_upack>`
+     - :ref:`util_upack2`
 
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-linux:`Linux device tree zynqmp-zcu102-rev10-ad9783.dts <arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev10-ad9783.dts>`
--  :git-linux:`Linux driver ad9783.c <drivers/iio/frequency>`
+- :git-linux:`Linux device tree zynqmp-zcu102-rev10-ad9783.dts <arch/arm64/boot/dts/xilinx/zynqmp-zcu102-rev10-ad9783.dts>`
+- :git-linux:`Linux driver ad9783.c <drivers/iio/frequency>`
 
 .. include:: ../common/more_information.rst
 

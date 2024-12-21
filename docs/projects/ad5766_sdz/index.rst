@@ -28,33 +28,34 @@ negative high voltage power supplies for the output amplifiers. A VLOGIC supply
 pin is provided to set the logic levels for the digital interface pins.
 The :adi:`AD5766`/ :adi:`AD5767` utilize a versatile 4-wire serial interface
 that operates at clock rates of up to 50 MHz for write mode and up to 10MHz for
-readback and daisy-chain mode, and is compatible with SPIR, QSPI., MICROWIRE. 
+readback and daisy-chain mode, and is compatible with SPIR, QSPI., MICROWIRE.
 and DSP interface standards.
 
 The :adi:`AD5766`/ :adi:`AD5767` are available in a 4mm x 4mm WLCSP package
 and operates at the range of -40C to +105C.
 
 Applications:
-  * Mach Zehnder Modulator Bias Control
-  * Analog Output Modules
-  * Process Control
+
+* Mach Zehnder Modulator Bias Control
+* Analog Output Modules
+* Process Control
 
 Supported boards
 -------------------------------------------------------------------------------
 
--  :adi:`EVAL-AD5766 <EVAL-AD5766>`
+- :adi:`EVAL-AD5766`
 
 Supported devices
 -------------------------------------------------------------------------------
 
--  :adi:`AD5766`
--  :adi:`AD5767`
+- :adi:`AD5766`
+- :adi:`AD5767`
 
 Supported carriers
 -------------------------------------------------------------------------------
 
--  :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
--  :adi:`SDP-I-FMC <EVAL-SDP-I-FMC>`
+- :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
+- :adi:`SDP-I-FMC <EVAL-SDP-I-FMC>`
 
 Block design
 -------------------------------------------------------------------------------
@@ -93,10 +94,10 @@ CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The addresses are dependent on the architecture of the FPGA, having an offset
-added to the base address from HDL (see more at :ref:`architecture`).
+added to the base address from HDL (see more at :ref:`architecture cpu-intercon-addr`).
 
 ========================  ===========
-Instance                  Address
+Instance                  Zynq
 ========================  ===========
 spi/axi                   0x44A0_0000
 spi/axi_ad5766            0x44A1_0000
@@ -147,7 +148,7 @@ GPIOs
 
 The Software GPIO number is calculated as follows:
 
--  Zynq-7000: if PS7 is used, then offset is 54
+- Zynq-7000: if PS7 is used, then offset is 54
 
 .. list-table::
    :widths: 25 25 25 25
@@ -182,19 +183,19 @@ Building the HDL project
 -------------------------------------------------------------------------------
 
 The design is built upon ADI's generic HDL reference design framework.
-ADI does not distribute the bit/elf files of these projects so they
-must be built from the sources available :git-hdl:`here </>`. To get
-the source you must
+ADI distributes the bit/elf files of these projects as part of the
+:dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
+If you want to build the sources, ADI makes them available on the
+:git-hdl:`HDL repository </>`. To get the source you must
 `clone <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`__
 the HDL repository, and then build the project as follows:
 
 **Linux/Cygwin/WSL**
 
-.. code-block::
-   :linenos:
+.. shell::
 
-   user@analog:~$ cd hdl/projects/ad5766_sdz/zed
-   user@analog:~/hdl/projects/ad5766_sdz/zed$ make
+   $cd hdl/projects/ad5766_sdz/zed
+   $make
 
 A more comprehensive build guide can be found in the :ref:`build_hdl` user guide.
 
@@ -204,16 +205,16 @@ Resources
 Hardware related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Product datasheets:
+- Product datasheets:
 
-   -  :adi:`AD5766`
-   -  :adi:`AD5767`
--  `UG-1070, Evaluation Board User Guide <https://www.analog.com/media/en/technical-documentation/user-guides/EVAL-AD5766SD2Z-5767SD2Z-UG-1070.pdf>`__
+  - :adi:`AD5766`
+  - :adi:`AD5767`
+- `UG-1070, Evaluation Board User Guide <https://www.analog.com/media/en/technical-documentation/user-guides/EVAL-AD5766SD2Z-5767SD2Z-UG-1070.pdf>`__
 
 HDL related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-hdl:`ad5766_sdz HDL project source code <projects/ad5766_sdz>`
+- :git-hdl:`ad5766_sdz HDL project source code <projects/ad5766_sdz>`
 
 .. list-table::
    :widths: 30 35 35
@@ -223,50 +224,50 @@ HDL related
      - Source code link
      - Documentation link
    * - AXI_AD5766
-     - :git-hdl:`library/axi_ad5766 <library/axi_ad5766>`
+     - :git-hdl:`library/axi_ad5766`
      - ---
    * - AXI_CLKGEN
-     - :git-hdl:`library/axi_dmac <library/axi_clkgen>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_clkgen>`
+     - :git-hdl:`library/axi_clkgen`
+     - :ref:`axi_clkgen`
    * - AXI_DMAC
-     - :git-hdl:`library/axi_dmac <library/axi_dmac>`
-     - :ref:`here <axi_dmac>`
+     - :git-hdl:`library/axi_dmac`
+     - :ref:`axi_dmac`
    * - AXI_HDMI_TX
-     - :git-hdl:`library/axi_hdmi_tx <library/axi_hdmi_tx>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_hdmi_tx>`      
+     - :git-hdl:`library/axi_hdmi_tx`
+     - :ref:`axi_hdmi_tx`
    * - AXI_I2S_ADI
-     - :git-hdl:`library/axi_i2s_adi <library/axi_i2s_adi>`
+     - :git-hdl:`library/axi_i2s_adi`
      - ---
    * - AXI_SPDIF_TX
-     - :git-hdl:`library/axi_spdif_tx <library/axi_spdif_tx>`
+     - :git-hdl:`library/axi_spdif_tx`
      - ---
    * - AXI_SYSID
-     - :git-hdl:`library/axi_sysid <library/axi_sysid>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :git-hdl:`library/axi_sysid`
+     - :ref:`axi_sysid`
    * - AXI_SPI_ENGINE
-     - :git-hdl:`library/spi_engine/axi_spi_engine <library/spi_engine/axi_spi_engine>`
-     - :ref:`here <spi_engine axi>`
+     - :git-hdl:`library/spi_engine/axi_spi_engine`
+     - :ref:`spi_engine axi`
    * - SPI_ENGINE_EXECUTION
-     - :git-hdl:`library/spi_engine/spi_engine_execution <library/spi_engine/spi_engine_execution>`
-     - :ref:`here <spi_engine execution>`
+     - :git-hdl:`library/spi_engine/spi_engine_execution`
+     - :ref:`spi_engine execution`
    * - SPI_ENGINE_INTERCONNECT
-     - :git-hdl:`library/spi_engine/spi_engine_interconnect <library/spi_engine/spi_engine_interconnect>`
-     - :ref:`here <spi_engine interconnect>`
+     - :git-hdl:`library/spi_engine/spi_engine_interconnect`
+     - :ref:`spi_engine interconnect`
    * - SYSID_ROM
-     - :git-hdl:`library/sysid_rom <library/sysid_rom>`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :git-hdl:`library/sysid_rom`
+     - :ref:`axi_sysid`
    * - UTIL_I2C-MIXER
-     - :git-hdl:`library/util_i2c_mixer <library/util_i2c_mixer>`
-     - ---  
+     - :git-hdl:`library/util_i2c_mixer`
+     - ---
 
--  :ref:`SPI Engine Framework documentation <spi_engine>`
+- :ref:`SPI Engine Framework documentation <spi_engine>`
 
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- :git-no-os:`AD5766 - No-OS driver source code <projects/ad5766-sdz>`
-- :dokuwiki:`AD5766 - No-OS Driver [Wiki] <resources/tools-software/uc-drivers/ad5766>`
-- :dokuwiki:`How to build No-OS <resources/no-os/build>`
+- :git-no-os:`AD5766 no-OS project <projects/ad5766-sdz>`
+- :git-no-os:`AD5766 no-OS driver source code ad5766.c <drivers/dac/ad5766/ad5766.c>`
+- :dokuwiki:`[Wiki] AD5766 no-OS driver doc. <resources/tools-software/uc-drivers/ad5766>`
 
 .. include:: ../common/more_information.rst
 

@@ -9,7 +9,7 @@ ENDTITLE
 REG
 0x0000
 VERSION
-Version of the peripheral. Follows semantic versioning. Current version 2.00.61.
+Version of the peripheral. Follows semantic versioning. Current version 2.00.62.
 ENDREG
 
 FIELD
@@ -25,7 +25,7 @@ R
 ENDFIELD
 
 FIELD
-[7:0] 0x00000061
+[7:0] 0x00000062
 VERSION_PATCH
 R
 ENDFIELD
@@ -39,7 +39,7 @@ PERIPHERAL_ID
 ENDREG
 
 FIELD
-[31:0] ''ID''
+[31:0] ID
 PERIPHERAL_ID
 R
 Value of the ID configuration parameter.
@@ -84,49 +84,49 @@ INTERFACE_DESCRIPTION
 ENDREG
 
 FIELD
-[30:24] ''SYNC_COUNT_WIDTH''
+[30:24] SYNC_COUNT_WIDTH
 SYNC_COUNT_WIDTH
 R
 Width of internal synchronization counter.
 ENDFIELD
 
 FIELD
-[21:16] ''BURST_COUNT_WIDTH''
+[21:16] BURST_COUNT_WIDTH
 BURST_COUNT_WIDTH
 R
 Width of burst counter.
 ENDFIELD
 
 FIELD
-[13:8] ''REGISTER_WIDTH''
+[13:8] REGISTER_WIDTH
 REGISTER_WIDTH
 R
 Width of internal reference counter and timing registers.
 ENDFIELD
 
 FIELD
-[7] ''SYNC_EXTERNAL_CDC''
+[7] SYNC_EXTERNAL_CDC
 SYNC_EXTERNAL_CDC
 R
 Enable CDC for external synchronization pulse.
 ENDFIELD
 
 FIELD
-[6] ''SYNC_EXTERNAL''
+[6] SYNC_EXTERNAL
 SYNC_EXTERNAL
 R
 Enable external synchronization support.
 ENDFIELD
 
 FIELD
-[5] ''SYNC_INTERNAL''
+[5] SYNC_INTERNAL
 SYNC_INTERNAL
 R
 Enable internal synchronization support.
 ENDFIELD
 
 FIELD
-[4:0] ''CHANNEL_COUNT''-1
+[4:0] CHANNEL_COUNT_EXTRA = CHANNEL_COUNT-1
 CHANNEL_COUNT_EXTRA
 R
 Number of channels starting from CH1, excluding CH0.
@@ -141,7 +141,7 @@ DEFAULT_POLARITY
 ENDREG
 
 FIELD
-[31:0] ''DEFAULT_POLARITY''
+[31:0] DEFAULT_POLARITY
 DEFAULT_POLARITY
 R
 Default polarity per every channel - LSB corresponds to CH0, MSB to CH31.
@@ -252,7 +252,7 @@ FIELD
 [31:0] 0x00000000
 STARTUP_DELAY
 RW
-The initial delay value before the beginning of the first frame; defined in clock cycles.
+The initial delay value before the beginning of the first frame; defined in clock cycles-1.
 ENDFIELD
 
 ############################################################################################
@@ -268,7 +268,7 @@ FIELD
 [31:0] 0x00000000
 FRAME_LENGTH
 RW
-The length of the transmission frame; defined in clock cycles.
+The length of the transmission frame; defined in clock cycles-1.
 ENDFIELD
 
 ############################################################################################
@@ -276,15 +276,15 @@ ENDFIELD
 
 REG
 0x0016
-SYNC_COUNTER_LOW
+SYNC_PERIOD_LOW
 TDD Sync counter
 ENDREG
 
 FIELD
 [31:0] 0x00000000
-SYNC_COUNTER_LOW
+SYNC_PERIOD_LOW
 RW
-The LSB slice of the offset (from sync counter equal zero) when an internal sync pulse is generated. This register is implemented if ''SYNC_COUNT_WIDTH''>0.
+The LSB slice of the internal sync pulse period defined in clock cycles-1. This register is implemented if ''SYNC_COUNT_WIDTH''>0.
 ENDFIELD
 
 ############################################################################################
@@ -292,15 +292,15 @@ ENDFIELD
  
 REG
 0x0017
-SYNC_COUNTER_HIGH
+SYNC_PERIOD_HIGH
 TDD Sync counter
 ENDREG
 
 FIELD
 [31:0] 0x00000000
-SYNC_COUNTER_HIGH
+SYNC_PERIOD_HIGH
 RW
-The MSB slice of the offset (from sync counter equal zero) when an internal sync pulse is generated. This register is implemented if ''SYNC_COUNT_WIDTH''>32.
+The MSB slice of the internal sync pulse period defined in clock cycles-1. This register is implemented if ''SYNC_COUNT_WIDTH''>32.
 ENDFIELD
 
 ############################################################################################

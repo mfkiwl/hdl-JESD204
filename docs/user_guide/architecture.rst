@@ -36,13 +36,15 @@ the *base design first*, then the *board design*.
 Example
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Take :adi:`AD-FMCOMMS2 <EVAL-ADFMCOMMS2>` with ZedBoard;
+Take :adi:`AD-FMCOMMS2 <EVAL-ADFMCOMMS2>` with
+:xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>`;
 the ``system_bd.tcl`` will look like the following:
 
-.. code-block:: bash
+.. shell:: bash
+   :no-path:
 
-   source $ad_hdl_dir/projects/common/zed/zed_system_bd.tcl
-   source ../common/fmcomms2_bd.tcl
+   $source $ad_hdl_dir/projects/common/zed/zed_system_bd.tcl
+   $source ../common/fmcomms2_bd.tcl
 
 Typical project diagram
 -------------------------------------------------------------------------------
@@ -66,7 +68,7 @@ Usually, they contain:
 Microprocessor
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In our designs, we use only two types:
+In our designs, we use only three types:
 
 .. list-table::
    :widths: 20 20 20 20 20 20
@@ -117,18 +119,18 @@ the manufacturer's website, listed in the table above.
    CIPS <https://docs.xilinx.com/r/en-US/pg352-cips/Overview>`__
    (``versal_cips``)
 
-Memory Interface Controller
+Memory interface controller
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In almost all cases, the carrier board is not made and designed by
-Analog Devices, so the external memory solution of the system is given.
-Meaning we can not support, modify or alter this important part of the
-system, in several cases we even have system limitations because of it
+:adi:`Analog Devices <>`, so the external memory solution of the system is given.
+Meaning, we can not support, modify or alter this important part of the
+system. In several cases we even have system limitations because of it
 (e.g. the memory interface is not fast enough to handle the required
 data throughput).
 
-Under the two links below the user can find the landing page of the
-available memory solutions for both Intel and AMD:
+In the following two links, the user can find the landing page of the
+available memory solutions for Intel and AMD:
 
 -  Intel's memory interfaces:
    https://www.intel.com/content/www/us/en/programmable/support/support-resources/external-memory.html
@@ -139,11 +141,13 @@ Peripheral interfaces
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 These interfaces are used to control external peripherals located on
-the prototyping board or the FMC IO board.
+the prototyping board or the FMC I/O board.
 
 In HDL, these ports are named slightly different than how they're in
 the documentations. Thus, to make it easier for beginners, here you
 have the naming of the ports depending on the microprocessor used.
+
+.. _architecture cpu-intercon-addr:
 
 CPU/Memory interconnects addresses
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -181,6 +185,14 @@ If the address is between 0x7000_0000 - 0x7FFF_FFFF then the
 AXI peripherics will be placed in 0xB000_0000 - 0xBFFF_FFFF range
 by adding 0x4000_0000 to the address.
 
+**Intel**
+
+Applying to DE10-Nano, C5SoC.
+
+The address usually (but not always) starts from 0x0002_0000, or the first
+available block of a bigger size. In Quartus block design you should be
+able to determine it.
+
 SPI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -194,15 +206,15 @@ I2C/I2S/SPDIF
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A couple of carrier boards require these standard interfaces for
-different purposes, for example, a configuration interface for an audio
-peripheral device. These peripherals do not necessarily have vital roles
-in the reference design, it's more like a generic goal to support all
+different purposes (e.g. a configuration interface for an audio
+peripheral device). These peripherals do not necessarily have vital roles
+in the reference design -- it's more like a generic goal to support all
 the provided peripherals of the carrier board.
 
 HDMI
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-There is HDMI support for all the carriers which are using the ADV7511
+There is HDMI support for all carriers which are using the :adi:`ADV7511`
 as HDMI transmitter. The HDMI transmitter core can be found
 :git-hdl:`here (axi_hdmi_tx) <library/axi_hdmi_tx>`.
 
@@ -213,12 +225,13 @@ The general rule of thumb is to define 64 GPIO pins for the base design:
 
 -  bits [31: 0] always belong to the carrier board;
 -  bits [63:32] will be assigned to switches, buttons and/or LEDs, which
-   can be found on the FMC board.
+   can be found on the FMC board;
 -  bits [95:64] will be used when the FPGA type is Zynq UltraScale+
-   MPSoC
+   MPSoC.
 
 When some of these GPIOs are not used, the input pins should have the
-output pins driven to them, so that Vivado will not complain about
+output pins driven to them, so that
+:xilinx:`Vivado <products/design-tools/vivado.html>` will not complain about
 inputs not being assigned to.
 
 Depending on the processor type, add these values to the GPIO number
@@ -233,7 +246,7 @@ Connectivity
 -  Ethernet
 -  USB OTG
 
-These interfaces designs are borrowed from the golden reference design
+These interface designs are borrowed from the golden reference design
 of the board.
 
 Interrupts
@@ -298,6 +311,8 @@ HDL riscv-rx no-OS
 Board design and capabilities
 -------------------------------------------------------------------------------
 
+.. _architecture amd-platforms:
+
 AMD platforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -311,25 +326,25 @@ AMD platforms
      - FMC connector 2
      - VADJ FMC connector
      - Family
-   * - `AC701 <https://www.xilinx.com/products/boards-and-kits/ek-a7-ac701-g.html>`__ **
+   * - :xilinx:`AC701` **
      - JTAG
      - HPC (2 GTP @ 6.6 Gbps)
      - ---
      - 3.3V/**\*2.5V**/1.8V
      - Artix-7
-   * - `Cora Z7-07S <https://digilent.com/reference/programmable-logic/cora-z7/start>`__
+   * - :xilinx:`Cora Z7S <products/boards-and-kits/1-1qlaz7n.html>`
      - SD card
      - ---
      - ---
      - ---
      - Zynq-7000
-   * - `KC705 <https://www.xilinx.com/products/boards-and-kits/ek-k7-kc705-g.html>`__
+   * - :xilinx:`KC705`
      - JTAG
      - HPC (4 GTX @ 10.3125 Gbps)
      - LPC (1 GTX @ 10.3125 Gbps)
      - 3.3V/**\*2.5V**/1.8V
      - Kintex-7
-   * - `KCU105 <https://www.xilinx.com/products/boards-and-kits/kcu105.html>`__
+   * - :xilinx:`KCU105`
      - JTAG
      - HPC (8 GTH @ 16.3 Gbps)
      - LPC (1 GTH @ 16.3 Gbps)
@@ -341,67 +356,67 @@ AMD platforms
      - ---
      - ---
      - Zynq-7000
-   * - `VC707 <https://www.xilinx.com/products/boards-and-kits/ek-v7-vc707-g.html>`__
+   * - :xilinx:`VC707`
      - JTAG
      - HPC (8 GTX @ 12.5 Gbps)
      - HPC (8 GTX @ 12.5 Gbps)
      - **\*1.8V**/1.5V/1.2V
      - Virtex-7
-   * - `VC709 <https://www.xilinx.com/products/boards-and-kits/dk-v7-vc709-g.html>`__ **
+   * - :xilinx:`VC709` **
      - JTAG
      - HPC (10 GTH @ 13.1 Gbps)
      - ---
      - **\*1.8V**
      - Virtex-7
-   * - `VCK190 <https://www.xilinx.com/products/boards-and-kits/vck190.html>`__
+   * - :xilinx:`VCK190`
      - SD card
      - FMC+ (12 GTY @ 28.21 Gbps)
      - FMC+ (12 GTY @ 28.21 Gbps)
      - **\*1.5V**/1.2V
      - Versal AI Core
-   * - `VCU118 <https://www.xilinx.com/products/boards-and-kits/vcu118.html>`__
+   * - :xilinx:`VCU118`
      - JTAG
      - FMC+ (24 GTY @ 28.21 Gbps)
      - LPC
      - **\*1.8V**/1.5V/1.2V
      - Virtex UltraScale+
-   * - `VCU128 <https://www.xilinx.com/products/boards-and-kits/vcu128.html>`__
+   * - :xilinx:`VCU128`
      - JTAG
      - FMC+ (24 GTY @ 28.21 Gbps)
      - ---
      - **\*1.8V**/1.5V/1.2V
      - Virtex UltraScale+ HBM
-   * - `VMK180 <https://www.xilinx.com/products/boards-and-kits/vmk180.html>`__
+   * - :xilinx:`VMK180`
      - SD card
      - FMC+ (12 GTY @ 28.21 Gbps)
      - FMC+ (12 GTY @ 28.21 Gbps)
      - **\*1.5V**/1.2V
      - Versal Prime Series
-   * - `VPK180 <https://www.xilinx.com/products/boards-and-kits/vpk180.html>`__
+   * - :xilinx:`VPK180`
      - SD card
      - FMC+ (8 GTYP @ 32.75 Gbps)
      - ---
      - **\*1.5V**/1.2V
      - Versal Premium
-   * - `ZC702 <https://www.xilinx.com/products/boards-and-kits/ek-z7-zc702-g.html>`__
+   * - :xilinx:`ZC702`
      - SD card
      - LPC
      - LPC
      - 3.3V/**\*2.5V**/1.8V
      - Zynq-7000
-   * - `ZC706 <https://www.xilinx.com/products/boards-and-kits/ek-z7-zc706-g.html>`__
+   * - :xilinx:`ZC706`
      - SD card
      - HPC (8 GTX @ 10.3125 Gbps)
      - LPC (1 GTX @ 10.3125 Gbps)
      - 3.3V/**\*2.5V**/1.8V
      - Zynq-7000
-   * - `ZCU102 <https://www.xilinx.com/products/boards-and-kits/ek-u1-zcu102-es2-g.html>`__
+   * - :xilinx:`ZCU102`
      - SD card
      - HPC (8 GTH @ 16.3 Gbps)
      - HPC (8 GTH @ 16.3 Gbps)
      - **\*1.8V**/1.5V/1.2V
      - Zynq UltraScale+ MP SoC
-   * - `ZedBoard <https://www.avnet.com/wps/portal/us/products/avnet-boards/avnet-board-families/zedboard/>`__
+   * - :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>`
      - SD card
      - LPC
      - ---
@@ -433,6 +448,8 @@ AMD platforms
    connected to the FMC, the custom VADJ will have the value supported by
    both the carrier and the device(s)
 
+.. _architecture intel-platforms:
+
 Intel platforms
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -443,19 +460,19 @@ Intel platforms
    * - Board name
      - Connector 1
      - Connector 2
-   * - `A10GX <https://www.altera.com/products/boards_and_kits/dev-kits/altera/kit-a10-gx-fpga.html>`__ **
+   * - :intel:`A10GX <content/www/us/en/products/details/fpga/development-kits/arria/10-gx.html>` ** (Arria 10 GX)
      - FMC LPC ()
      - FMC HPC (8 x 17.4 Gbps)
-   * - `A10SoC <https://www.altera.com/products/boards_and_kits/dev-kits/altera/arria-10-soc-development-kit.html>`__
+   * - :intel:`A10SoC <content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html>` (Arria 10 SoC)
      - FMC HPC (8)
      - FMC LPC (8)
-   * - `S10SoC <https://www.intel.com/content/www/us/en/products/details/fpga/development-kits/stratix/10-sx.html>`__
+   * - :intel:`S10SoC </content/www/us/en/products/details/fpga/development-kits/stratix/10-sx.html>` (Stratix 10 SoC)
      - FMC+ (24 @ 28.3 Gbps)
      - FMC+ (24 @ 28.3 Gbps)
-   * - `C5SoC <https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&CategoryNo=167&No=819>`__
+   * - :intel:`C5SoC <content/www/us/en/products/details/fpga/development-kits/cyclone/v-sx.html>` (Cyclone V SoC)
      - HSMC
      - ---
-   * - `DE10Nano <https://www.intel.com/content/www/us/en/developer/topic-technology/edge-5g/hardware/fpga-de10-nano.html>`__
+   * - :intel:`DE10-Nano <content/www/us/en/developer/topic-technology/edge-5g/hardware/fpga-de10-nano.html>`
      - Arduino shield
      - ---
 
@@ -474,13 +491,13 @@ VADJ values
    * - Board name
      - FMC connector 1
      - FMC connector 2
-   * - `A10GX <https://www.altera.com/products/boards_and_kits/dev-kits/altera/kit-a10-gx-fpga.html>`__
+   * - :intel:`A10GX <content/www/us/en/products/details/fpga/development-kits/arria/10-gx.html>`
      - **\*1.8V**/1.5V/1.35V/1.2V
      - **\*1.8V**/1.5V/1.35V/1.2V
-   * - `A10SoC <https://www.altera.com/products/boards_and_kits/dev-kits/altera/arria-10-soc-development-kit.html>`__
+   * - :intel:`A10SoC <content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html>`
      - **\*1.8V**/1.5V/1.35V/1.25V/1.2V/1.1V
      - **\*1.8V**/1.5V/1.35V/1.2V/1.1V
-   * - `S10SoC <https://www.intel.com/content/www/us/en/products/details/fpga/development-kits/stratix/10-sx.html>`__
+   * - :intel:`S10SoC </content/www/us/en/products/details/fpga/development-kits/stratix/10-sx.html>`
      - **\*3.3V**/1.8V/1.2V
      - **\*3.3V**/1.8V/1.2V
 
@@ -513,23 +530,23 @@ A project for an AMD FPGA board should contain the following files:
 -  ``system_bd.tcl`` --- sources the *base design first*, then the
    *board design*, and afterwards it contains all the IP instances and
    connections that must be added on top of the sourced files, to
-   complete the design of the project (these are specific to the
+   complete the design of the project (these are **specific** to the
    combination of this carrier and board)
 
 -  ``system_constr.xdc`` --- constraints file of the design; it’s the
-   connection between the physical pins of the FPGA that you want to use
-   and the HDL code that describes the behavior; here you define the FMC
-   I/O pins, board-specific clock signals, timing constraints, etc. The
+   connection between the physical pins of the FPGA and the HDL code
+   that describes the behavior; here you define the FMC I/O pins,
+   board-specific clock signals, timing constraints, etc. The
    constraints specific to the carrier are imported in the
    *system_project.tcl* file
 
 -  ``system_top.v`` --- contains everything about the HDL part of the
-   project; it instantiates the ``system_wrapper`` module, IO buffers,
+   project; it instantiates the ``system_wrapper`` module, I/O buffers,
    I/ODDRs, modules that transform signals from LVDS to single-ended,
    etc. The I/O ports of this Verilog module will be connected to actual
    I/O pads of the FPGA.
 
-   -  ``system_wrapper`` --- is a tool generated file and can be found at
+   -  ``system_wrapper`` --- is a tool-generated file and can be found at
       ``<project_name>.srcs/sources_1/bd/system/hdl/system_wrapper.v``
 
       -  the I/O ports of this module are declared in either
@@ -561,42 +578,8 @@ A project for an Intel FPGA board should contain the following files:
    constraints
 
 -  ``system_top.v`` --- contains everything about the HDL part of the
-   project; it instantiates the ``system_wrapper`` module, IO buffers,
-   I/ODDRs, modules that transform signals from LVDS to single-ended,
-   etc. The I/O ports of this Verilog module will be connected to actual
-   I/O pads of the FPGA
-
-Project files for Lattice boards
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-A project for a Lattice FPGA board should contain the following files:
-
--  ``Makefile`` --- auto-generated file; contains all the IP
-   dependencies needed for the project to be built
-
--  ``system_project_pb.tcl`` --- used to build the Propel Builder project
-   (block design); linked in project-lattice.mk, run by propelbld (Windows),
-   propelbldwrap (Linux);
-
--  ``system_project.tcl`` --- used to build the Radiant project; Linked in
-   project-lattice.mk, run by pnmainc (Windows), radiantc (Linux);
-
--  ``system_pb.tcl`` --- linker script for the projects, sourced in
-   adi_project_pb procedure that is called in system_project_pb.tcl and it is
-   defined in adi_project_lattice_pb.tcl; sources the *base design first*,
-   then the *board design*, and afterwards it contains all the IP instances and
-   connections that must be added on top of the sourced files, to
-   complete the design of the project (these are specific to the
-   combination of this carrier and board)
-
--  ``system_constr.sdc`` --- contains clock definitions and other path
-   constraints
--  ``system_constr.pdc`` --- contains clock definitions and other path
-   constraints  + phisical constraints
-
--  ``system_top.v`` --- contains everything about the HDL part of the
-   project; it instantiates the **<project_name>.v** ``system_wrapper`` module,
-   IO buffers, I/ODDRs, modules that transform signals from LVDS to single-ended,
+   project; it instantiates the ``system_bd`` module, I/O buffers, specific
+   SPI modules, modules that transform signals from LVDS to single-ended,
    etc. The I/O ports of this Verilog module will be connected to actual
    I/O pads of the FPGA
 
@@ -608,3 +591,32 @@ has constraints file for both PL side and PS side:
 
 -  a10soc_plddr4_assign.tcl --- constraints file for the PL
 -  a10soc_system_assign.tcl --- constraints file for the PS
+
+Project files for Lattice boards
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A project for a Lattice FPGA board should contain the following files:
+
+-  ``Makefile`` --- auto-generated file; contains all the IP
+   dependencies needed for the project to be built
+-  ``system_project_pb.tcl`` --- used to build the Propel Builder project
+   (block design); linked in project-lattice.mk, run by propelbld (Windows),
+   propelbldwrap (Linux);
+-  ``system_project.tcl`` --- used to build the Radiant project; Linked in
+   project-lattice.mk, run by pnmainc (Windows), radiantc (Linux);
+-  ``system_pb.tcl`` --- linker script for the projects, sourced in
+   adi_project_pb procedure that is called in system_project_pb.tcl and it is
+   defined in adi_project_lattice_pb.tcl; sources the *base design first*,
+   then the *board design*, and afterwards it contains all the IP instances and
+   connections that must be added on top of the sourced files, to
+   complete the design of the project (these are specific to the
+   combination of this carrier and board)
+-  ``system_constr.sdc`` --- contains clock definitions and other path
+   constraints
+-  ``system_constr.pdc`` --- contains clock definitions and other path
+   constraints  + phisical constraints
+-  ``system_top.v`` --- contains everything about the HDL part of the
+   project; it instantiates the **<project_name>.v** ``system_wrapper`` module,
+   IO buffers, I/ODDRs, modules that transform signals from LVDS to single-ended,
+   etc. The I/O ports of this Verilog module will be connected to actual
+   I/O pads of the FPGA

@@ -80,9 +80,11 @@ prescaled) before for the internal logic.
 
 .. math::
 
-   delay_{before} = 2+ t * \frac{(div + 1)*2}{f_{clk}}
+   delay\_{before} = 2+ t * \frac{(div + 1)*2}{f_{clk}}
 
-   delay_{after}  = t * \frac{(div + 1)*2}{f_{clk}}
+.. math::
+
+   delay\_{after}  = t * \frac{(div + 1)*2}{f_{clk}}
 
 .. list-table::
    :widths: 10 15 75
@@ -171,7 +173,7 @@ is the minimum, needed by the internal logic.
 
 .. math::
 
-   sleep\_time = \frac{2+(t) * ((div + 1) * 2)}{f_{clk}}
+   sleep\_time = \frac{2+(t+1) * ((div + 1) * 2)}{f_{clk}}
 
 .. list-table::
    :widths: 10 15 75
@@ -182,7 +184,7 @@ is the minimum, needed by the internal logic.
      - Description
    * - t
      - Time
-     - The amount of time to wait.
+     - The amount of prescaler cycles to wait, minus one.
 
 .. _spi_engine cs-invert-mask-instruction:
 
@@ -199,7 +201,7 @@ The CS Invert Mask Instructions allows the user to select on a per-pin basis
 whether the Chip Select will be active-low (default) or active-high (inverted).
 Note that the Chip-Select instructions should remain the same because the value
 of CS is inverted at the output register, and additional logic (e.g. reset
-counters) occurs when the CS active state is asserted. 
+counters) occurs when the CS active state is asserted.
 
 Since the physical values on the pins are inverted at the output, the current
 Invert Mask does not affect the use of the :ref:`spi_engine cs-instruction`. As
@@ -224,9 +226,9 @@ version 1.02.00 of the core.
      - reserved
      - Reserved for future use. Must always be set to 0.
    * - m
-     - Mask 
+     - Mask
      - Mask for selecting inverted CS channels. For the bits set to 1, the
-       corresponding channel will be inverted at the output. 
+       corresponding channel will be inverted at the output.
 
 .. _spi_engine configuration-registers:
 
@@ -251,9 +253,13 @@ bus behavior.
    * - Bits
      - Name
      - Description
-   * - [7:3]
+   * - [7:4]
      - reserved
      - Must always be 0.
+   * - [3]
+     - sdo_idle_state
+     - Configures the output of the SDO pin when CS is inactive or during
+       read-only transfers.
    * - [2]
      - three_wire
      - Configures the output of the three_wire pin.
@@ -288,7 +294,7 @@ using the following formula:
 
 .. math::
 
-   f_{sclk} = \frac{f_{clk}}{((div + 1) * 2)}
+   f\_{sclk} = \frac{f_{clk}}{((div + 1) * 2)}
 
 
 If no prescaler block is present div is 0.

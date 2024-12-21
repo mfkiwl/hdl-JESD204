@@ -1,7 +1,10 @@
 ###############################################################################
-## Copyright (C) 2017-2023 Analog Devices, Inc. All rights reserved.
+## Copyright (C) 2017-2024 Analog Devices, Inc. All rights reserved.
 ### SPDX short identifier: ADIBSD
 ###############################################################################
+
+add_files -norecurse  $ad_hdl_dir/library/util_cdc/sync_bits.v
+add_files -norecurse  $ad_hdl_dir/library/util_cdc/sync_event.v
 
 if {[info exists DEBUG_BUILD] == 0} {
   set DEBUG_BUILD 1
@@ -147,6 +150,9 @@ ad_ip_instance proc_sys_reset logic_analyzer_reset
 ad_ip_instance axi_rd_wr_combiner axi_rd_wr_combiner_logic
 ad_ip_instance axi_rd_wr_combiner axi_rd_wr_combiner_converter
 
+create_bd_cell -type module -reference sync_event cdc_adc_trig_sync
+create_bd_cell -type module -reference sync_event cdc_la_trig_sync
+
 ad_connect data_i     logic_analyzer/data_i
 ad_connect trigger_i  logic_analyzer/trigger_i
 ad_connect data_o     logic_analyzer/data_o
@@ -181,7 +187,7 @@ ad_connect logic_analyzer_dmac/fifo_wr_en   la_trigger_fifo/data_out_valid
 
 ad_connect logic_analyzer/fifo_depth la_trigger_fifo/depth
 
-ad_connect logic_analyzer/trigger_out logic_analyzer_dmac/fifo_wr_sync
+ad_connect logic_analyzer/trigger_out logic_analyzer_dmac/sync
 ad_connect logic_analyzer/trigger_in adc_trigger/trigger_out_la
 
 ad_connect pattern_generator_dmac/fifo_rd_en      logic_analyzer/dac_read
@@ -236,7 +242,7 @@ ad_connect adc_trigger_fifo/depth        adc_trigger/fifo_depth
 ad_connect adc_trigger/trigger_in        logic_analyzer/trigger_out_adc
 
 ad_connect adc_trigger_fifo/data_out        ad9963_adc_dmac/fifo_wr_din
-ad_connect adc_trigger/trigger_out          ad9963_adc_dmac/fifo_wr_sync
+ad_connect adc_trigger/trigger_out          ad9963_adc_dmac/sync
 ad_connect adc_trigger_fifo/data_out_valid  ad9963_adc_dmac/fifo_wr_en
 
 ad_connect axi_dac_interpolate/dac_clk      axi_ad9963/dac_clk
@@ -260,11 +266,22 @@ ad_connect axi_dac_interpolate/dac_enable_b   axi_ad9963/dac_enable_q
 ad_connect ad9963_dac_dmac_b/m_axis_valid     axi_dac_interpolate/dma_valid_b
 
 ad_connect axi_dac_interpolate/trigger_i   trigger_i
-ad_connect axi_dac_interpolate/trigger_adc adc_trigger/trigger_out_la
-ad_connect axi_dac_interpolate/trigger_la  logic_analyzer/trigger_out_adc
+
+ad_connect axi_ad9963/dac_clk  cdc_adc_trig_sync/out_clk
+ad_connect axi_ad9963/adc_clk  cdc_adc_trig_sync/in_clk
+ad_connect adc_trigger/trigger_out_la  cdc_adc_trig_sync/in_event
+ad_connect axi_dac_interpolate/trigger_adc  cdc_adc_trig_sync/out_event
+
+ad_connect axi_ad9963/dac_clk  cdc_la_trig_sync/out_clk
+ad_connect axi_ad9963/adc_clk  cdc_la_trig_sync/in_clk
+ad_connect logic_analyzer/trigger_out_adc  cdc_la_trig_sync/in_event
+ad_connect axi_dac_interpolate/trigger_la  cdc_la_trig_sync/out_event
 
 ad_connect axi_dac_interpolate/dac_valid_out_a  axi_ad9963/dma_valid_i
 ad_connect axi_dac_interpolate/dac_valid_out_b  axi_ad9963/dma_valid_q
+
+ad_connect axi_dac_interpolate/last_a           ad9963_dac_dmac_a/m_axis_last
+ad_connect axi_dac_interpolate/last_b           ad9963_dac_dmac_b/m_axis_last
 
 ad_connect /axi_ad9963/tx_data    txd
 ad_connect /axi_ad9963/tx_iq      txiq

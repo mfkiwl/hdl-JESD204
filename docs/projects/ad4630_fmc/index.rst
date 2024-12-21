@@ -9,7 +9,7 @@ Overview
 The :adi:`AD4630-24` is a two-channel, simultaneous sampling, Easy Drive, 2 MSPS
 successive approximation register (SAR) analog-to-digital converter (ADC). The
 :adi:`AD4030-24` is the single channel version. With a guaranteed maximum ±0.9
-ppm INL and no missing codes at 24-bits, the :adi:`AD4630-24` and 
+ppm INL and no missing codes at 24-bits, the :adi:`AD4630-24` and
 :adi:`AD4030-24` achieve unparalleled precision from −40°C to +125°C.
 The :adi:`AD4030-16` is a 16-bit dual channel version.
 
@@ -37,10 +37,10 @@ integrates all critical power supply and reference bypass capacitors, reducing
 the footprint and system component count, and lessening sensitivity to board
 layout.
 
-The ADAQ4224 is a μModule® precision data acquisition (DAQ) signal chain 
-solution that reduces the development cycle of a precision measurement system 
-by transferring the signal chain design challenge of component selection, 
-optimization, and layout from the designer to the device. With a guaranteed 
+The ADAQ4224 is a μModule® precision data acquisition (DAQ) signal chain
+solution that reduces the development cycle of a precision measurement system
+by transferring the signal chain design challenge of component selection,
+optimization, and layout from the designer to the device. With a guaranteed
 maximum ±TBD ppm INL and no missing codes at 24 bits, the ADAQ4224 achieves
 unparalleled precision from −40°C to +85°C.
 
@@ -55,34 +55,35 @@ Zedboard, which is a low cost FPGA carrier board from Digilent, using a
 Zynq-7000 re-programmable SoC from Xilinx.
 
 Applications:
-  * Automatic test equipment
-  * Digital control loops
-  * Medical instrumentation
-  * Seismology
-  * Semiconductor manufacturing
-  * Scientific instrumentation
-  
+
+* Automatic test equipment
+* Digital control loops
+* Medical instrumentation
+* Seismology
+* Semiconductor manufacturing
+* Scientific instrumentation
+
 Supported boards
 -------------------------------------------------------------------------------
 
--  :adi:`EVAL-AD4030-24FMCZ <EVAL-AD4030-24FMCZ>`
--  :adi:`EVAL-AD4630-16FMCZ <EVAL-AD4630-16FMCZ>`
--  :adi:`EVAL-AD4630-24FMCZ <EVAL-AD4630-24FMCZ>`
--  EVAL-ADAQ4224-FMCZ <EVAL-ADAQ4224>
--  EVAL-ISO-4224-FMCZ <EVAL-ISO-ADAQ4224>
+- :adi:`EVAL-AD4030-24FMCZ`
+- :adi:`EVAL-AD4630-16FMCZ`
+- :adi:`EVAL-AD4630-24FMCZ`
+- :adi:`EVAL-ADAQ4224-FMCZ`
+- :adi:`EV-ISO-4224-FMCZ`
 
 Supported devices
 -------------------------------------------------------------------------------
 
--  :adi:`AD4030-24`
--  :adi:`AD4630-16`
--  :adi:`AD4630-24`
--  ADAQ4224
+- :adi:`AD4030-24`
+- :adi:`AD4630-16`
+- :adi:`AD4630-24`
+- :adi:`ADAQ4224`
 
 Supported carriers
 -------------------------------------------------------------------------------
 
--  :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
+- :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
 
 Block design
 ---------------------------------------------------------------------------------
@@ -168,29 +169,40 @@ Configuration modes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The CLK_MODE configuration parameter defines clocking mode of the device's
-digital interface: Options: 0 - SPI mode, 1 - Echo-clock or Master clock mode
+digital interface:
+
+* 0 - SPI mode
+* 1 - Echo-clock or Master clock mode
 
 The NUM_OF_SDI configuration parameter defines the number of MOSI lines of the
-SPI interface: Options: 1 - Interleaved mode, 2 - 1 lane per channel,
-4 - 2 lanes per channel, 8 - 4 lanes per channel
+SPI interface:
+
+* 1 - Interleaved mode
+* 2 - 1 lane per channel,
+* 4 - 2 lanes per channel
+* 8 - 4 lanes per channel
 
 The CAPTURE_ZONE configuration parameter defines the capture zone of the next
-sample. There are two capture zones: 1 - from negative edge of the BUSY line
-until the next CNV positive edge -20ns, 2 - from the next consecutive CNV
-positive edge +20ns until the second next consecutive CNV positive edge -20ns
+sample. There are two capture zones:
+
+* 1 - from negative edge of the BUSY line until the next CNV positive edge -20ns
+* 2 - from the next consecutive CNV positive edge +20ns until the second next
+  consecutive CNV positive edge -20ns
 
 The DDR_EN configuration parameter defines the type of data transfer. In echo
 and master clock mode the SDI lines can have Single or Double Data Rates.
-Options: 0 - MISO runs on SDR, 1 - MISO runs on DDR.
+
+* 0 - MISO runs on SDR
+* 1 - MISO runs on DDR.
 
 CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The addresses are dependent on the architecture of the FPGA, having an offset
-added to the base address from HDL(see more at :ref:`architecture`).
+added to the base address from HDL(see more at :ref:`architecture cpu-intercon-addr`).
 
 ========================  ===========
-Instance                  Address
+Instance                  Zynq
 ========================  ===========
 spi_ad463x_axi_regmap     0x44A0_0000
 axi_ad463x_dma            0x44A3_0000
@@ -202,7 +214,7 @@ sync_generator*           0x44C0_0000
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated, but only used for ADAQ4224 with isolated power supply 
+   ``*`` instantiated, but only used for ADAQ4224 with isolated power supply
 
 I2C connections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -221,21 +233,21 @@ I2C connections
      - axi_iic_fmc
      - 0x4162_0000
      - ---
-   * - 
-     - 
-     - 
+   * -
+     -
+     -
      - 0x50
      - eeprom
-   * - 
-     - 
-     - 
+   * -
+     -
+     -
      - 0x5F
      - temperature sensor  *
 
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` Temperature Sensor HW Monitor is present only in ADAQ4224
+   - ``*`` Temperature Sensor HW Monitor is present only in ADAQ4224
 
 SPI connections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -258,7 +270,7 @@ GPIOs
 
 The Software GPIO number is calculated as follows:
 
--  Zynq-7000: if PS7 is used, then offset is 54
+- Zynq-7000: if PS7 is used, then offset is 54
 
 .. list-table::
    :widths: 25 25 25 25
@@ -292,8 +304,8 @@ The Software GPIO number is calculated as follows:
 .. admonition:: Legend
    :class: note
 
-   -   ``*`` instantiated, but used for ADAQ4224 only
-   -   ``**`` instantiated, but used for ADAQ4224 with isolated power supply
+   - ``*`` instantiated, but used for ADAQ4224 only
+   - ``**`` instantiated, but used for ADAQ4224 with isolated power supply
 
 Interrupts
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -311,19 +323,19 @@ Building the HDL project
 -------------------------------------------------------------------------------
 
 The design is built upon ADI's generic HDL reference design framework.
-ADI does not distribute the bit/elf files of these projects so they
-must be built from the sources available :git-hdl:`here </>`. To get
-the source you must
+ADI distributes the bit/elf files of these projects as part of the
+:dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
+If you want to build the sources, ADI makes them available on the
+:git-hdl:`HDL repository </>`. To get the source you must
 `clone <https://git-scm.com/book/en/v2/Git-Basics-Getting-a-Git-Repository>`__
 the HDL repository, and then build the project as follows:.
 
 **Linux/Cygwin/WSL**
 
-.. code-block::
-   :linenos:
+.. shell::
 
-   user@analog:~$ cd hdl/projects/ad4630_fmc/zed
-   user@analog:~/hdl/projects/ad4630_fmc/zed$ make NUM_OF_SDI=4 CAPTURE_ZONE=2
+   $cd hdl/projects/ad4630_fmc/zed
+   $make NUM_OF_SDI=4 CAPTURE_ZONE=2
 
 The result of the build, if parameters were used, will be in a folder named
 by the configuration used:
@@ -349,18 +361,18 @@ Systems related
 Hardware related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Product datasheets:
+- Product datasheets:
 
--  :adi:`AD4030-24`
--  :adi:`AD4630-16`
--  :adi:`AD4630-24`
--  :dokuwiki:`[Wiki] AD4630/AD4030 Evaluation Board User Guide <resources/eval/ad4630-24-eval-board>`
+  - :adi:`AD4030-24`
+  - :adi:`AD4630-16`
+  - :adi:`AD4630-24`
+- :dokuwiki:`[Wiki] AD4630/AD4030 Evaluation Board User Guide <resources/eval/ad4630-24-eval-board>`
 
 HDL related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  :git-hdl:`AD4630_FMC HDL project source code <projects/ad4630_fmc>`
--  :dokuwiki:`[Wiki] AD4630_FMC HDL project documentation <resources/eval/user-guides/ad463x/hdl>`
+- :git-hdl:`AD4630_FMC HDL project source code <projects/ad4630_fmc>`
+- :dokuwiki:`[Wiki] AD4630_FMC HDL project documentation <resources/eval/user-guides/ad463x/hdl>`
 
 .. list-table::
    :widths: 30 35 35
@@ -374,45 +386,45 @@ HDL related
      - ---
    * - AXI_CLKGEN
      - :git-hdl:`library/axi_clkgen`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_clkgen>`
+     - :ref:`axi_clkgen`
    * - AXI_DMAC
      - :git-hdl:`library/axi_dmac`
-     - :ref:`here <axi_dmac>`
+     - :ref:`axi_dmac`
    * - AXI_HDMI_TX
      - :git-hdl:`library/axi_hdmi_tx`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_hdmi_tx>`
+     - :ref:`axi_hdmi_tx`
    * - AXI_I2S_ADI
      - :git-hdl:`library/axi_i2s_adi`
      - ---
    * - AXI_PWM_GEN
      - :git-hdl:`library/axi_pwm_gen`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_pwm_gen>`
+     - :ref:`axi_pwm_gen`
    * - AXI_SPDIF_TX
      - :git-hdl:`library/axi_spdif_tx`
      - ---
    * - AXI_SPI_ENGINE
      - :git-hdl:`library/spi_engine/axi_spi_engine`
-     - :ref:`here <spi_engine axi>`
+     - :ref:`spi_engine axi`
    * - SPI_AXIS_REORDER
      - :git-hdl:`library/spi_engine/spi_axis_reorder`
      - ---
    * - SPI_ENGINE_EXECUTION
      - :git-hdl:`library/spi_engine/spi_engine_execution`
-     - :ref:`here <spi_engine execution>`
+     - :ref:`spi_engine execution`
    * - SPI_ENGINE_INTERCONNECT
      - :git-hdl:`library/spi_engine/spi_engine_interconnect`
-     - :ref:`here <spi_engine interconnect>`
+     - :ref:`spi_engine interconnect`
    * - SPI_ENGINE_OFFLOAD
      - :git-hdl:`library/spi_engine/spi_engine_offload`
-     - :ref:`here <spi_engine offload>`
+     - :ref:`spi_engine offload`
    * - SYSID_ROM
      - :git-hdl:`library/sysid_rom`
-     - :dokuwiki:`[Wiki] <resources/fpga/docs/axi_sysid>`
+     - :ref:`axi_sysid`
    * - UTIL_I2C_MIXER
-     - :git-hdl:`library/util_i2c_mixer <library/util_i2c_mixer>`
+     - :git-hdl:`library/util_i2c_mixer`
      - ---
 
--  :ref:`SPI Engine Framework documentation <spi_engine>`
+- :ref:`SPI Engine Framework documentation <spi_engine>`
 
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
