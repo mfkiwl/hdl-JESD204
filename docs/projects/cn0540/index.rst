@@ -355,7 +355,11 @@ HDL related
 Software related
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- :git-linux:`CN0540 Linux driver source code <analogdevicesinc/linux/blob/main/drivers/iio/adc/ad7768-1.c>`
+- :git-linux:`CN0540 Linux driver source code <drivers/iio/adc/ad7768-1.c>`
+- CN0540/CoraZ7S Linux device tree
+   :git-linux:`arch/arm/boot/dts/xilinx/zynq-coraz7s-cn0540.dts`
+- CN0540/DE-10Nano Linux device tree
+   :git-linux:`arch/arm/boot/dts/intel/socfpga/socfpga_cyclone5_de10_nano_cn0540.dts`
 
 .. include:: ../common/more_information.rst
 

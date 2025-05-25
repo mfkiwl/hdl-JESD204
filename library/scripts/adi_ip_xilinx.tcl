@@ -1,5 +1,5 @@
 ###############################################################################
-## Copyright (C) 2014-2024 Analog Devices, Inc. All rights reserved.
+## Copyright (C) 2014-2025 Analog Devices, Inc. All rights reserved.
 ### SPDX short identifier: ADIBSD
 ###############################################################################
 
@@ -305,12 +305,20 @@ proc adi_ip_create {ip_name} {
 #
 proc adi_ip_files {ip_name ip_files} {
   set proj_fileset [get_filesets sources_1]
+  set design_source_files [list]
+  set constraint_files [list]
   foreach m_file $ip_files {
     if {[file extension $m_file] eq ".xdc"} {
-      add_files -norecurse -fileset constrs_1 $m_file
+      lappend constraint_files $m_file
     } else {
-      add_files -norecurse -scan_for_includes -fileset $proj_fileset $m_file
+      lappend design_source_files $m_file
     }
+  }
+  if {$design_source_files != {}} {
+    add_files -norecurse -scan_for_includes -fileset $proj_fileset $design_source_files
+  }
+  if {$constraint_files != {}} {
+    add_files -norecurse -fileset constrs_1 $constraint_files
   }
   set_property "top" "$ip_name" $proj_fileset
 }
@@ -427,11 +435,12 @@ proc adi_init_bd_tcl {} {
   foreach i $auto_set_param_list {
     if { [ipx::get_user_parameters $i -of_objects $cc -quiet] ne "" } {
       append auto_set_param "    $i \\\n"
+      set j $i
     }
   }
   if { $auto_set_param ne "" } {
     puts $bd_tcl "  bd::mark_propagate_only \$ip \" \\"
-    regsub "${i} \\\\" $auto_set_param "$i\"" auto_set_param
+    regsub "${j} \\\\" $auto_set_param "$j\"" auto_set_param
     puts $bd_tcl $auto_set_param
   }
 
@@ -439,11 +448,12 @@ proc adi_init_bd_tcl {} {
   foreach i $auto_set_param_list_overwritable {
     if { [ipx::get_user_parameters $i -of_objects $cc -quiet] ne "" } {
       append auto_set_overwritable_param "    $i \\\n"
+      set j $i
     }
   }
   if { $auto_set_overwritable_param ne "" } {
     puts $bd_tcl "  bd::mark_propagate_override \$ip \" \\"
-    regsub "${i} \\\\" $auto_set_overwritable_param "$i\"" auto_set_overwritable_param
+    regsub "${j} \\\\" $auto_set_overwritable_param "$j\"" auto_set_overwritable_param
     puts $bd_tcl $auto_set_overwritable_param
   }
   puts $bd_tcl "  adi_auto_assign_device_spec \$cellpath"
@@ -592,8 +602,8 @@ proc adi_if_ports {dir width name {type none} {default_value none}} {
 
   ipx::add_bus_abstraction_port $name [ipx::current_busabs]
   set m_intf [ipx::get_bus_abstraction_ports $name -of_objects [ipx::current_busabs]]
-  set_property master_presence required $m_intf
-  set_property slave_presence  required $m_intf
+  set_property master_presence optional $m_intf
+  set_property slave_presence  optional $m_intf
   set_property master_width $width $m_intf
   set_property slave_width  $width $m_intf
 

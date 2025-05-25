@@ -14,7 +14,6 @@ version = '' # documentation version, will be printed on the cover page
 
 extensions = [
     'sphinx.ext.todo',
-    'sphinxcontrib.wavedrom',
     'adi_doctools',
     'rst2pdf.pdfbuilder'
 ]
@@ -28,7 +27,7 @@ source_suffix = '.rst'
 
 # -- External docs configuration ----------------------------------------------
 
-interref_repos = ['doctools', 'documentation']
+interref_repos = ['doctools', 'documentation', 'pyadi-iio']
 
 # -- Custom extensions configuration ------------------------------------------
 

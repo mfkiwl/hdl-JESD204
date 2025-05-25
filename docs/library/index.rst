@@ -23,9 +23,10 @@ ADC/DAC
 .. toctree::
    :maxdepth: 1
 
-   axi_ad3552r/index
+   axi_ad35xxr/index
    axi_ad408x/index
    axi_ad485x/index
+   axi_ad7405/index
    axi_ad7606x/index
    axi_ad7616/index
    axi_ad7768/index
@@ -35,7 +36,10 @@ ADC/DAC
    axi_ad9467/index
    axi_ad9783/index
    axi_ad9963/index
+   axi_ada4355/index
    axi_adaq8092/index
+   axi_adrv9001/index
+   axi_ltc235x/index
    axi_ltc2387/index
 
 Data Offload
@@ -81,6 +85,7 @@ Utilities
    axi_pwm_gen/index
    axi_sysid/index
    axi_tdd/index
+   cn0363/index
    common/ad_dds/index
    corundum/index
    util_axis_fifo/index
@@ -98,9 +103,6 @@ Utilities
 Obsolete IPs
 -------------------------------------------------------------------------------
 
-The following IPs are obsolete and **not maintained anymore**. The latest
-available sources can be found in the same archive.
-
 .. toctree::
    :maxdepth: 1
 
@@ -108,3 +110,21 @@ available sources can be found in the same archive.
    axi_ad9371/index
    axi_ad9643/index
    axi_ad9671/index
+
+The following IPs are obsolete and **not maintained anymore**. The latest
+available sources can be found in the following release branches:
+
+.. list-table::
+   :widths: 50 50
+   :header-rows: 1
+
+   * - IP name
+     - Code link
+   * - axi_ad9144
+     - :git-hdl:`hdl_2019_r2 <hdl_2019_r2:library/axi_ad9144>`
+   * - axi_ad9371
+     - :git-hdl:`hdl_2019_r2 <hdl_2019_r2:library/axi_ad9371>`
+   * - axi_ad9643
+     - :git-hdl:`hdl_2016_r1 <hdl_2016_r1:library/axi_ad9643>`
+   * - axi_ad9671
+     - :git-hdl:`hdl_2022_r2 <hdl_2022_r2:library/axi_ad9671>`

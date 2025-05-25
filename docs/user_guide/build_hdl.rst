@@ -3,6 +3,9 @@
 Build an HDL project
 ===============================================================================
 
+Prerequisites
+-------------------------------------------------------------------------------
+
 .. warning::
 
    Please note that ADI only provides the source files necessary to create
@@ -84,6 +87,12 @@ be described:
 2. Setup the HDL repository
 -------------------------------------------------------------------------------
 
+.. caution::
+
+   We offer support only for
+   `the latest 2 releases <https://github.com/analogdevicesinc/hdl/releases>`__
+   from our repository, and the :git-hdl:`main <>` branch.
+
 These designs are built upon ADI's generic HDL reference designs framework.
 ADI distributes the bit/elf files of these projects as part of the
 :dokuwiki:`ADI Kuiper Linux <resources/tools-software/linux-software/kuiper-linux>`.
@@ -95,23 +104,16 @@ the repository. This is the best method to get the sources.
 Here, we are cloning the repository inside a directory called **adi**.
 Please refer to the :ref:`git_repository` section for more details.
 
+Cloning is now done using HTTPS and a classic PAT (Personal Access Token).
+More details on how to do this,
+`here <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens>`__.
+
 .. shell:: bash
 
-   $git clone git@github.com:analogdevicesinc/hdl.git
+   $git clone https://github.com/analogdevicesinc/hdl.git
 
-.. collapsible:: Cloning is done now using SSH
-
-   .. warning::
-
-      Cloning the HDL repository is done now using SSH, because of
-      GitHub security reasons. Check out this documentation on `how to deal
-      with SSH keys in
-      GitHub <https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent>`__.
-      Both for `Cygwin <https://www.cygwin.com/>`__ and
-      `WSL <https://learn.microsoft.com/en-us/windows/wsl/install/>`__ it is
-      necessary to create a unique SSH key. If you use WSL, to get the best
-      performance, you must clone your HDL repository in the WSL file system.
-      For example: (:code:`\\\\wsl.localhost\\Ubuntu\\home\\username\\hdl`)
+If you use WSL, you must clone your HDL repository in the WSL file system.
+For example ``\\wsl.localhost\Ubuntu\home\username\hdl``.
 
 The above command clones the **default** branch, which is the **main** for
 HDL repo. The **main** branch always points to the latest stable release
@@ -121,7 +123,7 @@ want to switch to any other branch you need to checkout that branch:
 .. shell:: bash
 
    ~/hdl
-   $git checkout hdl_2022_r2
+   $git checkout hdl_2023_r2
 
 If this is your first time cloning, you have the latest source files.
 If not, you can simply pull the latest sources using ``git pull`` or
@@ -131,7 +133,7 @@ If not, you can simply pull the latest sources using ``git pull`` or
 
    ~/hdl
    $git fetch origin               # shows what changes will be pulled on your local copy
-   $git rebase origin/hdl_2022_r2  # updates your local copy
+   $git rebase origin/hdl_2023_r2  # updates your local copy
 
 .. _build_hdl environment:
 
@@ -158,11 +160,9 @@ method in your **~/.bashrc** file as follows:
        source /opt/Xilinx/Vivado/$XVERSION/settings64.sh
    }
 
-.. tip::
-
-   Even though it's convenient, we discourage adding the source scripts to
-   .bashrc files outside of wrapper methods, as multiple vendor environments
-   may conflict with each other.
+Even though it's convenient, we discourage adding the source scripts to
+.bashrc files outside of wrapper methods, as multiple vendor environments
+may conflict with each other.
 
 Then, `re-source your bashrc <https://linuxcommand.org/lc3_man_pages/sourceh.html>`__
 for the current session (or open a new one) and call the defined method:
@@ -213,6 +213,9 @@ For Lattice:
 3b. Windows environment setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Cygwin
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Because GNU Make is not supported on Windows, you need to install
 `Cygwin <https://www.cygwin.com/>`__, which is a UNIX-like environment
 and command-line interface for Microsoft Windows.
@@ -226,8 +229,6 @@ For AMD Xilinx Vivado:
 .. shell:: bash
 
    ~/hdl
-   $source /cygdrive/path_to/Xilinx/Vivado/202x.x/settings64.sh
-
    $export PATH=$PATH:/cygdrive/c/Xilinx/Vivado/202x.x/bin
    $export PATH=$PATH:/cygdrive/c/Xilinx/Vivado_HLS/202x.x/bin
    $export PATH=$PATH:/cygdrive/c/Xilinx/Vitis/202x.x/bin
@@ -252,10 +253,111 @@ For Lattice:
    $export PATH=$PATH:/cygdrive/c/lscc/propel/202x.x/builder/rtf/bin/nt64
    $export PATH=$PATH:/cygdrive/c/lscc/radiant/202x.x/bin/nt64
 
-.. collapsible:: Alternatives to Cygwin/Linux terminal
+WSL
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   A very good alternative to Cygwin -- **but not supported by us** -- is
-   `WSL <https://learn.microsoft.com/en-us/windows/wsl/install/>`__.
+`WSL <https://learn.microsoft.com/en-us/windows/wsl/install/>`__ (or Windows
+Subsystem for Linux) is both a UNIX-like environment and a command-line
+interface for Microsoft Windows. You need to install the Ubuntu distribution.
+
+To be able to access the GUI, **WSL2 is recommended**. This is done using
+PowerShell or Windows Command Prompt in Administrator mode.
+In the link above, you can find the installation guide for WSL on Windows.
+
+:red:`We do not offer support on WSL-related issues or on Vivado/Vitis issues!`
+
+.. collapsible:: How to install WSL
+
+   When installing WSL, the Ubuntu distribution will be installed by default.
+   If it is not, after installing WSL, write in the terminal:
+
+   .. shell:: ps1
+
+      $wsl --update
+      $wsl --install -d ubuntu
+
+   If you want to check the WSL version, you can use the Windows Command
+   Prompt command: **wsl -l -v**.
+
+   If you want to check the version for wsl and Ubuntu, you can use the
+   following commands in Ubuntu:
+
+   .. shell:: bash
+
+      $uname -r
+       5.15.90.1-microsoft-standard-WSL2
+
+      $lsb_release -a
+       No LSB modules are available.
+       Distributor ID: Ubuntu
+       Description:    Ubuntu 22.04.2 LTS
+       Release:        22.04
+       Codename:       jammy
+
+.. collapsible:: How to install the tools in WSL
+
+   Before building any project,
+   :red:`it is necessary to install the Linux version for Vivado, in the WSL file system`,
+   because on the Ubuntu distribution on WSL you cannot
+   run projects from on the Windows version of them. When you have to choose
+   the installation path, choose the location where WSL is installed
+   ``\\wsl.localhost\Ubuntu\opt``.
+
+   Also, to get the best performance, you must clone your HDL repository in
+   the WSL file system. For example: ``\\wsl.localhost\Ubuntu\home\username\hdl``.
+
+   For more information you can consult the following link:
+   `WSL Storage <https://learn.microsoft.com/en-us/windows/wsl/filesystems#file-storage-and-performance-across-file-systems>`__.
+
+   Download the Linux version of Vitis (Vivado comes in the same package with
+   Vitis), then one by one, do the following commands in the WSL terminal:
+
+   .. shell:: bash
+
+      ~/Downloads
+      $chmod +x FPGAs_AdaptiveSoCs_Unified_2023.2_1113_1001_Lin64.bin
+      $sudo ./FPGAs_AdaptiveSoCs_Unified_2023.2_1113_1001_Lin64.bin
+
+   Now, you may have noticed that the installation raised a couple of
+   warnings, such as:
+
+   .. code-block::
+
+      $/tools/Xilinx/Vivado/2023.2/bin/rdiArgs.sh: line 31: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8): No such file or directory
+      /bin/bash: warning: setlocale: LC_ALL: cannot change locale (en_US.UTF-8)
+      terminate called after throwing an instance of 'std::runtime_error'
+        what():  locale::facet::_S_create_c_locale name not valid
+      /tools/Xilinx/Vivado/2023.2/bin/rdiArgs.sh: line 312:  4105 Aborted                 "$RDI_PROG" "$@"
+
+   See `here <https://adaptivesupport.amd.com/s/question/0D54U00006FYojlSAD/vivado-20222-on-ubuntu-with-error-lcall-cannot-change-locale-enusutf8?language=en_US>`__
+   a thread on the Xilinx community.
+
+   Next, run:
+
+   .. shell:: bash
+
+      ~/Downloads
+      $sudo apt-get install locales && sudo localedef -i en_US -f UTF-8 en_US.UTF-8
+      $cd /opt/Xilinx/Vitis/2023.2/scripts
+      $sudo ./installLibs.sh
+      $sudo apt-get install libxrender1 libxtst6 libxi6
+      $sudo apt-get install libtinfo5 # to be used only in case you have issues with missing libtinfo5 when building a project
+
+   Then you need to add the following paths to your $PATH environment variable:
+
+   .. shell:: bash
+
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vivado/202x.x/bin
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vivado_HLS/202x.x/bin
+
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vitis/202x.x/bin
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vitis/202x.x/gnu/microblaze/nt/bin
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vitis/202x.x/gnu/arm/nt/bin
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vitis/202x.x/gnu/microblaze/linux_toolchain/nt64_be/bin
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vitis/202x.x/gnu/microblaze/linux_toolchain/nt64_le/bin
+      $export PATH=$PATH:/opt/path_to/Xilinx/Vitis/202x.x/gnu/aarch32/nt/gcc-arm-none-eabi/bin
+
+.. collapsible:: Alternatives to Cygwin/WSL/Linux terminal
 
    If you do not want to use neither Cygwin nor WSL, there might still be some
    alternative. There are ``make`` alternatives for **Windows Command
@@ -280,9 +382,9 @@ current environment, for example:
    $which make
     /usr/bin/make
    $which vivado
-    /opt/Xilinx/Vivado/2023.1/bin/vivado
+    /opt/Xilinx/Vivado/2023.2/bin/vivado
    $which quartus
-    /opt/intelFPGA/23.1/quartus/bin/quartus
+    /opt/intelFPGA/24.2/quartus/bin/quartus
 
 .. _build_hdl build:
 
@@ -638,7 +740,7 @@ The **sof** file is used to program the device.
 
 .. collapsible:: Building an Intel project in WSL - known issues
 
-   For a10Soc and s10Soc projects it's very possible to face the following
+   For a10Soc and S10Soc projects it's very possible to face the following
    error when you try to build the project:
 
    .. warning::
@@ -725,34 +827,10 @@ Currently, we only have a single early-version base design that builds almost
 like the other ones. For Lattice, there are separate tools for creating
 a block design **(Propel Builder)** and building an HDL design **(Radiant)**.
 
-The build for any supported project works with ``make``, same as the others.
-First, you have to open the **Propel Builder GUI** and download the necessary
-Lattice-provided IPs manually. You can check the **necessary Lattice IPs** and
-and their versions in the
-**<project_name>_system_pb.tcl** script or follow the error messages in the
-**<project_name>_propel_builder.log** after running ``make`` and you get
-a FAILED message.
-
-Then, simply go to the carrier folder and run ``make``. For now, you can try
-to build the only base design we have available for
+To build a project, go to the carrier folder and run ``make``. For now, you can
+try to build the only base design we have available for
 **CertusPro-NX Evaluation Board** by entering the base design directory and
 running ``make``.
-
-Required Lattice Provided IPs to download for projects/common/lfcpnx
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-==================== ============================= =======
-IP name              Display name                  Version
-==================== ============================= =======
-riscv_rtos           RISC-V RX                      2.3.0
-gpio                 GPIO                           1.6.2
-spi_controller       SPI Controller                 2.1.0
-i2c_controller       I2C Controller                 2.0.1
-axi_interconnect     AXI4 Interconnect              1.2.2
-axi2ahb_bridge       AXI4 to AHB-Lite Bridge        1.1.1
-axi2apb_bridge       AXI4 to APB Bridge             1.1.1
-gp_timer             Timer-Counter                  1.3.0
-==================== ============================= =======
 
 .. shell:: bash
 
@@ -760,24 +838,27 @@ gp_timer             Timer-Counter                  1.3.0
    $cd projects/common/lfcpnx
    $make
 
-This, assuming that you have the tools and licenses set up correctly. If
-you don't get to the last line, the make failed to build the project.
+This assumes that you have the tools and licenses set up correctly.
 There is nothing you can gather from the ``make`` output (other than if the
 build failed or not); the actual failure message is in a log file.
 
 Checking the build and analyzing results
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The make script for Lattice projects is the **projects/scripts/project-lattice.mk**
-that is included in **Makefile** after setting the project dependencies.
+The make script for Lattice projects is ``projects/scripts/project-lattice.mk``
+which is included in **Makefile** after setting the project dependencies.
 If you check this make script, you can note that we have two rules we run by the
-**all:** rule: one that runs the **Propel Builder** targets (for the block
-design) and one that runs the  **Radiant** targets (for HDL build).
-For this reason, we have two log files as well, the first one
-**$(PROJECT_NAME)_propel_builder.log**, and the second one is
-**$(PROJECT_NAME)_radiant.log**.
+``all:`` rule:
 
-If you are seeking support from us, do a quick (or detailed) check on files.
+- Rule ``pb:`` which runs the **Propel Builder** targets (for the block design)
+- Rule ``rd:`` Which runs the  **Radiant** targets (for HDL build).
+
+For this reason, we have two log files as well:
+
+- **$(PROJECT_NAME)_propel_builder.log**
+- **$(PROJECT_NAME)_radiant.log**
+
+Before seeking support from us, do a quick (or detailed) check on files.
 This contains the most relevant information that you need to provide.
 
 .. warning::
@@ -788,26 +869,26 @@ This contains the most relevant information that you need to provide.
 
    ~/hdl
    $ls -ltr <ADI_carrier_proj_dir>
-   $ls -ltr <ADI_carrier_proj_dir>/<project_name>
-   $ls -ltr <ADI_carrier_proj_dir>/<project_name>/<project_name>
-   $tail <ADI_carrier_proj_dir>/<project_name>_propel_builder.log
-   $tail <ADI_carrier_proj_dir>/<project_name>_radiant.log
+   $ls -ltr <ADI_carrier_proj_dir>/_bld/<project_name>
+   $ls -ltr <ADI_carrier_proj_dir>/_bld/<project_name>/<project_name>
+   $tail <ADI_carrier_proj_dir>/_bld/<project_name>_propel_builder.log
+   $tail <ADI_carrier_proj_dir>/_bld/<project_name>_radiant.log
 
 Note that if the **Propel Builder** project fails to build, the
 **$(PROJECT_NAME)_radiant.log** may not exist.
 
-If the Propel Builder project was built successfully, the **sge**
-folder should appear in the **<ADI_carrier_proj_dir>/** or in the
-**<ADI_carrier_proj_dir>/<project_name>**.
-The **sge** folder contains the **bsp** folder (Base Support
+If the Propel Builder project was built successfully, the ``sge/``
+folder should appear in the ``<ADI_carrier_proj_dir>/`` or in the
+``<ADI_carrier_proj_dir>/_bld/<project_name>``.
+The ``sge/`` folder contains the ``bsp/`` folder (Base Support
 Package) and the SoC configuration files.
 
-The **bsp** folder contains the
+The ``bsp/`` folder contains the
 available Lattice-provided drivers for the IPs used in the design (sometimes
 these drivers are more like some basic examples to modify for your specific
 application) and the **sys_platform.h** file.
 
-You should find a **sys_env.xml** file in the same **sge** folder. This file is
+You should find a **sys_env.xml** file in the same ``sge/`` folder. This file is
 used to create a **no-OS** project with the current **bsp**.
 
 When running the Propel Builder targets, we call ``propelbld system_project_pb.tcl``
@@ -819,22 +900,22 @@ on Linux.
 
 The **system_project_pb.tcl** runs first. This file is used to create the
 **block design project** (Propel Builder) and source the **system_pb.tcl**
-which is used for linking one or more corelated block design '.tcl' scripts.
+which is used for linking one or more corelated block design (**.tcl**) scripts.
 
 The **system_pb.tcl** is sourced in **adi_project_pb** procedure.
 
 The **system_project.tcl** runs second. This file is used to create and build
 the **HDL project** (Radiant). Here we use the output of the Propel Builder
 project as the **configured IPs** that can be found in the
-*<ADI_carrier_proj_dir>/<project_name>/<project_name>/lib* folder and the
+``<ADI_carrier_proj_dir>/_bld/<project_name>/<project_name>/lib`` folder and the
 **default block design wrapper** that is the
-*<ADI_carrier_proj_dir>/<project_name>/<project_name>/<project_name>.v*.
+``<ADI_carrier_proj_dir>/_bld/<project_name>/<project_name>/<project_name>.v``.
 
 We add them to the Radiant project, then add our **system_top.v** wrapper,
 the **constraint files** and build the project.
 
 The output is a **.bit** file that by default will appear in the
-**<ADI_carrier_proj_dir>/<project_name>/impl_1** folder if the project was
+``<ADI_carrier_proj_dir>/_bld/<project_name>/impl_1`` folder if the project was
 successfully built.
 
 Supported targets of ``make`` command
@@ -1036,12 +1117,17 @@ on these tools.
       * - SDK (ARM/FPGA combo)
         - :red:`Not supported or nonexistent yet.`
       * - Upgrading/Version changes (non-ADI cores)
-        - :red:`You have to update the IP versions manually in GUI and copy the config
-          from the tcl console to the '.tcl' block design file, or update directly
-          in the '.tcl' block design file. Note that first you have to download the
-          new version of IPs using the GUI. An ip_upgrade tcl command exists, but
-          still the IPs have to be downloaded manually, and it only works if the old
-          IP's name is the same as the new (sometimes it changes by version).`
+        - :red:`If the project builds that means the dependency IPs are still
+          available for download. You can Update the IPs manually by checking
+          the available upgrades for the IPs in Propel Builder GUI at the IP
+          on Server section, then edit the project scripts to download and
+          instantiate the new versions of the IPs. the ip_catalog_install
+          tcl command is for downloading the IP, the adi_ip_instance is for
+          instantiating the IP. Simply edit the -vlnv sections with
+          the new versions. Sometimes configuration parameters or the IP name
+          also can change. In that case you should instantiate the new IP version
+          in GUI first, copy the vlnv and configuration section from the tcl shell window
+          to replace the -vlnv and -cfg_value section in the tcl scripts.`
 
 .. _build_hdl tool-versions:
 

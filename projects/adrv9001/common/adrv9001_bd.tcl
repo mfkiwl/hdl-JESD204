@@ -1,18 +1,13 @@
 ###############################################################################
-## Copyright (C) 2020-2024 Analog Devices, Inc. All rights reserved.
+## Copyright (C) 2020-2025 Analog Devices, Inc. All rights reserved.
 ### SPDX short identifier: ADIBSD
 ###############################################################################
 
-# create debug ports
-create_bd_port -dir O adc1_div_clk
-create_bd_port -dir O adc2_div_clk
-create_bd_port -dir O dac1_div_clk
-create_bd_port -dir O dac2_div_clk
-
-create_bd_port -dir I ref_clk
-
 create_bd_port -dir I tx_output_enable
 
+create_bd_port -dir I ref_clk
+create_bd_port -dir I mcs_in
+create_bd_port -dir O mcs_out
 create_bd_port -dir I mssi_sync
 
 # adrv9001 interface
@@ -85,6 +80,7 @@ ad_ip_parameter axi_adrv9001_rx1_dma CONFIG.AXI_SLICE_SRC 0
 ad_ip_parameter axi_adrv9001_rx1_dma CONFIG.AXI_SLICE_DEST 0
 ad_ip_parameter axi_adrv9001_rx1_dma CONFIG.DMA_2D_TRANSFER 0
 ad_ip_parameter axi_adrv9001_rx1_dma CONFIG.DMA_DATA_WIDTH_SRC 64
+ad_ip_parameter axi_adrv9001_rx1_dma CONFIG.CACHE_COHERENT $CACHE_COHERENCY
 
 ad_ip_instance util_cpack2 util_adc_1_pack { \
   NUM_OF_CHANNELS 4 \
@@ -102,6 +98,7 @@ ad_ip_parameter axi_adrv9001_rx2_dma CONFIG.AXI_SLICE_SRC 0
 ad_ip_parameter axi_adrv9001_rx2_dma CONFIG.AXI_SLICE_DEST 0
 ad_ip_parameter axi_adrv9001_rx2_dma CONFIG.DMA_2D_TRANSFER 0
 ad_ip_parameter axi_adrv9001_rx2_dma CONFIG.DMA_DATA_WIDTH_SRC 32
+ad_ip_parameter axi_adrv9001_rx2_dma CONFIG.CACHE_COHERENT $CACHE_COHERENCY
 
 ad_ip_instance util_cpack2 util_adc_2_pack { \
   NUM_OF_CHANNELS 2 \
@@ -119,13 +116,14 @@ ad_ip_parameter axi_adrv9001_tx1_dma CONFIG.AXI_SLICE_SRC 0
 ad_ip_parameter axi_adrv9001_tx1_dma CONFIG.AXI_SLICE_DEST 0
 ad_ip_parameter axi_adrv9001_tx1_dma CONFIG.DMA_2D_TRANSFER 0
 ad_ip_parameter axi_adrv9001_tx1_dma CONFIG.DMA_DATA_WIDTH_DEST 64
+ad_ip_parameter axi_adrv9001_tx1_dma CONFIG.CACHE_COHERENT $CACHE_COHERENCY
 
 ad_ip_instance util_upack2 util_dac_1_upack { \
   NUM_OF_CHANNELS 4 \
   SAMPLE_DATA_WIDTH 16 \
 }
 
-# dma for tx1
+# dma for tx2
 
 ad_ip_instance axi_dmac axi_adrv9001_tx2_dma
 ad_ip_parameter axi_adrv9001_tx2_dma CONFIG.DMA_TYPE_SRC 0
@@ -136,6 +134,7 @@ ad_ip_parameter axi_adrv9001_tx2_dma CONFIG.AXI_SLICE_SRC 0
 ad_ip_parameter axi_adrv9001_tx2_dma CONFIG.AXI_SLICE_DEST 0
 ad_ip_parameter axi_adrv9001_tx2_dma CONFIG.DMA_2D_TRANSFER 0
 ad_ip_parameter axi_adrv9001_tx2_dma CONFIG.DMA_DATA_WIDTH_DEST 32
+ad_ip_parameter axi_adrv9001_tx2_dma CONFIG.CACHE_COHERENT $CACHE_COHERENCY
 
 ad_ip_instance util_upack2 util_dac_2_upack { \
   NUM_OF_CHANNELS 2 \
@@ -157,11 +156,12 @@ ad_connect  axi_adrv9001/dac_1_clk util_dac_1_upack/clk
 ad_connect  axi_adrv9001/dac_2_clk axi_adrv9001_tx2_dma/m_axis_aclk
 ad_connect  axi_adrv9001/dac_2_clk util_dac_2_upack/clk
 
-ad_connect ref_clk           axi_adrv9001/ref_clk
-
 ad_connect tx_output_enable  axi_adrv9001/tx_output_enable
 
-ad_connect mssi_sync         axi_adrv9001/mssi_sync
+ad_connect ref_clk           axi_adrv9001/ref_clk
+ad_connect mcs_in            axi_adrv9001/mcs_in
+ad_connect mcs_out           axi_adrv9001/mcs_out
+ad_connect mssi_sync         axi_adrv9001/mssi_sync_in
 
 ad_connect rx1_dclk_in_n     axi_adrv9001/rx1_dclk_in_n_NC
 ad_connect rx1_dclk_in_p     axi_adrv9001/rx1_dclk_in_p_dclk_in
@@ -280,29 +280,30 @@ ad_cpu_interconnect 0x44A40000  axi_adrv9001_rx2_dma
 ad_cpu_interconnect 0x44A50000  axi_adrv9001_tx1_dma
 ad_cpu_interconnect 0x44A60000  axi_adrv9001_tx2_dma
 
-# memory inteconnect
+# memory interconnect
 
-ad_mem_hp1_interconnect $sys_cpu_clk sys_ps7/S_AXI_HP1
-ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_rx1_dma/m_dest_axi
-ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_rx2_dma/m_dest_axi
-ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_tx1_dma/m_src_axi
-ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_tx2_dma/m_src_axi
+if {$CACHE_COHERENCY} {
+  ad_mem_hpc0_interconnect $sys_cpu_clk sys_ps8/S_AXI_HPC0
+  ad_mem_hpc0_interconnect $sys_cpu_clk axi_adrv9001_rx1_dma/m_dest_axi
+  ad_mem_hpc0_interconnect $sys_cpu_clk axi_adrv9001_rx2_dma/m_dest_axi
+  ad_mem_hpc0_interconnect $sys_cpu_clk axi_adrv9001_tx1_dma/m_src_axi
+  ad_mem_hpc0_interconnect $sys_cpu_clk axi_adrv9001_tx2_dma/m_src_axi
+} else {
+  ad_mem_hp1_interconnect $sys_cpu_clk sys_ps7/S_AXI_HP1
+  ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_rx1_dma/m_dest_axi
+  ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_rx2_dma/m_dest_axi
+  ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_tx1_dma/m_src_axi
+  ad_mem_hp1_interconnect $sys_cpu_clk axi_adrv9001_tx2_dma/m_src_axi
+}
 
 ad_connect $sys_cpu_resetn axi_adrv9001_rx1_dma/m_dest_axi_aresetn
 ad_connect $sys_cpu_resetn axi_adrv9001_rx2_dma/m_dest_axi_aresetn
 ad_connect $sys_cpu_resetn axi_adrv9001_tx1_dma/m_src_axi_aresetn
 ad_connect $sys_cpu_resetn axi_adrv9001_tx2_dma/m_src_axi_aresetn
+
 # interrupts
 
 ad_cpu_interrupt ps-13 mb-12 axi_adrv9001_rx1_dma/irq
 ad_cpu_interrupt ps-12 mb-11 axi_adrv9001_rx2_dma/irq
 ad_cpu_interrupt ps-9  mb-6 axi_adrv9001_tx1_dma/irq
 ad_cpu_interrupt ps-10 mb-5 axi_adrv9001_tx2_dma/irq
-
-
-# Connect debug ports
-ad_connect  axi_adrv9001/adc_1_clk adc1_div_clk
-ad_connect  axi_adrv9001/adc_2_clk adc2_div_clk
-ad_connect  axi_adrv9001/dac_1_clk dac1_div_clk
-ad_connect  axi_adrv9001/dac_2_clk dac2_div_clk
-

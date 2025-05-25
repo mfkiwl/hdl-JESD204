@@ -37,7 +37,6 @@ Supported carriers
 -------------------------------------------------------------------------------
 
 - :xilinx:`ZedBoard <products/boards-and-kits/1-8dyf-11.html>` on FMC slot
-- :xilinx:`ZC706` on FMC LPC slot
 
 Other required hardware
 -------------------------------------------------------------------------------
@@ -80,29 +79,25 @@ AD7616_SDZ parallel interface
 Configuration modes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The INTF configuration parameter defines the interface type (Serial or
-Parallel). By default it is set to Parallel (0). Depending on the required interface mode,
-some hardware modifications need to be done on the board and/or make command:
+The following are the parameters of this project that can be configured:
+- INTF: specifies the type of interface used;
 
-In case of the **PARALLEL** interface:
+  - 0 - parallel (default)
+  - 1 - serial
 
-.. shell:: bash
+- NUM_OF_SDI: number of SDI lines used, **only in serial interface mode**;
 
-   $make INTF=0
+  - 1 - one SDI line
+  - 2 - two SDI lines (default)
 
-In case of the **SERIAL** interface:
+Depending on the required interface mode, some hardware modifications need to
+be done on the board:
 
-.. shell:: bash
+  - SL5 - unmounted - Parallel interface
+  - SL5 - mounted - Serial interface
 
-   $make INTF=1
-
-.. note::
-
-   This switch is a *hardware* switch. Please rebuild the  design if the
-   variable has been changed.
-
-   - SL5 - unmounted - Parallel interface
-   - SL5 - mounted - Serial interface
+This switch is a *hardware* switch. Please rebuild the design if the variable
+has been changed.
 
 Jumper setup
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -269,20 +264,18 @@ the HDL repository, and then build the project as follows:.
 .. shell::
 
    $cd hdl/projects/ad7616_sdz/zed
-   $make INTF=0
-
-The default configuration is Parallel Mode (0).
+   $make INTF=1 NUM_OF_SDI=2
 
 The result of the build, if parameters were used, will be in a folder named
 by the configuration used:
 
 if the following command was run
 
-``make INTF=0``
+``make INTF=1 NUM_OF_SDI=2``
 
 then the folder name will be:
 
-``INTF0``
+``INTF1_NUMOFSDI2``
 
 A more comprehensive build guide can be found in the :ref:`build_hdl` user guide.
 
@@ -367,10 +360,10 @@ HDL related
      - ---
    * - SYSID_ROM
      - :git-hdl:`library/sysid_rom`
-     - :ref:`here <axi_sysid>`
+     - :ref:`axi_sysid`
    * - UTIL_CPACK2
      - :git-hdl:`library/util_pack/util_cpack2` *
-     - :ref:`here <util_cpack2>`
+     - :ref:`util_cpack2`
 
 .. admonition:: Legend
    :class: note

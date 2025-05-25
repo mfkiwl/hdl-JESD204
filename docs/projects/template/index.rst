@@ -64,89 +64,100 @@ Supported carriers
      - :xilinx:`ZC706`
      - FMC HPC
 
-.. list-table::
-   :widths: 35 35 30
-   :header-rows: 1
-
-   * - Evaluation board
-     - Carrier
-     - FMC slot
-   * - :adi:`EVAL-AD9082`
-     - :xilinx:`VCK190`
-     - FMC0
-   * -
-     - :xilinx:`VCU118`
-     - FMC+
-   * -
-     - :xilinx:`ZCU102`
-     - FMC HPC0
-   * -
-     - :xilinx:`ZC706`
-     - FMC HPC
-
 Block design
 -------------------------------------------------------------------------------
 
 Block diagram
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If the project has multiple ways of configuration, then make subsections to
-this section and show the default configuration and some other popular modes.
+..
+  If the project has multiple ways of configuration, then make subsections to
+  this section and show the default configuration and some other popular modes.
 
 ..
    KEEP THIS PARAGRAPH
 
 The data path and clock domains are depicted in the below diagram:
 
-.. image:: ../ad9783_ebz/ad9783_zcu102_block_diagram.svg
-   :width: 800
+.. image:: ../ad_quadmxfe1_ebz/ad_quadmxfe1_ebz_jesd204b_block_diagram.svg
+   :width: 1000
    :align: center
-   :alt: AD9783-EBZ/ZCU102 block diagram
+   :alt: AD-QUADMXFE1-EBZ/VCU118 JESD204B block diagram
 
+.. important::
+
+   This configuration was built using the ``make`` command with the following
+   parameters:
+
+   .. shell:: bash
+
+      /hdl/projects/ad_quadmxfe1_ebz
+      $make JESD_MODE=8B10B \
+      $     RX_JESD_L=4 \
+      $     RX_JESD_M=8 \
+      $     RX_JESD_NP=16 \
+      $     RX_NUM_LINKS=4 \
+      $     TX_JESD_L=4 \
+      $     TX_JESD_M=8 \
+      $     TX_JESD_NP=16 \
+      $     TX_NUM_LINKS=4
+
+.. collapsible:: Click here for details on the block diagram modules
+
+   .. list-table::
+      :widths: 10 20 35 35
+      :header-rows: 1
+
+      * - Block name
+        - IP name
+        - Documentation
+        - Additional info
+      * - AXI_ADXCVR
+        - :git-hdl:`axi_adxcvr <library/xilinx/axi_adxcvr>`
+        - :ref:`axi_adxcvr`
+        - 2 instances, one for RX and one for TX
+      * - AXI_DMAC
+        - :git-hdl:`axi_dmac <library/axi_dmac>`
+        - :ref:`axi_dmac`
+        - 2 instances, one for RX and one for TX
+      * - DATA_OFFLOAD
+        - :git-hdl:`data_offload <library/data_offload>`
+        - :ref:`data_offload`
+        - 2 instances, one for RX and one for TX
+      * - RX JESD LINK
+        - axi_mxfe_rx_jesd
+        - :ref:`axi_jesd204_rx`
+        - Instantiaded by ``adi_axi_jesd204_rx_create`` procedure
+      * - RX JESD TPL
+        - rx_mxfe_tpl_core
+        - :ref:`ad_ip_jesd204_tpl_adc`
+        - Instantiated by ``adi_tpl_jesd204_rx_create`` procedure
+      * - TX JESD LINK
+        - axi_mxfe_tx_jesd
+        - :ref:`axi_jesd204_tx`
+        - Instantiaded by ``adi_axi_jesd204_tx_create`` procedure
+      * - TX JESD TPL
+        - tx_mxfe_tpl_core
+        - :ref:`ad_ip_jesd204_tpl_dac`
+        - Instantiated by ``adi_tpl_jesd204_tx_create`` procedure
+      * - UTIL_ADXCVR
+        - :git-hdl:`util_adxcvr <library/xilinx/util_adxcvr>`
+        - :ref:`util_adxcvr`
+        - Used for both AXI ADXCVR instances
+      * - UTIL_CPACK
+        - :git-hdl:`util_cpack2 <library/util_pack/util_cpack2>`
+        - :ref:`util_cpack2`
+        - ---
+      * - UTIL_UPACK
+        - :git-hdl:`util_upack2 <library/util_pack/util_upack2>`
+        - :ref:`util_upack2`
+        - ---
 ..
    MUST: Use SVG format for the diagram
 
 ..
    TIP: Block diagrams should contain subtitles only if there are at least two
    different diagrams
-
-Configuration modes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-..
-   MENTION IF ANY MODES ARE AVAILABLE FOR CONFIGURATION
-
-..
-   EXAMPLES BUT NOT LIMITED TO
-
-The following are the parameters of this project that can be configured:
-
-- JESD_MODE: used link layer encoder mode
-
-  - 64B66B - 64b66b link layer defined in JESD204C, uses AMD IP as Physical Layer
-  - 8B10B - 8b10b link layer defined in JESD204B, uses ADI IP as Physical Layer
-
-- RX_LANE_RATE: lane rate of the Rx link (MxFE to FPGA)
-- TX_LANE_RATE: lane rate of the Tx link (FPGA to MxFE)
-- REF_CLK_RATE: the rate of the reference clock
-- [RX/TX]_JESD_M: number of converters per link
-- [RX/TX]_JESD_L: number of lanes per link
-- [RX/TX]_JESD_S: number of samples per frame
-- [RX/TX]_JESD_NP: number of bits per sample
-- [RX/TX]_NUM_LINKS: number of links
-- [RX/TX]_TPL_WIDTH
-- TDD_SUPPORT: set to 1, adds the TDD; enables external synchronization through TDD. Must be set to 1 when SHARED_DEVCLK=1
-- SHARED_DEVCLK
-- TDD_CHANNEL_CNT
-- TDD_SYNC_WIDTH
-- TDD_SYNC_INT
-- TDD_SYNC_EXT
-- TDD_SYNC_EXT_CDC: if enabled, the CDC circuitry for the external sync signal is added
-- [RX/TX]_KS_PER_CHANNEL: Number of samples stored in internal buffers in
-  kilosamples per converter (M)
-- [ADC/DAC]_DO_MEM_TYPE
-- Check out this guide on more details regarding these parameters:
-  :ref:`axi_tdd`
 
 Clock scheme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -193,6 +204,91 @@ Deframer paramaters: L=4, M=2, F=1, S=1, NP=16
 The transport layer component presents on its output 128 bits at once on
 every clock cycle, representing 4 samples per converter. The two receive
 chains are merged together and transferred to the DDR with a single DMA.
+
+Configuration modes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+..
+   MENTION IF ANY MODES ARE AVAILABLE FOR CONFIGURATION
+
+..
+   EXAMPLES BUT NOT LIMITED TO
+
+The following are the parameters of this project that can be configured:
+
+- JESD_MODE: used link layer encoder mode
+
+  - 64B66B - 64b66b link layer defined in JESD204C, uses AMD IP as Physical Layer
+  - 8B10B - 8b10b link layer defined in JESD204B, uses ADI IP as Physical Layer
+
+- RX_LANE_RATE: lane rate of the Rx link (MxFE to FPGA)
+- TX_LANE_RATE: lane rate of the Tx link (FPGA to MxFE)
+- REF_CLK_RATE: the rate of the reference clock
+- [RX/TX]_JESD_M: number of converters per link
+- [RX/TX]_JESD_L: number of lanes per link
+- [RX/TX]_JESD_S: number of samples per frame
+- [RX/TX]_JESD_NP: number of bits per sample
+- [RX/TX]_NUM_LINKS: number of links
+- [RX/TX]_TPL_WIDTH
+- TDD_SUPPORT: set to 1, adds the TDD; enables external synchronization through TDD. Must be set to 1 when SHARED_DEVCLK=1
+- SHARED_DEVCLK
+- TDD_CHANNEL_CNT
+- TDD_SYNC_WIDTH
+- TDD_SYNC_INT
+- TDD_SYNC_EXT
+- TDD_SYNC_EXT_CDC: if enabled, the CDC circuitry for the external sync signal is added
+- [RX/TX]_KS_PER_CHANNEL: Number of samples stored in internal buffers in
+  kilosamples per converter (M)
+- [ADC/DAC]_DO_MEM_TYPE
+- Check out this guide on more details regarding these parameters:
+  :ref:`axi_tdd`
+
+Detailed description
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+..
+  Give details about how many JESD chains/how many lanes
+
+The design has one JESD204B receive chain and one transmit chain, each with
+8 lanes.
+
+Each chain consists of a transport layer represented by a JESD TPL module, 
+a link layer represented by a JESD LINK module, and a shared among chains
+physical layer, represented by an XCVR module. The HDL project in its current
+state, has **the link operating in subclass 0**.
+
+..
+  Specify the clock frequencies from the system
+
+- Rx device clock - 122.88 MHz
+- Tx device clock - 245.76 MHz
+- JESD204B Rx Lane Rate - 4.9152 Gbps
+- JESD204B Tx Lane Rate - 9.8304 Gbps
+
+..
+  GIVE DETAILS ABOUT THE JESD LAYERS/IMPORTANT MODULES, IN COLLAPSIBLE
+  SECTIONS IF THERE IS TOO MUCH INFORMATION!
+  TAKE A LOOK AT FMCOMMS11 EXAMPLE.
+
+.. collapsible:: JESD204 Physical layer
+
+   ..
+    Notable information about the physical layer.
+
+.. collapsible:: JESD204 Link layer
+
+   ..
+    Notable information about the link layer.
+
+.. collapsible:: JESD204 Transport layer
+
+   ..
+    Notable information about the transport layer.
+
+.. collapsible:: Top file
+
+   ..
+    Notable information about the top file.
 
 CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -327,113 +423,6 @@ You have many ways of writing this table: as a list-table or really to draw
 it. Take a look in the .rst of this page to see how they're written and
 which suits best your case.
 
-.. list-table::
-   :widths: 30 10 15 15 15 15
-   :header-rows: 1
-
-   * - Instance name
-     - HDL
-     - Linux Zynq
-     - Actual Zynq
-     - Linux ZynqMP
-     - Actual ZynqMP
-   * - ---
-     - 15
-     - 59
-     - 91
-     - 111
-     - 143
-   * - ---
-     - 14
-     - 58
-     - 90
-     - 110
-     - 142
-   * - ---
-     - 13
-     - 57
-     - 89
-     - 109
-     - 141
-   * - ---
-     - 12
-     - 56
-     - 88
-     - 108
-     - 140
-   * - ---
-     - 11
-     - 55
-     - 87
-     - 107
-     - 139
-   * - ---
-     - 10
-     - 54
-     - 86
-     - 106
-     - 138
-   * - ---
-     - 9
-     - 53
-     - 85
-     - 105
-     - 137
-   * - ---
-     - 8
-     - 52
-     - 84
-     - 104
-     - 136
-   * - ---
-     - 7
-     - 36
-     - 68
-     - 96
-     - 128
-   * - ---
-     - 6
-     - 35
-     - 67
-     - 95
-     - 127
-   * - ---
-     - 5
-     - 34
-     - 66
-     - 94
-     - 126
-   * - ---
-     - 4
-     - 33
-     - 65
-     - 93
-     - 125
-   * - ---
-     - 3
-     - 32
-     - 64
-     - 92
-     - 124
-   * - ---
-     - 2
-     - 31
-     - 63
-     - 91
-     - 123
-   * - ---
-     - 1
-     - 30
-     - 62
-     - 90
-     - 122
-   * - ---
-     - 0
-     - 29
-     - 61
-     - 89
-     - 121
-
 ================ === ========== =========== ============ ============= ====== =============== ================
 Instance name    HDL Linux Zynq Actual Zynq Linux ZynqMP Actual ZynqMP S10SoC Linux Cyclone V Actual Cyclone V
 ================ === ========== =========== ============ ============= ====== =============== ================
@@ -465,6 +454,21 @@ Instance name    HDL Linux Zynq Actual Zynq Linux ZynqMP Actual ZynqMP S10SoC Li
    NOTE THAT FOR ULTRASCALE\+ DEVICES, THE PS I2C IS NOT SUPPORTED IN LINUX!!
    ALWAYS USE PL I2C FOR THESE DESIGNS!!
 
+Resource utilization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To see the resources utilization, please go to
+:ref:`projects resources-daq3-zc706`. A simplified version of that table can
+be found below.
+
+..
+  ADAPT THE PATH BELOW SUCH THAT IT POINTS TO THE index.rst from
+  hdl/docs/projects/index.rst
+
+.. literalinclude:: ../../projects/index.rst
+  :start-at: daq3_zc706
+  :end-before: daq3_zcu102
+
 Building the HDL project
 -------------------------------------------------------------------------------
 
@@ -493,14 +497,14 @@ command.
 Example of running the ``make`` command without parameters (using the default
 configuration):
 
-.. shell::
+.. shell:: bash
 
    $cd hdl/projects/ad9081_fmca_ebz/zcu102
    $make
 
 Example of running the ``make`` command with parameters:
 
-.. shell::
+.. shell:: bash
 
    $cd hdl/projects/ad9081_fmca_ebz/a10soc
    $make RX_LANE_RATE=2.5 TX_LANE_RATE=2.5 RX_JESD_L=8 RX_JESD_M=4 RX_JESD_S=1 RX_JESD_NP=16 TX_JESD_L=8 TX_JESD_M=4 TX_JESD_S=1 TX_JESD_NP=16
@@ -779,3 +783,5 @@ and of the device tree.
 .. include:: ../common/support.rst
 
 .. _Example link: https://www.intel.com/content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html
+.. _AMD PG198: https://docs.amd.com/v/u/en-US/pg198-jesd204-phy
+.. _AMD UG578: https://docs.amd.com/v/u/en-US/ug578-ultrascale-gty-transceivers

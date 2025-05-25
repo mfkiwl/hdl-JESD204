@@ -1,6 +1,6 @@
 // ***************************************************************************
 // ***************************************************************************
-// Copyright (C) 2024 Analog Devices, Inc. All rights reserved.
+// Copyright (C) 2025 Analog Devices, Inc. All rights reserved.
 //
 // In this HDL repository, there are many different and unique modules, consisting
 // of various HDL (Verilog or VHDL) components. The individual modules are
@@ -55,7 +55,7 @@ module spi_engine_execution_shiftreg #(
   // spi data
   input   [(DATA_WIDTH-1):0]  sdo_data,
   input                       sdo_data_valid,
-  output reg                  sdo_data_ready,
+  output                      sdo_data_ready,
 
   output  [(NUM_OF_SDI * DATA_WIDTH-1):0] sdi_data,
   output reg                              sdi_data_valid,
@@ -70,32 +70,38 @@ module spi_engine_execution_shiftreg #(
   input   [ 7:0]  word_length,
 
   // timing from main fsm
-  input       sample_sdo,
-  output reg  sdo_io_ready,
+  output      sdo_io_ready,
+  output      echo_last_bit,
   input       transfer_active,
   input       trigger_tx,
   input       trigger_rx,
   input       first_bit,
-  input       cs_activate,
-  output      end_of_sdi_latch
+  input       cs_activate
 );
 
   reg [             7:0] sdi_counter    = 8'b0;
   reg [(DATA_WIDTH-1):0] data_sdo_shift = 'h0;
   reg [   SDI_DELAY+1:0] trigger_rx_d   = {(SDI_DELAY+2){1'b0}};
-  reg [(DATA_WIDTH-1):0] aligned_sdo_data, sdo_data_d;
+  reg [(DATA_WIDTH-1):0] aligned_sdo_data, sdo_data_reg;
+  reg data_sdo_v;
+  wire sdo_toshiftreg;
+  wire last_sdi_bit;
+  wire trigger_rx_s;
+  wire [2:0] current_instr = current_cmd[14:12];
 
-  wire        trigger_rx_s;
-  wire [2:0]  current_instr = current_cmd[14:12];
-  wire        last_sdi_bit;
-
-  always @(posedge clk) begin
+  // sdo data handshake
+  assign sdo_data_ready = (!data_sdo_v) || sdo_toshiftreg;
+  assign sdo_io_ready = data_sdo_v;
+  always @(posedge clk ) begin
     if (resetn == 1'b0) begin
-      sdo_data_ready <= 1'b0;
-    end else if (sdo_toshiftreg) begin
-      sdo_data_ready <= 1'b1;
-    end else if (sdo_data_valid == 1'b1) begin
-      sdo_data_ready <= 1'b0;
+      data_sdo_v <= 1'b0;
+    end else begin
+      if (sdo_data_ready && sdo_data_valid) begin
+        data_sdo_v <= 1'b1;
+        sdo_data_reg <= sdo_data;
+      end else if (sdo_toshiftreg) begin
+        data_sdo_v <= 1'b0;
+      end
     end
   end
 
@@ -103,16 +109,8 @@ module spi_engine_execution_shiftreg #(
   always @(posedge clk ) begin
     if (resetn == 1'b0) begin
       aligned_sdo_data <= 0;
-      sdo_io_ready <= 1'b0;
     end else begin
-      if (transfer_active == 1'b1 && trigger_tx == 1'b1) begin
-        sdo_io_ready <= 1'b0;
-      end
-      if (sample_sdo) begin
-        sdo_data_d <= sdo_data;
-        sdo_io_ready <= 1'b1;
-      end
-      aligned_sdo_data <= sdo_data_d << left_aligned;
+      aligned_sdo_data <= sdo_data_reg << left_aligned;
     end
   end
 
@@ -156,9 +154,8 @@ module spi_engine_execution_shiftreg #(
   generate
   if (ECHO_SCLK == 1) begin : g_echo_sclk_miso_latch
 
-    reg [7:0] sdi_counter_d = 8'b0;
-    reg [7:0] sdi_transfer_counter = 8'b0;
-    reg [7:0] num_of_transfers = 8'b0;
+    reg last_sdi_bit_r;
+    reg latch_sdi;
     reg [(NUM_OF_SDI * DATA_WIDTH)-1:0] sdi_data_latch = {(NUM_OF_SDI * DATA_WIDTH){1'b0}};
 
     if ((DEFAULT_SPI_CFG[1:0] == 2'b01) || (DEFAULT_SPI_CFG[1:0] == 2'b10)) begin : g_echo_miso_nshift_reg
@@ -177,18 +174,21 @@ module spi_engine_execution_shiftreg #(
 
         // intended LATCH
         always @(negedge echo_sclk) begin
-          if (last_sdi_bit)
+          if (latch_sdi)
             sdi_data_latch[i*DATA_WIDTH+:DATA_WIDTH] <= {data_sdi_shift, sdi[i]};
         end
       end
 
-      always @(posedge echo_sclk or posedge cs_activate) begin
+      always @(negedge echo_sclk or posedge cs_activate) begin
         if (cs_activate) begin
-          sdi_counter <= 8'b0;
-          sdi_counter_d <= 8'b0;
+          sdi_counter     <= 8'b0;
+          last_sdi_bit_r  <= 1'b0;
+          latch_sdi       <= 1'b0;
         end else begin
-          sdi_counter <= (sdi_counter == word_length-1) ? 8'b0 : sdi_counter + 1'b1;
-          sdi_counter_d <= sdi_counter;
+          // these paths would be unsafe it there wasn't a guarantee of some settling time between word_length changing and a transfer starting
+          latch_sdi       <= (sdi_counter == word_length - 2);
+          last_sdi_bit_r  <= (sdi_counter == word_length - 1);
+          sdi_counter     <= (sdi_counter == word_length - 1) ? 8'b0 : sdi_counter + 1'b1;
         end
       end
 
@@ -206,25 +206,29 @@ module spi_engine_execution_shiftreg #(
         end
         // intended LATCH
         always @(posedge echo_sclk) begin
-          if (last_sdi_bit)
-            sdi_data_latch[i*DATA_WIDTH+:DATA_WIDTH] <= data_sdi_shift;
+          if (latch_sdi)
+            sdi_data_latch[i*DATA_WIDTH+:DATA_WIDTH] <= {data_sdi_shift, sdi[i]};
         end
       end
 
       always @(posedge echo_sclk or posedge cs_activate) begin
         if (cs_activate) begin
-          sdi_counter <= 8'b0;
-          sdi_counter_d <= 8'b0;
+          sdi_counter     <= 8'b0;
+          last_sdi_bit_r  <= 1'b0;
+          latch_sdi       <= 1'b0;
         end else begin
-          sdi_counter <= (sdi_counter == word_length-1) ? 8'b0 : sdi_counter + 1'b1;
-          sdi_counter_d <= sdi_counter;
+          // these paths would be unsafe it there wasn't a guarantee of some settling time between word_length changing and a transfer starting
+          latch_sdi       <= (sdi_counter == word_length - 2);
+          last_sdi_bit_r  <= (sdi_counter == word_length - 1);
+          sdi_counter     <= (sdi_counter == word_length - 1) ? 8'b0 : sdi_counter + 1'b1;
         end
       end
 
     end
 
     assign sdi_data = sdi_data_latch;
-    assign last_sdi_bit = (sdi_counter == 0) && (sdi_counter_d == word_length-1);
+    assign last_sdi_bit = last_sdi_bit_r;
+    assign echo_last_bit =  !last_sdi_bit_m[3] && last_sdi_bit_m[2];
 
     // sdi_data_valid is synchronous to SPI clock, so synchronize the
     // last_sdi_bit to SPI clock
@@ -241,42 +245,16 @@ module spi_engine_execution_shiftreg #(
     always @(posedge clk) begin
       if (cs_activate) begin
         sdi_data_valid <= 1'b0;
-      end else if (sdi_enabled == 1'b1 &&
-                   last_sdi_bit_m[3] == 1'b0 &&
-                   last_sdi_bit_m[2] == 1'b1) begin
+      end else if (sdi_enabled == 1'b1 && echo_last_bit) begin
         sdi_data_valid <= 1'b1;
       end else if (sdi_data_ready == 1'b1) begin
         sdi_data_valid <= 1'b0;
       end
     end
 
-    always @(posedge clk) begin
-      if (cs_activate) begin
-        num_of_transfers <= 8'b0;
-      end else begin
-        if (current_instr == CMD_TRANSFER) begin
-          // current_cmd contains the NUM_OF_TRANSFERS - 1
-          num_of_transfers <= current_cmd[7:0] + 1'b1;
-        end
-      end
-    end
-
-    always @(posedge clk) begin
-      if (cs_activate) begin
-        sdi_transfer_counter <= 0;
-      end else if (last_sdi_bit_m[2] == 1'b0 &&
-                   last_sdi_bit_m[1] == 1'b1) begin
-        sdi_transfer_counter <= sdi_transfer_counter + 1'b1;
-      end
-    end
-
-    assign end_of_sdi_latch = last_sdi_bit_m[2] & (sdi_transfer_counter == num_of_transfers);
-
   end /* g_echo_sclk_miso_latch */
   else
   begin : g_sclk_miso_latch
-
-    assign end_of_sdi_latch = 1'b1;
 
     for (i=0; i<NUM_OF_SDI; i=i+1) begin: g_sdi_shift_reg
 

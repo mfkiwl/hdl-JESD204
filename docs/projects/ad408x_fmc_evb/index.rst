@@ -3,6 +3,12 @@
 AD408X-FMC-EVB HDL project
 ================================================================================
 
+.. caution::
+
+   Although the :adi:`AD4080` supports CMOS interface, this HDL project does not
+   support it. The only available interface for this project is LVDS, in
+   single lane mode, DDR.
+
 Overview
 -------------------------------------------------------------------------------
 
@@ -66,7 +72,7 @@ The data path and clock domains are depicted in the below diagram:
 .. image:: ../ad408x_fmc_evb/ad408x_fmc_evb_zed_block_diagram.svg
    :width: 800
    :align: center
-   :alt: EVAL-AD4080-FMC/ZedBoard block diagram
+   :alt: AD4080-FMC-EVB/ZedBoard block diagram
 
 Clock scheme
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -74,7 +80,7 @@ Clock scheme
 .. image:: ../ad408x_fmc_evb/ad408x_fmc_clock_scheme.svg
    :width: 800
    :align: center
-   :alt: EVAL-AD4080-FMC/ZedBoard block diagram
+   :alt: AD4080-FMC-EVB/ZedBoard block diagram
 
 CPU/Memory interconnects addresses
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -255,7 +261,7 @@ Software related
   - `PyADI-IIO documentation <https://analogdevicesinc.github.io/pyadi-iio/>`__
   - `PyADI-IIO example <https://github.com/analogdevicesinc/pyadi-iio/blob/ad4080/examples/ad4080_example.py>`__
   - `PyADI-IIO class <https://github.com/analogdevicesinc/pyadi-iio/blob/ad4080/adi/ad4080.py>`__
-  - AD4080-FMC-EVB Linux device tree :git-linux:`arch/arm/boot/dts/zynq-zed-adv7511-ad4080.dts`
+  - AD4080-FMC-EVB Linux device tree :git-linux:`arch/arm/boot/dts/xilinx/zynq-zed-adv7511-ad4080.dts`
   - AD4080 Linux driver :git-linux:`ad4080.c <drivers/iio/adc/ad4080.c>`
 
 .. include:: ../common/more_information.rst

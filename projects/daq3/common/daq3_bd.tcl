@@ -1,5 +1,5 @@
 ###############################################################################
-## Copyright (C) 2014-2023 Analog Devices, Inc. All rights reserved.
+## Copyright (C) 2014-2025 Analog Devices, Inc. All rights reserved.
 ### SPDX short identifier: ADIBSD
 ###############################################################################
 
@@ -70,6 +70,7 @@ ad_ip_parameter axi_ad9152_dma CONFIG.DMA_2D_TRANSFER 0
 ad_ip_parameter axi_ad9152_dma CONFIG.CYCLIC 0
 ad_ip_parameter axi_ad9152_dma CONFIG.DMA_DATA_WIDTH_SRC 128
 ad_ip_parameter axi_ad9152_dma CONFIG.DMA_DATA_WIDTH_DEST $dac_data_width
+ad_ip_parameter axi_ad9152_dma CONFIG.CACHE_COHERENT $CACHE_COHERENCY
 
 ad_dacfifo_create $dac_fifo_name $dac_data_width $dac_data_width $dac_fifo_address_width
 
@@ -107,6 +108,7 @@ ad_ip_parameter axi_ad9680_dma CONFIG.DMA_2D_TRANSFER 0
 ad_ip_parameter axi_ad9680_dma CONFIG.CYCLIC 0
 ad_ip_parameter axi_ad9680_dma CONFIG.DMA_DATA_WIDTH_SRC $adc_data_width
 ad_ip_parameter axi_ad9680_dma CONFIG.DMA_DATA_WIDTH_DEST 64
+ad_ip_parameter axi_ad9680_dma CONFIG.CACHE_COHERENT $CACHE_COHERENCY
 
 if {$sys_zynq == 0 || $sys_zynq == 1} {
   ad_adcfifo_create $adc_fifo_name $adc_data_width $adc_data_width $adc_fifo_address_width
@@ -139,7 +141,10 @@ ad_xcvrpll  axi_ad9152_xcvr/up_pll_rst util_daq3_xcvr/up_qpll_rst_*
 ad_xcvrpll  axi_ad9680_xcvr/up_pll_rst util_daq3_xcvr/up_cpll_rst_*
 
 # connections (dac)
-
+# mapping the link layer lanes to the physical layer lanes
+# logical lanes 0-3 are mapped to physical lanes {0 2 3 1}
+# | logical lane  | 0 | 1 | 2 | 3 |
+# | physical lane | 0 | 2 | 3 | 1 |
 ad_xcvrcon  util_daq3_xcvr axi_ad9152_xcvr axi_ad9152_jesd {0 2 3 1} {} {} $MAX_TX_NUM_OF_LANES
 ad_connect  util_daq3_xcvr/tx_out_clk_0 axi_ad9152_tpl_core/link_clk
 ad_connect  axi_ad9152_jesd/tx_data axi_ad9152_tpl_core/link

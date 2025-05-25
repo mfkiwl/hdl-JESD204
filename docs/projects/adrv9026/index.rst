@@ -17,6 +17,13 @@ Supported boards
 
 - :adi:`ADRV9026/ADRV9029 <EVAL-ADRV9026>`
 
+Supported devices
+-------------------------------------------------------------------------------
+
+- :adi:`ADRV9026`
+- :adi:`ADRV9029`
+- ADRV9025 (OBSOLETE)
+
 Supported carriers
 -------------------------------------------------------------------------------
 
@@ -31,14 +38,11 @@ Supported carriers
      - :intel:`A10SoC <content/www/us/en/products/details/fpga/development-kits/arria/10-sx.html>`
      - FMCA
    * -
-     - :xilinx:`ZCU102`
-     - FMC HPC1
-   * -
-     - :xilinx:`VCK190`
-     - FMCP1
-   * -
      - :xilinx:`VCU118`
      - FMCP
+   * -
+     - :xilinx:`ZCU102`
+     - FMC HPC1
 
 Block design
 -------------------------------------------------------------------------------
@@ -122,18 +126,18 @@ CPU/Memory interconnects addresses
 The addresses are dependent on the architecture of the FPGA, having an offset
 added to the base address from HDL (see more at :ref:`architecture cpu-intercon-addr`).
 
-==================== ==================== =============== =========== ===========
-Instance             Depends on parameter Zynq/Microblaze ZynqMP      Versal
-==================== ==================== =============== =========== ===========
-rx_adrv9026_tpl_core                      0x44A0_0000     0x84A0_0000 0xA4A0_0000
-tx_adrv9026_tpl_core                      0x44A0_4000     0x84A0_4000 0xA4A0_4000
-axi_adrv9026_rx_xcvr $ADI_PHY_SEL==1      0x44A6_0000     0x84A6_0000 0xA4A6_0000
-axi_adrv9026_tx_xcvr $ADI_PHY_SEL==1      0x44A8_0000     0x84A8_0000 0xA4A8_0000
-axi_adrv9026_tx_jesd                      0x44A9_0000     0x84A9_0000 0xA4A9_0000
-axi_adrv9026_rx_jesd                      0x44AA_0000     0x84AA_0000 0xA4AA_0000
-axi_adrv9026_rx_dma                       0x7C40_0000     0x9C40_0000 0xBC40_0000
-axi_adrv9026_tx_dma                       0x7C42_0000     0x9C42_0000 0xBC42_0000
-==================== ==================== =============== =========== ===========
+==================== =============== ===========
+Instance             Zynq/Microblaze ZynqMP     
+==================== =============== ===========
+rx_adrv9026_tpl_core 0x44A0_0000     0x84A0_0000
+tx_adrv9026_tpl_core 0x44A0_4000     0x84A0_4000
+axi_adrv9026_rx_xcvr 0x44A6_0000     0x84A6_0000
+axi_adrv9026_tx_xcvr 0x44A8_0000     0x84A8_0000
+axi_adrv9026_tx_jesd 0x44A9_0000     0x84A9_0000
+axi_adrv9026_rx_jesd 0x44AA_0000     0x84AA_0000
+axi_adrv9026_rx_dma  0x7C40_0000     0x9C40_0000
+axi_adrv9026_tx_dma  0x7C42_0000     0x9C42_0000
+==================== =============== ===========
 
 SPI connections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -177,7 +181,7 @@ ZCU102
      - INOUT
      - 68
      - 146
-   * - ad9528_reset_b
+   * - ad9528_sysref_req
      - INOUT
      - 67
      - 145
@@ -352,8 +356,8 @@ Instance name        HDL Linux ZynqMP Actual ZynqMP
 ==================== === ============ =============
 axi_adrv9026_tx_jesd 10  106          138
 axi_adrv9026_rx_jesd 11  107          139
-axi_adrv9026_tx_dma  13  108          140
-axi_adrv9026_rx_dma  14  109          141
+axi_adrv9026_tx_dma  13  109          141
+axi_adrv9026_rx_dma  14  110          142
 ==================== === ============ =============
 
 Microblaze
@@ -389,9 +393,6 @@ by typing in your command prompt:
    $cd hdl/projects/adrv9026/zcu102
    $make
 
-   $cd hdl/projects/adrv9026/a10soc
-   $make
-
 The following dropdowns contain tables with the parameters that can be used to
 configure this project, depending on the carrier used.
 
@@ -400,7 +401,7 @@ configure this project, depending on the carrier used.
    +-------------------+------------------------------------------------------+
    | Parameter         | Default value of the parameters depending on carrier |
    +-------------------+---------------------------+--------------------------+
-   |                   |             ZCU102/A10SoC/VCK190/VCU118              |
+   |                   |                ZCU102/A10SoC/VCU118                  |
    +===================+======================================================+
    | JESD_MODE         |                       8B10B                          |
    +-------------------+------------------------------------------------------+
